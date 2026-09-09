@@ -1,0 +1,373 @@
+'!pragma ratio 0.3
+!pragma horizontalLineBetweenDifferentPackageAllowed
+!if ({{config.elk}} == true)
+!pragma layout elk
+!endif
+'Общее позиционирование
+
+allowmixing
+
+skinparam {
+    titleFontSize 40
+	'maxMessageSize 200
+	'hide stereotype
+	tabSize 5
+	defaultfontname Arial
+	linetype ortho
+	'linetype polyline
+	nodesep 20
+	ranksep 20
+	shadowing true
+	stereotypefontsize 8
+	'padding 10
+    hyperlinkColor black
+    hyperlinkUnderline false
+}
+
+top to bottom direction
+'left to right direction
+
+hide circle
+
+hide empty members
+
+'Стили регионов
+
+skinparam rectangle {
+
+	borderthickness 2
+	fontstyle bold
+
+	attributefontsize 11
+
+	'sameClassWidth true
+
+	'padding 200
+
+	'ranksep 10
+	'bordercolor transparent
+	backgroundcolor #f0f0f0
+
+	bordercolor<<External-сеть>> transparent
+
+	backgroundcolor<<External-сеть>> #ddd5e4
+
+	bordercolor<<Internal-сеть>> transparent
+
+	backgroundcolor<<Internal-сеть>> #c5d7ef
+
+	borderstyle<<Группа систем>> dashed
+
+	bordercolor<< ДБ/ДЗО >> transparent
+
+	backgroundcolor<< ДБ/ДЗО >> #f0f0f0
+
+	bordercolor<<Каналы>> transparent
+
+	backgroundcolor<<Каналы>> #84b5f5
+
+	bordercolor<<Банк>> transparent
+
+	backgroundcolor<<Банк>> #e9f6dc
+
+	bordercolor<<ОЭ>> transparent
+
+	backgroundcolor<<ОЭ>> #a1f1dc
+
+	bordercolor<<Cloud>> transparent
+
+	backgroundcolor<<Cloud>> #a1f1dc
+
+	backgroundcolor<<Платформа>> #ffcc66
+
+}
+
+<style>
+    classDiagram {
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 10
+
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            linecolor #4e4948
+
+            'stereotypefontsize 9
+
+            header {
+                fontstyle bold
+                fontsize 11
+            }
+
+            .Внешняя {
+                linecolor gray
+                header {
+                    backgroundcolor lightblue/%lighten("#lightblue", 40)
+                }
+            }
+
+            .Нецелевая {
+                linecolor gray
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600-%lighten("#006600", 40)
+                }
+            }
+
+            .Нецелевая модифицируется {
+                linecolor red
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600/%lighten("#006600", 40)
+                }
+            }
+
+            .Целевая требуется выбор {
+                linecolor red
+                header {
+                    backgroundcolor orange/%lighten("#orange", 40)
+                }
+            }
+
+            .Целевая разработка {
+                linecolor red
+                header {
+                    backgroundcolor ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена {
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая внедрена полностью {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Целевая внедрена полностью модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Технический сервис {
+                header {
+                    backgroundcolor de924b/%lighten("de924b", 40)
+                }
+            }
+        }
+
+        node {
+            fontstyle bold
+            fontsize 14
+            linestyle 8
+            linethickness 2
+            backgroundcolor #GreenYellow/LightGoldenRodYellow
+            'backgroundcolor #84b5f5
+        }
+
+        frame {
+            fontstyle bold
+            fontsize 11
+            linestyle 8
+            linethickness 2
+
+            'backgroundColor #ffcc66
+        }
+
+        file {
+            backgroundcolor transparent
+            'borderColor transparent
+            linethickness 2
+            textcolor white
+            fontcolor transparent
+            fontsize 0
+        }
+
+        component {
+            .Person {
+                backgroundcolor transparent
+                lineColor transparent
+                linethickness 1
+                fontsize 14
+                fontstyle Bold
+            }
+        }
+    }
+</style>
+
+'hide stereotype
+hide <<>> stereotype
+hide <<Person>> stereotype
+'hide <<Технический сервис>> stereotype
+'hide <<Нецелевая>> stereotype
+
+set namespaceSeparator none
+title {{&title}}
+
+@startuml
+
+{{#clients}}
+    component {{id}} <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..{{&title}}..
+    ]
+{{/clients}}
+
+!if ({{has_channels}})
+node "Каналы взаимодействия с клиентом" as channels_boundary{
+!endif
+    {{#channels}}
+        rectangle "{{&title}}" as {{id}}
+    {{/channels}}
+!if ({{has_channels}})
+}
+!endif
+
+{{#systems}}
+    !if ({{config.sber_frame}} == true)
+    !if ({{is_sber}})
+        file "Cистемы Сбербанка" as sber_area{
+
+        {{#groups}}
+            rectangle "{{&title}}" as {{id}}.sber_area {
+        {{/groups}}
+    !else
+    !if ({{is_external}})
+        file "Внешние системы" as external_area{
+
+        {{#groups}}
+            rectangle "{{&title}}" as {{id}}.external_area {
+        {{/groups}}
+    !else
+        file "Прикладные системы" as systems_area{
+
+        {{#groups}}
+            rectangle "{{&title}}" as {{id}}.systems_area {
+        {{/groups}}
+    !endif
+    !endif
+    !else
+        {{#groups}}
+            rectangle "{{&title}}" as {{id}} {
+        {{/groups}}
+    !endif
+
+
+        !if ({{has_subsystems}})
+            frame "{{&title}}" as {{id}}.frame {
+            class "{{&title}}" as {{id}} << {{notation}} >> [[/entities/kadzo.v2023.systems/card?id={{id}}]]
+            !if ({{has_functions}})
+                {
+                {{#functions}}
+                    {field} <color:{{color}}><size:8><U+25E6> {{&title}}</size></color>
+                {{/functions}}
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы {{&title}}" as {{id}}.sub {
+            {{#subsystems}}
+                class "{{&title}}" as {{id}} << {{notation}} >> [[/entities/kadzo.v2023.systems/card?id={{id}}]]
+                !if ({{has_functions}})
+                    {
+                    {{#functions}}
+                        {field} <color:{{color}}><size:8><U+25E6> {{&title}}</size></color>
+                    {{/functions}}
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+            {{/subsystems}}
+            }
+            }
+        !else
+        class "{{&title}}" as {{id}} << {{notation}} >> [[/entities/kadzo.v2023.systems/card?id={{id}}]]
+            !if ({{has_functions}})
+                {
+                {{#functions}}
+                    {field} <color:{{color}}><size:8><U+25E6> {{&title}}</size></color>
+                {{/functions}}
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    {{#groups}}
+    }
+    {{/groups}}
+    !if ({{config.sber_frame}} == true)
+    }
+    !else
+        !if ({{has_channels}})
+            {{#groups}}
+                channels_boundary -[hidden]down- {{id}}
+            {{/groups}}
+        !endif
+    !endif
+{{/systems}}
+
+!if ({{config.sber_frame}} == true)
+    !if ({{has_channels}})
+        channels_boundary -[hidden]down- systems_area
+        !if ({{has_external}})
+            channels_boundary -[hidden]down- external_area
+        !endif
+        !if ({{has_sber}})
+        channels_boundary -[hidden]down- sber_area
+        !endif
+    !endif
+
+    !if ({{has_sber}})
+    sber_area -[hidden]down- systems_area
+    !endif
+
+    !if ({{has_external}})
+    systems_area -[hidden]down- external_area
+    !endif
+!endif
+
+{{#tech_services}}
+    rectangle "Технические сервисы" {
+        class "{{&title}}" as {{id}} <<Технический сервис>>
+    }
+{{/tech_services}}
+
+{{#integrations}}
+    "{{from}}" {{&direction}} "{{to}}" #{{color}};text:{{color}} : [[/entities/kadzo.v2023.integrations/card?id={{link_id}} {{&code}}]]
+{{/integrations}}
+
+{{#channels_links}}
+    "{{channel}}" -[dotted]down- "{{system}}"
+{{/channels_links}}
+
+{{#clients_links}}
+    "{{client}}" -[dotted]down- "{{channel}}"
+{{/clients_links}}
+
+@enduml

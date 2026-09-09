@@ -1,0 +1,158 @@
+editable_table.ai.auto_fill.gigachat.agent.request_data:
+  default: DEFAULT
+  text: Hello World
+  fn: FN MOCK DATA
+  checkbox: true
+  select: blue
+
+  multiple_select:
+    - КрасНый
+    - blue
+    - asd
+
+  #  colors:
+  #    - КрасНый
+  #    - blue
+  #    - asd
+
+  # ПУСТОЙ ЭЛЕМЕНТ ПРОБЕМ null
+  #  colors:
+  #    - КрасНый
+  #    - blue
+  #    - asd
+  #    -
+
+  #  colors:
+  #    - КрасНый КрасНый, КрасНый КрасНый
+  #    - blue
+  #    - asd
+  #    -
+
+  colors:
+    - КрасНый КрасНый, КрасНый КрасНый
+    - blue
+    - asd
+    - 34535345
+
+  color: white
+  link: https://ya.ru
+
+docs:
+  editable_table__ai__auto_fill__gigachat__agent:
+    type: ai-chat
+    location: TABLE / AI / AUTO FILL / GIGACHAT AGENT / AGENT
+    scenarios:
+      gigachat_agent:
+        history: false
+        title: gigachat_agent
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент. 
+          
+          От пользователя ты получаешь запрос который содержит данные и ID.
+          
+          Алгорит действий:
+          Выполни инструмент "transform" передав ID (id) и данные (content)
+          Верни пользователю результат.
+
+          ВАЖНО! 
+            - Не давай комментариев при ответе
+            - Не форматируй ответ
+            - Используя только описанный алгоритм
+          
+          КРИТИЧЕСКИ ВАЖНО: НЕ МЕНЯЙ ФОРМАТ (СТРУКТУРУ) ДАННЫХ ПОЛУЧЕННЫХ ЧЕРЕЗ ТУЛЫ ПРИ ПЕРЕДАЧЕ ОТВЕТА КЛИЕНТУ. (НЕ УБИРАЙ СКОБКИ У JSON и пр.)
+
+        tools:
+          - type: jsonata
+            query: >
+              (
+              
+                $log("============== PARAMS =================");
+                $log($params);
+              
+                $prop := $params.id ? $params.id : "default";
+                $ctx := $."editable_table.ai.auto_fill.gigachat.agent.request_data";
+
+                $log("============== CTX =================");
+                $log($ctx);
+
+                $log("============== PROP =================");
+                $log($prop);
+
+                $result := ($params.id = "checkbox" and $params.data = "false") or $not($exists($params.data))
+                  ? $string($lookup($ctx, $prop))
+                  : "None";
+                            
+                $log("============== RESULT =================");
+                $log($result);
+              
+                $result
+              )
+            schema:
+              name: transform
+              description: Возвращает преобразованные данные
+              parameters:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    description: Контекнт
+                  id:
+                    type: string
+                    description: ID
+
+#      gigachat_agent:
+#        history: false
+#        title: gigachat_agent
+#        type: gigachat
+#        model: GigaChat-2
+#        system_prompt: |
+#          Ты ИИ - ассистент.
+#
+#          От пользователя ты получаешь запрос который содержит данные и ID.
+#
+#          Алгорит действий:
+#
+#          Если в запросе пользователя в качестве данных - "true" ИДИ  указаны ЛЮБЫЕ ДРУГИЕ данные:
+#            - Вернуть пользователю "None".
+#
+#          Иначе:
+#            - Сделай преобразование данных используя инструмент "transform" передав в него ID полученный от пользователя.
+#            - Верни результат выполнения "transform" пользователю, без каких-либо преобразований.
+#
+#          ВАЖНО!
+#            - Не давай комментариев при ответе
+#            - Не форматируй ответ
+#            - Используя только описанный алгоритм
+#
+#        tools:
+#          - type: jsonata
+#            query: >
+#              (
+#                $log("============== PARAMS =================");
+#                $log($params);
+#
+#                $prop := $params.prop ? $params.prop : "default";
+#                $ctx := $."editable_table.ai.auto_fill.gigachat.agent.request_data";
+#
+#
+#                $log("============== CTX =================");
+#                $log($ctx);
+#
+#                $log("============== PROP =================");
+#                $log($prop);
+#
+#                $result := $lookup($ctx, $prop);
+#
+#                $string($result)
+#              )
+#            schema:
+#              name: transform
+#              description: Возвращает преобразованные данные
+#              parameters:
+#                type: object
+#                properties:
+#                  prop:
+#                    type: string
+#                    description: ID

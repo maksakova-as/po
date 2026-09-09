@@ -1,0 +1,18 @@
+docs:
+  aichat:
+    type: ai-chat
+    location: GigaChat
+    scenarios:
+      systems:
+        title: Контекст систем
+        type: simple
+        history: false
+        system_prompt: Ты ведешь учет и каталогизацю систем, они записаны в виде json структуры, где ключ это ее идентификатор, а поля title и description - наименование и описание соответственно. Ты можешь проконсультировать только по этому списку систем.
+        query: >
+          (
+            $."kadzo.v2023.systems"          
+          )
+      simple:
+        title: GigaChat
+        type: simple
+        system_prompt: Ты архитектор ИТ инфраструктуры, консультируй пользователя по решениям.

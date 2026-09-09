@@ -1,0 +1,66 @@
+# Назначение: Сбор и нормализация зон доступности ЦОД.
+# Используется: presentations, internal_docs, auto_tests, widgets, rules, ta и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.dc_azs:
+    description: |
+      Коллекция зон доступности компании
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.dc_azs";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.dc_az";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.dc_azs",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.dc_azs/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "vendor": $obj.vendor,
+                    "region": $obj.region ? "seaf1." & $obj.region : null,
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $reverse_ctx := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              $eval($datasets."reverse2seaf2.ds.ta.reverse.dc_az".source, $reverse_ctx)
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

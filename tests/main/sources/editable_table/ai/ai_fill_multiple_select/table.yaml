@@ -1,0 +1,106 @@
+editable_table.ai.ai_fill_multiple_select.table.data:
+  row_1: {}
+
+editable_table.ai.ai_fill_multiple_select.table.colors:
+  - value: red
+    text: Красный
+  - value: green
+    text: Зеленый
+  - value: blue
+    text: Синий
+  - value: white
+    text: Белый
+
+docs:
+  editable_table.ai.ai_fill_multiple_select.table:
+    location: TABLE / AI / Автозаполенение / Заполнение multiple-select / table
+    origin:
+      headers: >
+        ($.docs."editable_table.ai.ai_fill_multiple_select.table"."headers")
+      body: >
+        ($."editable_table.ai.ai_fill_multiple_select.table.data")
+      color_options: >
+        ($."editable_table.ai.ai_fill_multiple_select.table.colors")
+
+    type: editable-table
+    page_size: 20
+    new_row: >
+      (
+          $rows := $keys(table);
+          $new_row_count := $count($rows) + 1;
+          $new_row_id := "row_" & $new_row_count;
+          $new_row_id
+      )
+
+    headers:
+      - value: text_1
+        type: text
+
+      - value: text_2
+        type: text
+        agent:
+          ia_table_agent.scenarios.simple_agent:
+            params:
+              - prop: text
+            input_headers:
+              - text_2
+            request: |
+              [text_2]
+
+      - value: select
+        type: select
+        options: >
+          (color_options)
+
+      - value: multiple_select
+        type: multiple-select
+        options: >
+          (color_options)
+        agent:
+          ia_table_agent.scenarios.simple_agent:
+            params:
+              - prop: colors
+            input_headers:
+              - multiple_select
+            request: |
+              [multiple_select]
+
+      - value: link
+        type: link
+        agent:
+          ia_table_agent.scenarios.simple_agent:
+            params:
+              - prop: link
+            input_headers:
+              - link
+            request: |
+              [link]
+
+      - value: fn
+        type: fn
+        fn: >
+          (
+              row.fn ? row.fn : null
+          )
+        agent:
+          ia_table_agent.scenarios.simple_agent:
+            params:
+              - prop: text
+            input_headers:
+              - fn
+            request: |
+              [fn]
+
+    source: >
+      (
+          $headers := $map(headers, function($h){(
+              $mock := {
+                  "width": "130px",
+                  "editable": true,
+                  "save": {"path": "test.yaml"}
+              };
+              $merge([$h, $mock]);
+          )});
+          { "body": body, "headers": $headers }
+      )
+      

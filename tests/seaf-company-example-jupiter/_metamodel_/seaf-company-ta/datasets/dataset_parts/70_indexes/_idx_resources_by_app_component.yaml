@@ -1,0 +1,18 @@
+# Назначение: Индекс ресурсов TA по прикладному компоненту для быстрых карточек/таблиц.
+# Используется: app.
+datasets:
+  seaf.company.ds.ta._idx.resources_by_app_component:
+    description: |
+      Индекс TA-ресурсов по идентификатору прикладной системы (app_components).
+    origin:
+      ta_all: seaf.company.ds.ta.all_objects_light
+    source: >
+      (
+        $normalize := function($value){ $type($value) = "array" ? $value : ($exists($value) ? [$value] : []) };
+        (
+          ta_all.*.(
+            $res := $;
+            $normalize($res.app_components).{ "sys": $, "res": $res }
+          )
+        ){ sys: res }
+      )

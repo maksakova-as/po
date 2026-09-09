@@ -1,0 +1,71 @@
+# Здесь описываем (декларируем) внешние по отношению к нашему модулю сущности, на объекты которых мы ссылаемся в своих
+# сущностях посредством конструкции вида $ref: "#/$rels/kadzo.v2023.tasks.tasks".
+# Это декларирование позволяет устранить ошибки валидации в некоторых реализациях движка jsonschema (например в vscode)
+# в тех случаях, когда сторонние модули не подключены к арх. репозиторию, а ссылки на сущности этих модулей описаны в нашей схеме
+
+entities:
+
+# Сущности SEAF2
+  seaf.company.change.activities:
+    objects:
+      activity: {}
+
+  seaf.company.app.systems:
+    objects:
+      system: {}
+
+  seaf.company.cybersec.systems:
+    objects:
+      system: {}
+
+  seaf.company.ba.channels:
+    objects:
+      channel: {}
+
+  seaf.company.ba.processes:
+    objects:
+      process: {}
+
+  seaf.company.ba.products:
+    objects:
+      product: {}
+  
+  # Сущности SEAF1
+  seaf.ba.processes:
+    objects:
+      process: {}
+
+  seaf.ba.products:
+    objects:
+      product: {}
+  
+  
+  # Сущности КАДЗО
+  kadzo.v2023.tasks:
+    objects:
+      tasks: {}
+
+  kadzo.v2023.systems:
+    objects:
+      systems: {}
+
+  kadzo.v2023.kb_systems:
+    objects:
+      kb_systems: {}
+
+  kadzo.v2023.tech_services:
+    objects:
+      tech_services: {}
+
+  kadzo.v2023.channels:
+    objects:
+      channels: {}
+
+  kadzo.v2023.processes:
+    objects:
+      processes: {}
+
+  kadzo.v2023.products:
+    objects:
+      products: {}
+

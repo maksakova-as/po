@@ -1,0 +1,26 @@
+# Метаданные пакета
+$package:
+  jupiter_custom: # Идентификатор пакета
+    # Краткое название пакета
+    name: Кастомный пакет расширения метамодели
+    # Поставщик
+    vendor: ООО Юпитер
+    # Описание
+    description: Кастомный пакет расширения метамодели ООО Юпитер. Используется для кастомизации метамодели под нужды компании.
+    # Версия
+    version: 0.1.0
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+
+imports:
+  - _shared/_root.yaml
+  - common/_root.yaml
+  - ba/_root.yaml
+  - app/_root.yaml
+  - cybersec/_root.yaml
+  - da/_root.yaml
+  - ta/_root.yaml
+  - change/_root.yaml
+  - artefacts/_root.yaml
+  - mm_viewer/_root.yaml

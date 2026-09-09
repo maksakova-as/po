@@ -1,0 +1,235 @@
+seaf.company.ai.solutions:
+  jupiter.ai_agent.assets_checker:
+    title: ИИ Агент проверки активов клиента
+    description: >
+      Агент анализирует документацию по кредитной сделке в части активов клиента и дает свое заключение о качестве активов
+    lifecycle_stage: Используется и развивается
+
+    activities:
+      - activity: jupiter.activity.2025_aiagent1
+        description: Старт разработки
+      - activity: https://jira.solaris.ru/browse/CROSSGOAL-25107
+        description: Инициатива на стороне головной организации
+
+    criticality_level: Business Critical
+
+    capabilities:
+      - Юридическая верификация текста договора купли-продажи
+      - Финансовый анализ баланса компании
+      - Прогноз экономического состояния юрлица
+
+    business_usages:
+      - business_object: jupiter.channel.website
+        description: Используется в web-приложениях канала
+        lifecycle_stage: Используется
+      - business_object: jupiter.process.knowledge_management
+        description: Основной агент для процесса
+      - business_object: jupiter.product.news
+        description: Использование при формировании продукта
+        lifecycle_stage: Тестируется
+
+    stakeholders:
+      - role: Владелец от бизнеса
+        name: Иванов Иван Иванович
+        description: Постановка задач от финансового блока
+      - role: Владелец от ИТ
+        name: Петров Петр Петрович
+        description: Группа GenAI
+
+    models:
+      - model: jupiter.ai_model.abcd
+        description: Open Source LLM. Экспериментальное использование
+        lifecycle_stage: Идея в проработке
+      - model: sber.ai_model.gigachat_ultra
+        description: Используется для анализа финансовых документов
+
+    memory:
+      - title: Сессионная память агента
+        type: Кратковременная память
+        description: Сохраняется в md файлах в папке сессий
+        lifecycle_stage: Используется
+      - title: Долговременная память агента
+        type: Долговременная память
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Используется
+
+    domain_knowledge:
+      - title: Актуальные сделки клиента
+        type: RAG
+        description: Обращение за актуальными данными по сделкам клиента, проиндексированным в векторной БД
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Используется
+
+    tools:
+      - title: Запрос курсов валют
+        type: Прямой вызов API
+        description: Вызов API GetCurrencyRates с сайта ЦБ
+      - title: Запрос базовой информации о юрлице
+        type: Прямое взаимодействие с БД
+        description: Доступ по dblink к таблице клиентов
+        realized_in: jupiter.app_system.1c_erp
+        lifecycle_stage: Тестируется
+      - title: Вычисление актива в разных валютах
+        type: Внутренняя логика
+        description: Математические расчеты сумм с учетом исторических курсов валют
+      - title: Поиск открытой информации о бенефициарах
+        type: MCP функция
+        description: Запрос в yandex \ google открытой информации о лицах, связанных с клиентом
+        lifecycle_stage: Тестируется
+      - title: Вызов агента-критика
+        type: Вызов ИИ-агента
+        description: Цель - дать альтернативное мнение по финансовой стороне сделки
+        realized_in: jupiter.ai_agent.assets_checker_alt
+
+    control_flows:
+      - title: Основной поток
+        description: Анализ входных документов, вычленение информации об активах, пересчет в разные валюты
+        realized_in: jupiter.app_system.aihub
+
+    feedbacks:
+      - title: Объяснение оценок
+        type: Интроспекция
+        description: Способность объяснить заниженную оценку актива
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Тестируется
+      - title: Анализ Экспертом-экономистом
+        type: Оценка человеком
+        description: Анализ объяснений и действий агента с позиции эксперта по экономике
+        lifecycle_stage: Идея в проработке
+      - title: Самоанализ агента
+        type: Рефлексия
+        description: Самоанализ и корректировка поведения
+        lifecycle_stage: Используется и развивается
+
+    input_interfaces:
+      - title: API межагентский
+        description: Возможность вызова данного агента любым сторонним агентом
+        type: API
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Тестируется
+      - title: Пользовательский интерфейс
+        description: >
+          Возможность зайти на страницу агента и "попросить" его проанализировать пакет документов.
+          Используется для тестирования
+        type: GUI
+        lifecycle_stage: Идея в проработке
+
+    guardrails:
+      - title: Проверка соответствия тону сообщения
+        type: Валидация ответа
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Используется
+      - title: Контроль форматов вызова
+        type: Контроль структуры и форматов вызовов инструментов (tools) из AI-агента
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Создается
+      - title: Проверка целей
+        type: Проверка запросов к AI-агенту на соответствие цели AI-агента
+        realized_in: jupiter.app_system.aihub
+        lifecycle_stage: Тестируется
+
+    ai_stack:
+      - technology: Agent Navigator (Sber)
+        description: Построение основного ядра, RAG и инструментов агента
+        delivery_type: On-prem
+        build_type: Low code, No code
+      - technology: LangChain
+        description: Тестирование прототипов агента
+        build_type: Code based
+        delivery_type: On-prem
+    comments:
+      - комментарий 1
+      - комментарий 2
+    tags:
+      - ИИ-Помощник Сбера
+
+#seaf.company.ai.agents:
+  jupiter.ai_agent.assets_checker_alt:
+    title: ИИ Агент формирования альтернативного мнения
+    description: Агент формирования альтернативного мнения по финансовой сделке
+    lifecycle_stage: Тестируется
+
+    activity: jupiter.activity.2025_aiagent1
+
+    criticality_level: Business Operational
+
+    capabilities:
+      - Финансовый анализ баланса компании
+      - Прогноз экономического состояния юрлица
+
+    business_usages:
+      - business_object: jupiter.process.knowledge_management
+        description: Основной агент для процесса
+        lifecycle_stage: Тестируется
+
+    stakeholders:
+      - role: Владелец от бизнеса
+        name: Иванов Иван Иванович
+        description: Постановка задач от финансового блока
+      - role: Владелец от ИТ
+        name: Петров Петр Петрович
+        description: Группа GenAI
+
+    models:
+      - model: jupiter.ai_model.deepseek_general_llm
+        description: Используется для доп. проверки ответов основной LLM
+        lifecycle_stage: Тестируется
+
+    memory:
+      - title: Сессионная память агента
+        description: Память хранится в md файлах внутри сессии
+        type: Кратковременная память
+
+    tools:
+      - title: Запрос курсов валют
+        type: Прямой вызов API
+        description: Вызов API GetCurrencyRates с сайта ЦБ
+      - title: Вычисление актива в разных валютах
+        type: Внутренняя логика
+        description: Математические расчеты сумм с учетом исторических курсов валют
+
+    control_flows:
+      - title: Основной поток
+        description: Анализ входных документов, вычленение информации об активах, пересчет в разные валюты
+        realized_in: jupiter.app_system.aihub
+
+    feedbacks:
+      - title: Объяснение оценок
+        type: Интроспекция
+        description: Способность объяснить заниженную оценку актива
+      - title: Самоанализ агента
+        type: Рефлексия
+        description: Самоанализ и корректировка поведения
+
+    input_interfaces:
+      - title: API межагентский
+        description: Возможность вызова данного агента любым сторонним агентом
+        type: API
+        lifecycle_stage: Идея в проработке
+
+    guardrails:
+      - title: Контроль форматов вызова
+        type: Контроль структуры и форматов вызовов инструментов (tools) из AI-агента
+        lifecycle_stage: Создается
+      - title: Проверка целей
+        type: Проверка запросов к AI-агенту на соответствие цели AI-агента
+
+    ai_stack:
+      - technology: Agent Navigator (Sber)
+        description: Построение основного ядра, RAG и инструментов агента
+        delivery_type: On-prem
+        build_type: Low code, No code
+      - technology: LangChain
+        description: Тестирование прототипов агента
+        build_type: Code based
+        delivery_type: On-prem
+
+    domain_knowledge:
+      - title: Актуальные сделки клиента
+        type: RAG
+        description: Обращение за актуальными данными по сделкам клиента, проиндексированным в векторной БД
+
+    tags:
+      - Тег 1
+      - Тег 2
+      - Тег 3

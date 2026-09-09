@@ -1,0 +1,100 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_cmc_presence:
+      uid: SEAF-TA-P3-K8S-CMC
+      title: '[TACCS_1-P10-2-04] ЦУЦ/УЦ: наличие целевого центра (ca)'
+      description: 'Проверяем доступность доверенного ЦУЦ: кластер должен находиться
+        в `protected_services`
+
+        CMC-сервиса и иметь общую сеть с ним.
+
+        '
+      correction: 'Расширьте `protected_services` CMC и настройте пересечение `network_connection`.
+
+        '
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_cmc_presence";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $code := "TACCS_1-P10-2-04";
+                  $kb := $."seaf.company.ta.services.kbs";
+                  $cmc_services :=
+                    $filter(
+                      $map($keys($kb), function($svc_key){
+                        (
+                          $svc := $lookup($kb, $svc_key);
+                          ($svc.tag = "CMC" and $exists($svc.protected_services)) ? {
+                            "key": $svc_key,
+                            "svc": $svc
+                          }
+                        )
+                      }),
+                      function($entry){ $type($entry) = "object" }
+                    );
+                  $each($."seaf.company.ta.services.k8s", function($k, $k_key){
+                    (
+                      $nets := $distinct((($k.network_connection) or []) ~> $append($k.management_networks));
+                      $matches := $filter($cmc_services, function($entry){
+                        $k_key in $entry.svc.protected_services
+                      });
+                      ($count($matches)=0) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_cmc_presence.missing." & $k_key,
+                        "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_cmc_presence.missing." & $k_key,
+                        "title": "K8s '" & $k.title & "' не привязан к ЦУЦ",
+                        "correction": "ID: " & $k_key & ". " & ("Укажите кластер в protected_services CMC"),
+                        "description": "Отсутствует запись в KB"
+                      } : (
+                        $issues := $map($matches, function($entry){
+                          (
+                            $svc := $entry.svc;
+                            $svc_key := $entry.key;
+                            ($exists($nets) and $exists($svc.network_connection)) ? (
+                              $common := $filter($nets, function($n){ $n in $svc.network_connection });
+                              ($count($common)=0) ? {
+                                "uid": "seaf.validation.ta.p3.k8s_cmc_presence.reach." & $k_key & "." & $svc_key,
+                                "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_cmc_presence.reach." & $k_key & "." & $svc_key,
+                                "title": "K8s '" & $k.title & "' и CMC '" & $svc.title & "' не делят сети",
+                                "correction": "ID: " & $k_key & ". " & ("Согласуйте `network_connection` кластера и CMC"),
+                                "description": "CMC: " & $svc_key
+                              } : []
+                            ) : []
+                          )
+                        });
+                        $filter($issues, function($issue){ $type($issue) = "object" })
+                      )
+                    )
+                  }) ~> $reduce(function($curr, $acc){
+                    (
+                      $seq :=
+                        ($type($curr) = "array") ? $curr :
+                        ($type($curr) = "object") ? [$curr] :
+                        [];
+                      $seq ~> $reduce(function($value, $inner){
+                        $inner ~> $append($value)
+                      }, $acc)
+                    )
+                  }, [])
+                )
+              ])
+
+            )
+            : []
+        )

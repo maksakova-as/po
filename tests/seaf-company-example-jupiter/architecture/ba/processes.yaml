@@ -1,0 +1,58 @@
+seaf.company.ba.processes:
+  jupiter.process.knowledge_management:
+    title: Управление знаниями
+    description: Процесс подготовки, редактуры и публикации знаний
+    lifecycle_stage: Используется и развивается
+    produces:
+      - jupiter.product.knowledge
+    uses_it_services:
+      - jupiter.srv.ai_news_summary
+    uses_data:
+      - business_term: jupiter.bt.model
+        usage_mode: read-write
+      - business_term: jupiter.bt.material
+        usage_mode: read-write
+      - business_term: jupiter.bt.color
+        usage_mode: read-write
+      - business_term: jupiter.bt.size
+        usage_mode: read-write
+
+  jupiter.process.news_production:
+    title: Производство новостей
+    description: Процесс подготовки, редактуры и публикации новостей в каналах компании
+    lifecycle_stage: Используется и развивается
+    is_part_of: jupiter.process.knowledge_management
+    produces:
+      - jupiter.product.news
+    uses_it_services:
+      - jupiter.srv.lk_news_editor
+      - jupiter.srv.ai_news_summary
+
+  jupiter.process.merch_production:
+    title: Производство мерчей
+    description: Процесс производства и упаковки мерчей
+    lifecycle_stage: Используется и развивается
+    uses_data:
+      - business_term: jupiter.bt.model
+        usage_mode: read-only
+      - business_term: jupiter.bt.material
+        usage_mode: read-only
+      - business_term: jupiter.bt.color
+        usage_mode: read-only
+      - business_term: jupiter.bt.size
+        usage_mode: read-only
+      - business_term: jupiter.bt.employee
+        usage_mode: read-write
+      - business_term: jupiter.bt.full_name
+        usage_mode: read-write
+      - business_term: jupiter.bt.designer
+        usage_mode: read-write
+      - business_term: jupiter.bt.lead_technician
+        usage_mode: read-write
+      - business_term: jupiter.bt.senior_technician
+        usage_mode: read-write
+    produces:
+      - jupiter.product.merch
+    uses_it_services:
+      - jupiter.srv.lk_production_expert
+      - jupiter.srv.esign

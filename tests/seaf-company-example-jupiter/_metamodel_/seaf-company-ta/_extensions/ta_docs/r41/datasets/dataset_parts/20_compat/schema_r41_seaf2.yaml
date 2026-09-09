@@ -1,0 +1,230 @@
+# Назначение: Источник R41 только из SEAF2-сущностей без fallback.
+# Используется: docs.
+datasets:
+  seaf.company.ds.ta.schema_r41_seaf2:
+    description: >
+      Источник данных для R41 только из сущностей SEAF2 (seaf.company.ta.*) без fallback и без смешивания с seaf1/reverse.
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $by_entities := by_entities;
+        $data_lake := data_lake;
+        $plural_to_singular_map := {
+          "seaf.company.ta.services.dc_regions": "seaf.ta.services.dc_region",
+          "seaf.company.ta.services.dc_azs": "seaf.ta.services.dc_az",
+          "seaf.company.ta.services.dcs": "seaf.ta.services.dc",
+          "seaf.company.ta.services.dc_offices": "seaf.ta.services.office",
+          "seaf.company.ta.services.network_segments": "seaf.ta.services.network_segment",
+          "seaf.company.ta.services.networks": "seaf.ta.services.network",
+          "seaf.company.ta.services.network_links": "seaf.ta.services.network_links",
+          "seaf.company.ta.services.logical_links": "seaf.ta.services.logical_link",
+          "seaf.company.ta.services.kbs": "seaf.ta.services.kb",
+          "seaf.company.ta.components.hw_storages": "seaf.ta.components.hw_storage",
+          "seaf.company.ta.components.servers": "seaf.ta.components.server",
+          "seaf.company.ta.components.user_devices": "seaf.ta.components.user_device",
+          "seaf.company.ta.components.networks": "seaf.ta.components.network",
+          "seaf.company.ta.services.cluster_virtualizations": "seaf.ta.services.cluster_virtualization",
+          "seaf.company.ta.services.compute_services": "seaf.ta.services.compute_service",
+          "seaf.company.ta.services.storages": "seaf.ta.services.storage",
+          "seaf.company.ta.services.backups": "seaf.ta.services.backup",
+          "seaf.company.ta.services.monitorings": "seaf.ta.services.monitoring",
+          "seaf.company.ta.services.k8s": "seaf.ta.services.k8s",
+          "seaf.company.ta.services.softwares": "seaf.ta.services.software"
+        };
+        $required := [
+          "seaf.ta.services.dc_region",
+          "seaf.ta.services.dc_az",
+          "seaf.ta.services.dc",
+          "seaf.ta.services.office",
+          "seaf.ta.services.network_segment",
+          "seaf.ta.services.network",
+          "seaf.ta.services.network_links",
+          "seaf.ta.services.logical_link",
+          "seaf.ta.services.kb",
+          "seaf.ta.components.hw_storage",
+          "seaf.ta.components.server",
+          "seaf.ta.components.user_device",
+          "seaf.ta.components.network",
+          "seaf.ta.services.cluster_virtualization",
+          "seaf.ta.services.compute_service",
+          "seaf.ta.services.storage",
+          "seaf.ta.services.backup",
+          "seaf.ta.services.monitoring",
+          "seaf.ta.services.k8s",
+          "seaf.ta.services.software"
+        ];
+        $mapped := $merge(
+          $keys($plural_to_singular_map)@$plural.(
+            $singular := $lookup($plural_to_singular_map, $plural);
+            $value := $lookup($by_entities, $plural);
+            $value_norm := $plural = "seaf.company.ta.services.network_segments"
+              ? (
+                  $value ? $value.$spread().(
+                    $id := $keys()[0];
+                    $obj := $.*[0];
+                    $loc_list := $type($obj.location) = "array" ? $obj.location : ($exists($obj.location) ? [$obj.location] : []);
+                    $legacy_sber := $type($obj.sber) = "object" ? $obj.sber : {};
+                    $sber_location := $exists($legacy_sber.location)
+                      ? $legacy_sber.location
+                      : ($count($loc_list) > 0 ? $string($loc_list[0]) : "");
+                    $sber_zone := $exists($legacy_sber.zone)
+                      ? $legacy_sber.zone
+                      : ($exists($obj.zone) ? $obj.zone : "");
+                    {
+                      ($id): $merge([
+                        $obj,
+                        {
+                          "sber": {
+                            "location": $sber_location,
+                            "zone": $sber_zone
+                          }
+                        }
+                      ])
+                    }
+                  ) ~> $merge() : {}
+                )
+              : ($plural = "seaf.company.ta.services.networks"
+              ? (
+                  $value ? $value.$spread().(
+                    $id := $keys()[0];
+                    $obj := $.*[0];
+                    {
+                      ($id): $merge([
+                        $obj,
+                        (
+                          $loc_list := $type($obj.location) = "array" ? $obj.location : ($exists($obj.location) ? [$obj.location] : []);
+                          $seg_list := $type($obj.segment) = "array" ? $obj.segment : ($exists($obj.segment) ? [$obj.segment] : []);
+                          {
+                            "location": $count($loc_list) > 0 ? $string($loc_list[0]) : null,
+                            "segment": $count($seg_list) > 0 ? $string($seg_list[0]) : null,
+                            "locations": $loc_list,
+                            "segments": $seg_list
+                          }
+                        )
+                      ])
+                    }
+                  ) ~> $merge() : {}
+                )
+              : (
+                  $plural = "seaf.company.ta.components.networks" or $plural = "seaf.company.ta.components.servers" or $plural = "seaf.company.ta.components.hw_storages" or $plural = "seaf.company.ta.components.user_devices"
+                    ? (
+                        $net_map := $lookup($by_entities, "seaf.company.ta.services.networks");
+                        $value ? $value.$spread().(
+                          $id := $keys()[0];
+                          $obj := $.*[0];
+                          $canonical_type := $plural = "seaf.company.ta.components.networks"
+                            ? "network"
+                            : (
+                                $plural = "seaf.company.ta.components.servers"
+                                  ? "server"
+                                  : (
+                                      $plural = "seaf.company.ta.components.hw_storages"
+                                        ? "hw_storage"
+                                        : ($plural = "seaf.company.ta.components.user_devices" ? "user_device" : $obj.__object_type__)
+                                      )
+                              );
+                          $network_type_map := {
+                            "Маршрутизатор (роутер)": "Маршрутизатор",
+                            "Межсетевой экран (файрвол)": "МСЭ",
+                            "Коммутатор (свитч)": "Коммутатор",
+                            "Switch (Subnet)": "Коммутатор",
+                            "Router (VPC)": "Маршрутизатор",
+                            "NAT Gateway": "NAT",
+                            "VPN Gateway": "VPN"
+                          };
+                          $normalized_component_type := $plural = "seaf.company.ta.components.networks"
+                            ? (
+                                $mapped_type := $lookup($network_type_map, $obj.type);
+                                $exists($mapped_type) ? $mapped_type : $obj.type
+                              )
+                            : $obj.type;
+                          $conn_list := $type($obj.network_connection) = "array"
+                            ? $obj.network_connection
+                            : (
+                                $exists($obj.network_connection)
+                                  ? [$obj.network_connection]
+                                  : (
+                                      $type($obj.subnets) = "array"
+                                        ? $obj.subnets
+                                        : ($exists($obj.subnets) ? [$obj.subnets] : [])
+                                    )
+                              );
+                          $seg_list := $type($obj.segment) = "array" ? $obj.segment : ($exists($obj.segment) ? [$obj.segment] : []);
+                          $seg_from_conn := $count($seg_list) > 0
+                            ? $seg_list[0]
+                            : (
+                                $count($conn_list) > 0
+                                  ? (
+                                      $n0 := $lookup($net_map, $conn_list[0]);
+                                      $n0 ? ($type($n0.segment) = "array" ? $n0.segment[0] : $n0.segment) : null
+                                    )
+                                  : null
+                              );
+                          {
+                            ($id): $merge([
+                              $obj,
+                              {
+                                "__object_type__": $canonical_type,
+                                "type": $normalized_component_type,
+                                "network_connection": $conn_list,
+                                "segment": $seg_from_conn,
+                                "location": $type($obj.location) = "array" ? $obj.location : ($exists($obj.location) ? [$obj.location] : [])
+                              }
+                            ])
+                          }
+                        ) ~> $merge() : {}
+                      )
+                    : $value
+                ));
+            { ($singular): ($exists($value_norm) ? $value_norm : {}) }
+          )
+        );
+        $result := $merge(
+          $required@$key.{
+            ($key): ($exists($lookup($mapped, $key)) ? $lookup($mapped, $key) : {})
+          }
+        );
+        $legacy_clusters := $lookup($by_entities, "seaf.company.ta.services.clusters")
+          ? $lookup($by_entities, "seaf.company.ta.services.clusters")
+          : $lookup($data_lake, "seaf.company.ta.services.clusters");
+        $result := $merge([
+          $result,
+          {
+            "seaf.ta.services.compute_service": $merge([
+              ($exists($lookup($result, "seaf.ta.services.compute_service")) ? $lookup($result, "seaf.ta.services.compute_service") : {}),
+              ($exists($legacy_clusters) ? $legacy_clusters : {})
+            ])
+          }
+        ]);
+        $singular_to_plural_map := {
+          "seaf.ta.services.dc_region": "seaf.company.ta.services.dc_regions",
+          "seaf.ta.services.dc_az": "seaf.company.ta.services.dc_azs",
+          "seaf.ta.services.dc": "seaf.company.ta.services.dcs",
+          "seaf.ta.services.office": "seaf.company.ta.services.dc_offices",
+          "seaf.ta.services.network_segment": "seaf.company.ta.services.network_segments",
+          "seaf.ta.services.network": "seaf.company.ta.services.networks",
+          "seaf.ta.services.network_links": "seaf.company.ta.services.network_links",
+          "seaf.ta.services.logical_link": "seaf.company.ta.services.logical_links",
+          "seaf.ta.services.kb": "seaf.company.ta.services.kbs",
+          "seaf.ta.components.hw_storage": "seaf.company.ta.components.hw_storages",
+          "seaf.ta.components.server": "seaf.company.ta.components.servers",
+          "seaf.ta.components.user_device": "seaf.company.ta.components.user_devices",
+          "seaf.ta.components.network": "seaf.company.ta.components.networks",
+          "seaf.ta.services.cluster_virtualization": "seaf.company.ta.services.cluster_virtualizations",
+          "seaf.ta.services.compute_service": "seaf.company.ta.services.compute_services",
+          "seaf.ta.services.storage": "seaf.company.ta.services.storages",
+          "seaf.ta.services.backup": "seaf.company.ta.services.backups",
+          "seaf.ta.services.monitoring": "seaf.company.ta.services.monitorings",
+          "seaf.ta.services.k8s": "seaf.company.ta.services.k8s",
+          "seaf.ta.services.software": "seaf.company.ta.services.softwares"
+        };
+        $aliases := $merge(
+          $keys($singular_to_plural_map)@$singular.(
+            $plural := $lookup($singular_to_plural_map, $singular);
+            { ($plural): ($exists($lookup($result, $singular)) ? $lookup($result, $singular) : {}) }
+          )
+        );
+        $merge([$result, $aliases])
+      )

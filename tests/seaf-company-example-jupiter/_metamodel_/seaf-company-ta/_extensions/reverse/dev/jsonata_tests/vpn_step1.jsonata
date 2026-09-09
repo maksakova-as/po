@@ -1,0 +1,3 @@
+(
+  $count($."seaf.ta.reverse.cloud_ru.advanced.vpn_gateways")
+)

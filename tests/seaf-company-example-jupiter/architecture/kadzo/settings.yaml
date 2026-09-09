@@ -1,0 +1,4 @@
+seaf.configs:
+  seaf->kadzo:
+    groups:
+      root_category: jupiter.sys_group.root

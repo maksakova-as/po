@@ -1,0 +1,36 @@
+# Назначение: Подготовка датасета `kadzo.ds.ta.monitoring` (monitoring) в контуре kadzo.
+# Используется: ta/dataset_parts/* и объединенные TA-таблицы через reverse2seaf2.ds.ta.kadzo.*.
+datasets:
+  kadzo.ds.ta.monitoring:
+    source: >
+      (
+        $services := data_lake."kadzo.v2023.tech_services";
+        $target_classes := ["Средства мониторинга", "Системы логирования"];
+        
+        $services.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          
+          $is_target := $obj.class in $target_classes;
+          
+          $is_target ? {
+            "kadzo.monitoring." & $id : {
+              "__id__": "kadzo.monitoring." & $id,
+              "__entity_id__": "seaf.company.ta.services.monitorings",
+              "__entity_title__": "Сервис мониторинга",
+              "title": $obj.title,
+              "name": $obj.title,
+              "description": $obj.description,
+              "app_components": $obj.provides ? $obj.provides : [],
+              "role": ["Monitoring"],
+              "ha": $obj.high_availability.type = "Да",
+              "location": [],
+              "availabilityzone": [],
+              "network_connection": [],
+              "monitored_services": [],
+              "source": "kadzo",
+              "legacy_id": $id
+            }
+          } : {}
+        ) ~> $merge()
+      )

@@ -1,0 +1,60 @@
+entities:
+  seaf.company.change.goals:
+    title: &entity_title Цели
+    description: &entity_description |
+      Цели, стоящие перед компанией.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.goal.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      goal:
+        route: "/"
+        title: Цель
+        symbol: "goal"
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры объектов
+              $ref: "#/$rels/seaf.company.change.goals.goal"
+
+            type:
+              title: Тип
+              description: Тип цели
+              enum:
+                - Стратегическая цель
+                - Бизнес цель
+                - Технологическая цель
+
+            horizon:
+              title: Горизонт целеполагания
+              description: | 
+                Дата \ срок, к которому требуется достигнуть указанную цель. 
+                Предпочтительный формат даты год-квартал: YYYYQN (например 2027Q3)
+              $ref: "#/$defs/seaf.def.type.date"
+
+          required:
+            - type
+            - horizon

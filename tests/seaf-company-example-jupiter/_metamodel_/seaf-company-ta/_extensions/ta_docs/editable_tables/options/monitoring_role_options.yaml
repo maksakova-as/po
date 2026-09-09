@@ -1,0 +1,26 @@
+datasets:
+  seaf.company.ds.ta.monitoring_roles:
+    description: Опции для поля "Роли" в мониторинге
+    origin:
+      monitoring: seaf.company.ds.ta.monitoring
+    source: >
+      (
+        $entries := $exists(monitoring) ? monitoring : {};
+        $role_map := $merge(
+          $map($entries, function($entry){
+            $exists($entry.role)
+              ? $merge(
+                  $map($entry.role, function($role){
+                    {
+                      $role: {
+                        "value": $role,
+                        "text": $role
+                      }
+                    }
+                  })
+                )
+              : {}
+          })
+        );
+        [$role_map.*]
+      )

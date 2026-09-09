@@ -1,0 +1,21 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - header.yaml
+  - summary.yaml
+  - comments.yaml
+  - models.yaml
+  - control_flows.yaml
+  - memory.yaml
+  - tools.yaml
+  - feedbacks.yaml
+  - input_interfaces.yaml
+  - guardrails.yaml
+  - stakeholders.yaml
+  - capabilities.yaml
+  - business_usages.yaml
+  - ai_stack.yaml
+  - domain_knowledge.yaml
+  - struct_schema.yaml
+  - app_schema.yaml
+  - schema_tabs.yaml

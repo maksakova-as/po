@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.backup` (backup) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.backup
+datasets:
+  seaf.company.ds.ta.backup:
+    description: |
+      Сервисы резервного копирования
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.services.backups") ? by_entities."seaf.company.ta.services.backups" : {};
+        $list := data_lake."seaf.ta.services.backup";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.services.backups",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.services.backups"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

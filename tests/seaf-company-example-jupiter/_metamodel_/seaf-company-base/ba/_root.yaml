@@ -1,0 +1,6 @@
+imports:
+  - configs.yaml
+  - clients/_root.yaml
+  - channels/_root.yaml
+  - products/_root.yaml
+  - processes/_root.yaml

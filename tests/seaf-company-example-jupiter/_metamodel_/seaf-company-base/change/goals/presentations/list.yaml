@@ -1,0 +1,38 @@
+entities:
+  seaf.company.change.goals:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: type
+            text: Тип
+            align: left
+          - value: horizon
+            text: Горизонт
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin: seaf.company.ds.change.goals
+        source: >
+          (
+          $.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "type": $val.type,
+              "horizon": $val.horizon,
+              "description": $val.description
+          }[];
+          )

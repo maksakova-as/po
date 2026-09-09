@@ -1,0 +1,10 @@
+docs:
+  test.markdown.md01:
+    type: markdown
+    location: /Tests/Markdown/MD01
+    source: md01.md
+
+  test.markdown.md02:
+    type: markdown
+    location: /Tests/Markdown/MD02
+    source: md02.md

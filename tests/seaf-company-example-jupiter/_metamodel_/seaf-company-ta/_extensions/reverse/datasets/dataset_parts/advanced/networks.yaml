@@ -1,0 +1,179 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.networks` (networks) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.networks:
+    description: |
+      Converts subnet information found inside `seaf.ta.reverse.servers_list` into LAN/WAN network objects linked with generated network segments.
+    source: |
+      (
+        $normalize := function($text){
+          (
+            $str := $type($text) = "string" ? $lowercase($text) : "";
+            $chars := $split($str, "");
+            $converted := $chars.(
+              $ch := $;
+              (
+                ($ch >= "a" and $ch <= "z") or ($ch >= "0" and $ch <= "9")
+              )
+                ? $ch
+                : (
+                    $ch = "-"
+                      ? "-"
+                      : "."
+                  )
+            );
+            $joined := $join($converted, "");
+            $trimmed := $replace($joined, "^(\\.)|(\\.)$", "");
+            $replace($trimmed, "\\.{2,}", ".")
+          )
+        };
+        $segment_from_subnet := function($name){
+          (
+            $str := $type($name) = "string" ? $lowercase($name) : "";
+            $match($str, /dmz/) ? "DMZ" : (
+              $match($str, /(internet|wan)/) ? "INTERNET" : "INT-NET"
+            )
+          )
+        };
+        $az_ref := function($az){
+          (
+            $val := $type($az) = "string" ? $trim($az) : "";
+            $val != "" ? "reverse.dc_az." & $val : null
+          )
+        };
+        $dc_from_az := function($az){
+          (
+            $val := $type($az) = "string" ? $trim($az) : "";
+            $norm := $normalize($val);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $dc_from_code := function($dc){
+          (
+            $code := $normalize($dc);
+            $code != "" ? "reverse.dc." & $code : null
+          )
+        };
+        $servers := $eval(datasets."seaf.ta.reverse.servers_list".source);
+        $subnet_catalog := $."seaf.ta.reverse.cloud_ru.advanced.subnets".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $subnet_id_map := $subnet_catalog.{
+          ($lookup(value, "id")): value
+        }[ $lookup(value, "id") != null ] ~> $merge();
+        $lookup_subnet := function($id){
+          $id != null and $exists($lookup($subnet_id_map, $id))
+            ? $lookup($subnet_id_map, $id)
+            : null
+        };
+        $subnet_entries := $servers.(
+          $server_az := $type($lookup($, "az")) = "string" ? $trim($lookup($, "az")) : "";
+          $block := $lookup($, "subnet_array");
+          $type($block) = "object"
+            ? $block.$spread().{
+                "key": $keys()[0],
+                "value": *,
+                "server_az": $server_az
+              }
+            : (
+                $type($block) = "array"
+                  ? $block.$spread().(
+                      $item := $;
+                      $type($item) = "object"
+                        ? $item.$spread().{
+                            "key": $keys()[0],
+                            "value": *,
+                            "server_az": $server_az
+                          }
+                        : []
+                    )
+                  : []
+              )
+        );
+        $flat := $subnet_entries[];
+        $flat.(
+          $full_key := key;
+          $subnet := value;
+          $server_az := $lookup($, "server_az");
+          $subnet_id := $subnet.id;
+          $subnet_name := $subnet.name;
+          $subnet_desc := $subnet.description;
+          $subnet_gateway := $subnet.gateway;
+          $subnet_dns := $subnet.dns_list;
+          $subnet_tenant := $subnet.tenant;
+          $subnet_cidr := $subnet.cidr;
+          $subnet_az := $subnet.availability_zone;
+          $subnet_az_alt := $subnet.az;
+          $raw_subnet := $lookup_subnet($subnet_id);
+          $az_value := (
+            $subnet_az != null and $subnet_az != ""
+              ? $subnet_az
+            : (
+                $subnet_az_alt != null and $subnet_az_alt != ""
+                  ? $subnet_az_alt
+                  : (
+                      $server_az != "" ? $server_az : (
+                        $raw_subnet != null ? $lookup($raw_subnet, "availability_zone") : ""
+                      )
+                    )
+              )
+          );
+          $dc_from_az_value := $dc_from_az($az_value);
+          $az_ref_value := $az_ref($az_value);
+          $dc_code_raw := $subnet.DC;
+          $dc_code_norm := $normalize($dc_code_raw);
+          $dc_from_code_value := $dc_from_code($dc_code_raw);
+          $segment_name := $segment_from_subnet($subnet_name);
+          $segment_ref := $dc_code_norm != ""
+            ? "reverse.segment." & $dc_code_norm & "." & $segment_name
+            : null;
+          $location_candidates := [
+            $dc_from_az_value,
+            $dc_from_code_value,
+            $az_ref_value
+          ];
+          $location_ref := $distinct($location_candidates[$ != null]);
+          $desc_blocks := [
+            $subnet_desc,
+            $subnet_gateway != null and $subnet_gateway != ""
+              ? "Gateway: " & $subnet_gateway
+              : "",
+            $count($subnet_dns) > 0
+              ? "DNS: " & $join($subnet_dns, ", ")
+              : "",
+            $subnet_tenant != null and $subnet_tenant != ""
+              ? "Tenant: " & $subnet_tenant
+              : ""
+          ][ $ != "" ];
+          $description := $desc_blocks != [] ? $join($desc_blocks, "\n") : "";
+          $network_type := $segment_name = "INTERNET" ? "WAN" : "LAN";
+          $id_part := $normalize(
+            $subnet_id != null ? $subnet_id : $full_key
+          );
+          $node_id := "reverse.network." & $id_part;
+          {
+            ($node_id): {
+              "__id__": $node_id,
+              "__entity_id__": "seaf.company.ta.services.networks",
+              "__entity_title__": "Network (reverse import)",
+              "__company_id__": $subnet_tenant,
+              "__link_to_card__": "/entities/seaf.company.ta.services.networks/card?id=" & $node_id,
+              "title": $subnet_name,
+              "type": $network_type,
+              "description": $description,
+              "external_id": $subnet_id,
+              "ipnetwork": $subnet_cidr,
+              "segment": $segment_ref != null ? [$segment_ref] : [],
+              "location": $location_ref,
+              "availabilityzone": $az_ref_value != null ? [$az_ref_value] : [],
+              "lan_type": $network_type = "LAN" ? "reverse-import" : null,
+              "provider": $network_type = "WAN" ? "Cloud.ru" : null,
+              "source_key": $full_key,
+              "resource_id": $subnet_id,
+              "reverse_source": "seaf.ta.reverse.servers_list"
+            }
+          }
+        )[] ~> $merge()
+      )
+

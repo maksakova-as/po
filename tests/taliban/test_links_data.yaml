@@ -1,0 +1,156 @@
+# test_links_data.yaml
+# Проверка доработок: network_links и logical_links
+
+#### Создаём Регион
+seaf.ta.services.dc_region:
+  test.region.russia:
+    title: Тестовый регион
+    description: Регион для проверки линков
+
+#### Создаём AZ
+seaf.ta.services.dc_az:
+  test.az.moscow:
+    title: Тестовая AZ
+    region: test.region.russia
+
+#### Создаём ЦОД
+seaf.ta.services.dc:
+  test.dc.01:
+    title: Тестовый ЦОД
+    description: ЦОД для тестирования доработок
+    availabilityzone: test.az.moscow
+
+#### Создаём сегменты (зоны безопасности)
+seaf.ta.services.network_segment:
+  # DMZ сегмент
+  test.segment.dmz:
+    title: DMZ Зона
+    sber:
+      zone: DMZ
+      location: test.dc.01
+
+  # Внутренний сегмент
+  test.segment.int:
+    title: Внутренняя зона
+    sber:
+      zone: INT-NET
+      location: test.dc.01
+
+  # Периметр
+  test.segment.inet_edge:
+    title: INET-EDGE
+    sber:
+      zone: INET-EDGE
+      location: test.dc.01
+
+#### Создаём сети (LAN)
+seaf.ta.services.network:
+  # Сети в DMZ
+  test.network.dmz_web:
+    title: DMZ Web Servers
+    type: LAN
+    ipnetwork: 10.0.1.0/24
+    segment: test.segment.dmz
+
+  test.network.dmz_api:
+    title: DMZ API Gateway
+    type: LAN
+    ipnetwork: 10.0.2.0/24
+    segment: test.segment.dmz
+
+  # Сети внутри
+  test.network.app:
+    title: Application Network
+    type: LAN
+    ipnetwork: 10.0.10.0/24
+    segment: test.segment.int
+
+  test.network.db:
+    title: Database Network
+    type: LAN
+    ipnetwork: 10.0.20.0/24
+    segment: test.segment.int
+
+  test.network.cache:
+    title: Cache Network
+    type: LAN
+    ipnetwork: 10.0.30.0/24
+    segment: test.segment.int
+
+#### Создаём сетевое оборудование
+seaf.ta.components.network:
+  # Маршрутизатор на периметре
+  test.router.edge:
+    title: Edge Router
+    type: Маршрутизатор
+    segment: test.segment.inet_edge
+    # Для network_links: от роутера к DMZ сетям
+    source: test.router.edge
+    targets: [test.network.dmz_web, test.network.dmz_api]
+    technology: ethernet
+
+  # Межсетевой экран
+  test.firewall.main:
+    title: Main Firewall
+    type: Межсетевой экран
+    segment: test.segment.dmz
+    # Network links от файрвола
+    source: test.firewall.main
+    targets: [test.network.dmz_web, test.network.app]
+    technology: fiber
+
+  # Внутренний маршрутизатор
+  test.router.internal:
+    title: Internal Router
+    type: Маршрутизатор
+    segment: test.segment.int
+    # Network links от внутреннего роутера
+    source: test.router.internal
+    targets: [test.network.app, test.network.db, test.network.cache]
+    technology: ethernet
+
+  #### Логические связи
+  # Если logical_links использует seaf.ta.components.network:
+  # Логическая связь между сетями приложений
+  test.logical.app_to_db:
+    title: App to DB Connection
+    source: test.network.app
+    targets: [test.network.db]
+    topology: star
+    tags: [production, critical]
+    segment: test.segment.int
+
+  # Логическая связь между DMZ и внутренними сетями
+  test.logical.dmz_to_app:
+    title: DMZ to App
+    source: test.network.dmz_web
+    targets: [test.network.app]
+    topology: chain
+    tags: [web]
+    segment: test.segment.dmz
+
+  # Логическая связь с кэшом
+  test.logical.app_to_cache:
+    title: App to Cache
+    source: test.network.app
+    targets: [test.network.cache]
+    topology: star
+    tags: [cache, performance]
+    segment: test.segment.int
+
+  #### Проверка Missing Links (отсутствующие связи)
+  test.logical.missing_link:
+    title: Missing Link Test
+    source: test.network.app
+    targets: [nonexistent.network.test]
+    topology: star
+    tags: [error]
+    segment: test.segment.int
+
+  test.router.with_missing:
+    title: Router with missing target
+    type: Маршрутизатор
+    segment: test.segment.inet_edge
+    source: test.router.with_missing
+    targets: [test.network.dmz_web, nonexistent.target.network]
+    technology: ethernet

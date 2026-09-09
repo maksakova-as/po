@@ -1,0 +1,706 @@
+{
+  "entities": {
+    "components": {
+      "config": {
+        "root_menu": "Архитектура/Прикладная"
+      },
+      "presentations": {
+        "seaf.app.services.registry": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left",
+              "link": "link"
+            },
+            {
+              "value": "description",
+              "text": "Описание",
+              "align": "left"
+            }
+          ],
+          "source": "(\n   [$.components.$spread()[*.type=\"service\"].{\n        \"id\": $keys()[0],\n        \"link\": \"/entities/components/blank?dh-component-id=\" & $keys()[0],\n        \"title\": *.title,\n        \"description\": *.description\n    }]\n)\n"
+        },
+        "blank": {
+          "widgets": {
+            "dzo_summary": {
+              "title": "Сбер инфо",
+              "presentation": "dzo_summary",
+              "align": "<",
+              "order": 15,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "hierarchy": {
+              "icon": "description",
+              "title": "Иерархия компонента",
+              "presentation": "hierarchy",
+              "align": "<",
+              "order": 30,
+              "style": {
+                "border": true,
+                "margin": "4px"
+              }
+            },
+            "contexts": {
+              "icon": "description",
+              "title": "Контексты",
+              "presentation": "contexts",
+              "align": ">",
+              "order": 10,
+              "style": {
+                "border": true,
+                "min-height": "300px",
+                "margin": "4px"
+              }
+            },
+            "docs": {
+              "icon": "description",
+              "title": "Документы",
+              "presentation": "docs",
+              "align": "<",
+              "order": 20,
+              "style": {
+                "border": true,
+                "padding": "12px",
+                "margin": "4px"
+              }
+            },
+            "summary": {
+              "icon": "settings",
+              "title": "Сводка по компоненту",
+              "presentation": "summary",
+              "align": "<",
+              "order": 10,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "title": "Карточка компонента",
+          "params": {
+            "type": "object",
+            "properties": {
+              "dh-component-id": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "dh-component-id"
+            ]
+          },
+          "type": "mkr-grid",
+          "source": "(\n  /* Получаем идентификатор компонента для карточки */\n  $component_id := $params.\"dh-component-id\";\n  \n  /* Получаем виджеты, которые нужно отобразить */\n  $widgets := entities.components.presentations.blank.widgets;\n  $wleft := $widgets.*[align=\"<\"]^(order);\n  $wright := $widgets.*[align=\">\"]^(order);\n  $wcenter := $widgets.*[$not(align=\">\" or align=\"<\")]^(order);\n\n  /* Функция генерации  профиля виджета для секции разметки */\n  $makeWidget := function($widgets) {(\n    [$widgets.{\n        \"title\": title,\n        \"icon\": icon,\n        \"style\": style ? style : {},\n        \"src\": \"@entity/components/\" & presentation & \"?component=\" & $component_id\n    }];\n  )};\n\n  /* Строим разметку страницы */\n  {\n    \"type\": \"rows\",\n    \"items\": $append(\n      [\n        {\n          \"type\": \"columns\",\n          \"items\": [\n            {\n              \"type\": \"rows\",\n              \"width\": \"40%\",\n              /* Строим список виджетов левой секции */\n              \"items\": $makeWidget($wleft)\n            },\n            {\n              \"type\": \"rows\",\n              \"width\": \"60%\",\n              /* Строим список виджетов правой секции */\n              \"items\": $makeWidget($wright)\n            }\n          ]\n        }\n      ],\n      /* Добавляем центральные виджеты */\n      $makeWidget($wcenter)\n    )\n  }\n)\n"
+        },
+        "dzo_summary": {
+          "params": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "type": "markdown",
+          "template": "templates/dzo_summary.md",
+          "source": "(          \n    $component_id := $params.component;\n    $MANIFEST := $;\n    $lookup(components, $component_id).(\n        /* Если это прикладной сервис */\n        $result := $[type=\"service\"].sber.(\n          [\n            {\n              \"title\": \"Класс\",\n              \"content\": class\n            },\n            {\n              \"title\": \"Ролевая модель\",\n              \"content\": role_model\n            },\n            {\n              \"title\": \"Уровень критичности\",\n              \"content\": criticality\n            },\n            location ? {\n              \"title\": \"Размещение\",\n              \"content\": location\n            },\n            ownership ? {\n              \"title\": \"Степень владения\",\n              \"content\": ownership\n            },\n            live_stage ? {\n              \"title\": \"Этап жизненного цикла\",\n              \"content\": live_stage\n            },\n            live_stage_target ? {\n              \"title\": \"Этап жизненного цикла на горизонт планирования\",\n              \"content\": live_stage_target\n            },\n            target_status ? {\n              \"title\": \"Целевой статус (решение принято)\",\n              \"content\": target_status\n            },\n            change_type ? {\n              \"title\": \"Тип изменений\",\n              \"content\": change_type\n            },\n            rto ? {\n              \"title\": \"RTO (мин)\",\n              \"content\": rto\n            },\n            rpo ? {\n              \"title\": \"RPO (мин)\",\n              \"content\": rpo\n            },\n            sla ? {\n              \"title\": \"SLA (%)\",\n              \"content\": sla\n            }\n          ]\n        );\n        $result := $result ? $result : $[type=\"component\"].sber.(\n           [\n             {\n               \"title\": \"Масштабируемость\",\n               \"content\": scalability\n             },\n             {\n               \"title\": \"Разработчик\",\n               \"content\": provider\n             },\n             {\n               \"title\": \"Тип разработчика компонента\",\n               \"content\": provider_type\n             },\n             {\n               \"title\": \"Включен в договор эскроу с вендором\",\n               \"content\": escrow  ? \"Да\" : \"Нет\"\n             },\n             {\n               \"title\": \"Компонент хранит конфиденциальные данные\",\n               \"content\": stores_confidential_data ? \"Да\" : \"Нет\"\n             },\n             cloud_readiness ? {\n               \"title\": \"Уровень облачной зрелости\",\n               \"content\": cloud_readiness\n             },\n             licenses_ids ? {\n               \"title\": \"Идентификаторы объектов-лицензий для компонента\",\n               \"content\": $join(licenses_ids, \"; \")\n             },\n             {\n               \"title\": \"Компонент включен в реестр регулятора\",\n               \"content\": included_in_regulator_registry ? \"Да\" : \"Нет\"\n             },\n             {\n               \"title\": \"Компонент размещен в DMZ\",\n               \"content\": located_in_DMZ ? \"Да\" : \"Нет\"\n             },\n             {\n               \"title\": \"Ресурсы компонента досутпны из внешних сетей\",\n               \"content\": access_from_external_networks ? \"Да\" : \"Нет\"\n             }                     ]\n         );\n\n        $result ? $result : (\n            [{\n               \"title\": \"Информации нет\"\n            }]      \n        );\n    )\n)\n"
+        },
+        "contexts": {
+          "source": "(\n    $component_id := $params.component;\n    $append(\n      [\n        {\n          \"title\": \"SELF (зависимости)\",\n          \"src\": \"@entity/contexts/plantuml?dh-context-id=SELF&componentId=\" & $component_id & \"&dh-focus-id=\" & $component_id\n        },\n        {\n          \"title\": \"SELF (интеграции)\",\n          \"src\": \"@entity/contexts/integration?dh-context-id=SELF&componentId=\" & $component_id & \"&dh-focus-id=\" & $component_id\n        }\n      ],\n      [$distinct([contexts.$spread().(\n          $CONTEXT := $;\n          $ID := $keys()[0];\n          $PRESENTATION := $exists($.*.presentation) ? $.*.presentation : $$.entities.contexts.config.defaultPresentation;\n          *.components[$wcard($component_id, $)].{\n              \"src\": \"@entity/contexts/\" & $PRESENTATION & \"?dh-context-id=\" & $ID & \"&dh-focus-id=\" & $component_id,\n              \"title\": $CONTEXT.*.title ? $CONTEXT.*.title : $ID\n          }\n      )])]^(title)\n    )\n)\n",
+          "title": "Контексты где встречается компонент",
+          "params": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "type": "mkr-select"
+        },
+        "summary": {
+          "title": "Сводка по компоненту",
+          "source": "(\n  $component_id := $params.component;\n  $lookup(components, $component_id).(\n      [\n          {\n              \"title\": \"Идентификатор\",\n              \"content\": $component_id\n          },\n          {\n              \"title\": \"Название\",\n              \"content\": title\n          },\n          {\n              \"title\": \"Описание\",\n              \"content\": description\n          }\n      ]\n  )\n)\n",
+          "params": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "type": "markdown",
+          "template": "templates/summary.md"
+        },
+        "hierarchy": {
+          "title": "Иерархия компонента",
+          "params": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "type": "plantuml",
+          "template": "templates/hierarchy.puml",
+          "source": "(\n  /* Запоминаем ссылки на контексты и объекты */\n  $CONTEXTS := contexts;\n  $COMPONENTS := components;\n  /* Определяем фильтр для выделяемой иерархической структуры */\n  $FILTER := $params.component;\n  $FILTER_LN := $length($FILTER);\n  /* Определяем иерархию владельцев */\n  $PARENTS := $FILTER.$split(\".\")~>$map(function($v, $LIMIT, $a){(\n      $a~>$map(function($v, $i) { $i <= $LIMIT ? $v})~>$join(\".\");\n  )});\n  $merge((\n      /* Выбираем их компонентов нужные для построения диаграммы */\n      [components.$spread().(\n            $ID := $keys()[0];\n            $PREFIX := $substring($ID, 0, $FILTER_LN + 1);\n            $FILTER_LN = 0\n            or ($PREFIX = $FILTER) or ($PREFIX = ($FILTER & \".\"))\n            or ($ID in $PARENTS) ? $ID;\n        )]\n      ).(\n        /* Готовим полный массив идентификаторов */\n        ($~>$split(\".\")~>$map(function($v, $limit, $struct) {\n          {\n            $struct~>$map(function($pice, $index) {\n              $index <= $limit ? $pice\n            })~>$join(\".\"): true\n          }\n        }))\n    )\n  ).$spread().(\n    /* Готовим массив для вывода */\n    $ID := $keys()[0];\n    $CONTEXT := $lookup($CONTEXTS, $ID);\n    $COMPONENT := $lookup($COMPONENTS, $ID);\n    {\n      \"id\": $ID,\n      \"title\": $COMPONENT.title ? $COMPONENT.title : (\n        $CONTEXT.title ? $CONTEXT.title : $reverse($split($ID, \".\"))[0]\n      ),\n      \"link\": $CONTEXT ? \"/architect/contexts/\" & $ID : \"/architect/components/\" & $ID\n    }            \n  )^(id).(\n    /* Готовим PlantUML код для MindMap */\n    $color := id = $FILTER ? \"[#FFBBCC]\" : \"\";\n    \"*\" & $join($split(id, \".\").(\"*\")) & $color & \" [[\" & link & \" \" & title & \"]]\"\n  )~>$join(\"\\n\");\n)\n"
+        },
+        "docs": {
+          "title": "Документы",
+          "params": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "component"
+            ]
+          },
+          "type": "mkr-tree",
+          "source": "(\n    $COMPONENT_ID := $params.component;\n    $MANIFEST := $;\n    [docs.$spread().(\n        $LINK := \"/docs/\" & $keys()[0];\n        $COMPONENT_ID in *.subjects ?\n        [$[$COMPONENT_ID in *.subjects]\n            {\n                \"location\": *.location,\n                \"title\": *.description,\n                \"link\": $LINK\n            }] : undefined;\n    )[location]^(location)];\n)\n"
+        },
+        "tree": {
+          "title": "Иерархия компонентов",
+          "type": "plantuml",
+          "template": "templates/tree.puml",
+          "source": "(\n  $COMPONENTS := components;\n  $merge((\n      /* Выбираем из компонентов нужные для построения диаграммы */\n      [$COMPONENTS.$spread().(\n          $keys()[0]~>$split(\".\")~>$map(function($v, $limit, $struct) {\n              {\n              $struct~>$map(function($pice, $index) {\n                  $index <= $limit ? $pice\n              })~>$join(\".\"): true\n              }\n          })\n      )]\n    )\n  ).$spread().(\n    /* Готовим массив для вывода */\n    $ID := $keys()[0];\n    $COMPONENT := $lookup($COMPONENTS, $ID);\n    {\n      \"id\": $ID,\n      \"title\": $COMPONENT.title ? $COMPONENT.title : $ID,\n      \"link\": \"/entities/components/blank?dh-component-id=\" & $ID\n    }            \n  )^(id).(\n    /* Готовим PlantUML код для MindMap */\n    $content := \" [[\" & link & \" \" & title & \"]]\";\n    \"*\" & $join($split(id, \".\").(\"*\")) & $content\n  )~>$join(\"\\n\");\n)\n"
+        }
+      },
+      "schema": {
+        "$defs": {
+          "seaf.app.sber.properties.ownership": {
+            "title": "Атрибуты модели владения",
+            "type": "object",
+            "properties": {
+              "location": {
+                "title": "Размещение",
+                "enum": [
+                  "Внутренняя",
+                  "Внешняя"
+                ]
+              },
+              "ownership": {
+                "title": "Степень владения",
+                "enum": [
+                  "Владеем исходным кодом",
+                  "Владеем экземпляром",
+                  "SaaS",
+                  "Система партнера"
+                ]
+              }
+            }
+          },
+          "seaf.app.sber.properties.livestage": {
+            "title": "Атрибуты управления жизненным циклом",
+            "type": "object",
+            "properties": {
+              "live_stage": {
+                "title": "Этап жизненного цикла",
+                "enum": [
+                  "Эскиз",
+                  "В разработке / приобретение",
+                  "Внедрение / Не введена в эксплуатацию",
+                  "Опытная эксплуатация",
+                  "Промышленная эксплуатация",
+                  "Архивная"
+                ]
+              },
+              "live_stage_target": {
+                "title": "Этап жизненного цикла на горизонт планирования",
+                "enum": [
+                  "Эскиз",
+                  "В разработке / приобретение",
+                  "Внедрение / Не введена в эксплуатацию",
+                  "Опытная эксплуатация",
+                  "Промышленная эксплуатация",
+                  "Архивная"
+                ]
+              },
+              "target_status": {
+                "title": "Целевой статус (решение принято)",
+                "enum": [
+                  "Целевая",
+                  "Не целевая"
+                ]
+              },
+              "change_type": {
+                "title": "Тип изменений",
+                "enum": [
+                  "Планируется",
+                  "Разрабатывается",
+                  "Модифицируется",
+                  "Используется",
+                  "Выводится из эксплуатации"
+                ]
+              },
+              "changes": {
+                "title": "Описание изменений",
+                "type": "string"
+              }
+            }
+          },
+          "seaf.app.sber.performance": {
+            "title": "Параметры производительности и надежности",
+            "type": "object",
+            "properties": {
+              "performance": {
+                "title": "Производительность",
+                "type": "string"
+              },
+              "rto": {
+                "title": "RTO (мин)",
+                "type": "integer"
+              },
+              "rpo": {
+                "title": "RPO (мин)",
+                "type": "integer"
+              },
+              "sla": {
+                "title": "SLA (%)",
+                "type": "number"
+              }
+            }
+          },
+          "seaf.app.sber.class": {
+            "title": "Класс автоматизированной системы / прикладного сервиса",
+            "type": "object",
+            "properties": {
+              "class": {
+                "title": "Класс",
+                "enum": [
+                  "BPM (Business Process Management)",
+                  "CRM-аналитический",
+                  "CRM-операционный",
+                  "ECM (Документооборот)",
+                  "RPA (Robotic process automation)",
+                  "Workforce Management",
+                  "Аналитика данных",
+                  "Бизнес-планирование",
+                  "Биллинг",
+                  "Бухгалтерия и финансы",
+                  "Бюджетирование и контроль",
+                  "Взаимоотношения с поставщиками",
+                  "Гео-информационные системы",
+                  "Клиентский профиль (Customer Information File)",
+                  "Контакт-центр",
+                  "Корпоративная база знаний",
+                  "Корпоративная отчетность",
+                  "Корпоративный портал",
+                  "Маркетинг",
+                  "Маркетплейс компании",
+                  "Мессенджеры",
+                  "Нормативная документация",
+                  "Обмен данными с контрагентами",
+                  "Получение сведений о юрлицах",
+                  "Продуктовая фабрика (основная деятельность)",
+                  "Продуктовый каталог",
+                  "Регуляторная отчетность",
+                  "Сайт компании",
+                  "Системы принятия решений",
+                  "Скоринг и рейтинг клиентов",
+                  "Совместная работа (collaboration)",
+                  "Управление активами",
+                  "Управление внутрихозяйственной деятельностью",
+                  "Управление задачами и проектами",
+                  "Управление обучением",
+                  "Управление персоналом",
+                  "Учет судебных дел",
+                  "Финансовый мониторинг и AML",
+                  "CMS (Content Management System)",
+                  "E-mail",
+                  "Service Desk",
+                  "Видеосвязь",
+                  "Мониторинг",
+                  "Рассылка SMS/Push",
+                  "Системы генерации документов",
+                  "Телефония",
+                  "Иное"
+                ]
+              }
+            },
+            "required": [
+              "class"
+            ]
+          },
+          "seaf.app.sber.role_model": {
+            "title": "Атрибуты ролевой модели",
+            "type": "object",
+            "properties": {
+              "role_model": {
+                "title": "Ролевая модель автоматизированной системы",
+                "type": "string",
+                "enum": [
+                  "Централизованная",
+                  "Нецентрализованная",
+                  "Отсутствует"
+                ]
+              }
+            },
+            "required": [
+              "role_model"
+            ]
+          },
+          "seaf.app.sber.criticality": {
+            "title": "Атрибуты оценки критичности",
+            "type": "object",
+            "properties": {
+              "criticality": {
+                "title": "Уровень критичности",
+                "enum": [
+                  "Mission Critical",
+                  "Business Critical",
+                  "Business Operational",
+                  "Office Productivity"
+                ]
+              }
+            },
+            "required": [
+              "criticality"
+            ]
+          },
+          "seaf.app.sber.comments": {
+            "title": "Комментарии, риски, проблемы",
+            "type": "object",
+            "properties": {
+              "comments": {
+                "title": "Комментарии, риски, проблемы",
+                "type": "string"
+              }
+            }
+          },
+          "seaf.app.sber.profile": {
+            "title": "Базовое описание компонента",
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Уникальный идентификатор компонента",
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          "seaf.app.sber.service": {
+            "title": "Описание автоматизированной системы (АС) / функциональной подсистемы (ФП)",
+            "properties": {
+              "sber": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.profile"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.properties.livestage"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.properties.ownership"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.performance"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.class"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.role_model"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.criticality"
+                  },
+                  {
+                    "$ref": "#/$defs/seaf.app.sber.comments",
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "service_type": {
+                            "type": "string",
+                            "enum": [
+                              "Система"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "service_type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "service_type": {
+                            "type": "string",
+                            "enum": [
+                              "Функциональная подсистема"
+                            ]
+                          },
+                          "parent": {
+                            "title": "Родительская система",
+                            "$ref": "#/$rels/components.component"
+                          }
+                        },
+                        "required": [
+                          "service_type",
+                          "parent"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "seaf.app.sber.app_component": {
+            "title": "Описание прикладного компонента",
+            "$ref": "#/$defs/seaf.app.sber.profile",
+            "properties": {
+              "sber": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "is_component_of": {
+                    "title": "Указание прикладного сервиса, в рамках которого проектируется или уже создан компонент",
+                    "$ref": "#/$rels/components.component"
+                  },
+                  "component_type": {
+                    "title": "Тип прикладного компонента",
+                    "type": "string",
+                    "enum": [
+                      "Реляционная СУБД",
+                      "NOSQL СУБД",
+                      "Иная СУБД",
+                      "Распределенный (Distributed) Кэш",
+                      "Сервер Приложений",
+                      "Web Сервер",
+                      "Микросервис",
+                      "Функция/Serverless",
+                      "Консольное приложение",
+                      "Скрипт",
+                      "Фронт (веб приложение)",
+                      "Фронт (мобильное приложение)",
+                      "Фронт (десктоп приложение)",
+                      "Шлюз",
+                      "Балансировщик",
+                      "Интеграционный компонент",
+                      "ETL",
+                      "Файловый ресурс",
+                      "Иное"
+                    ]
+                  },
+                  "scalability": {
+                    "title": "Масштабируемость",
+                    "enum": [
+                      "Нет",
+                      "Вертикальная",
+                      "Горизонтальная",
+                      "Вертикальная и горизонтальная"
+                    ]
+                  },
+                  "provider": {
+                    "title": "Разработчик",
+                    "type": "string"
+                  },
+                  "provider_type": {
+                    "title": "Тип разработчика компонента",
+                    "type": "string",
+                    "enum": [
+                      "Собственная разработка",
+                      "Локальный разработчик",
+                      "Внешний(Иностранный)",
+                      "Open Source Community"
+                    ]
+                  },
+                  "stores_confidential_data": {
+                    "title": "Компонент хранит конфиденциальные данные?",
+                    "type": "boolean"
+                  },
+                  "cloud_readiness": {
+                    "title": "Уровень облачной зрелости",
+                    "type": "string",
+                    "enum": [
+                      "Монолит на нестандартном аппаратном обеспечении (No Cloud-2)",
+                      "Монолит на стандартном аппаратном обеспечении (No Cloud-1)",
+                      "Монолит на виртуализированном аппаратном обеспечении (Cloud Ready 1)",
+                      "Компоненты в контейнерах на виртуализированном аппаратном обеспечении (Cloud ready 2)",
+                      "Компоненты в развёрнутом на виртуализированном аппаратном обеспечении оркестраторе контейнеров (Cloud ready 3)",
+                      "Компоненты в частном облаке с управляемым облачным поставщиком программным обеспечением среды исполнения контейнеров (Cloud Native 4)",
+                      "Компоненты в гибридном публичном облаке/наборе облаков с управляемыми облачными поставщиками инфраструктурными сервисами (Cloud Native 5)",
+                      "Бессерверные (serverless) облачные приложения  в публичном облаке/наборе облаков (Cloud Native 6) ]"
+                    ]
+                  },
+                  "licenses_ids": {
+                    "title": "Идентификаторы объектов-лицензий для компонента",
+                    "type": "array",
+                    "minItems": 0,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "included_in_regulator_registry": {
+                    "title": "Компонент включен в реестр регулятора?",
+                    "type": "boolean"
+                  },
+                  "located_in_DMZ": {
+                    "title": "Компонент размещен в DMZ?",
+                    "type": "boolean"
+                  },
+                  "access_from_external_networks": {
+                    "title": "Есть доступ к ресурсам данного компонента из внешних сетей ?",
+                    "type": "boolean"
+                  },
+                  "escrow": {
+                    "title": "Автоматизированная система включена в договор эскроу с вендором?",
+                    "description": "Поставщик ПО (вендор) делает условное депонирование (эскроу) кода, тестов, скриптов сборки, библиотек и т.д.\n",
+                    "type": "boolean"
+                  },
+                  "performance": {
+                    "title": "Производительность",
+                    "type": "string"
+                  },
+                  "changes": {
+                    "title": "Описание изменений",
+                    "type": "string"
+                  },
+                  "comments": {
+                    "title": "Комментарии, риски, проблемы",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "component_type",
+                  "scalability",
+                  "stores_confidential_data",
+                  "provider",
+                  "provider_type",
+                  "is_component_of"
+                ]
+              }
+            }
+          },
+          "seaf.app.sber.component": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/seaf.app.sber.app_component",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "component"
+                    ]
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              {
+                "$ref": "#/$defs/seaf.app.sber.service",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "service"
+                    ]
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          "seaf.app.sber.component_type": {
+            "title": "Тип компонента",
+            "type": "string",
+            "default": "component",
+            "enum": [
+              "component",
+              "service"
+            ]
+          }
+        },
+        "patternProperties": {
+          "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z0-9][a-zA-Z0-9_-]*)*$": {
+            "type": "object",
+            "$ref": "#/$defs/seaf.app.sber.component",
+            "properties": {
+              "description": {
+                "title": "Описание компонента",
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/$defs/seaf.app.sber.component_type"
+              },
+              "requirements": {
+                "title": "Требования",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$rels/seaf.change.requirements.requirement"
+                }
+              },
+              "aspects": {
+                "title": "Функциональность",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$rels/aspects.aspect"
+                }
+              },
+              "title": {
+                "title": "Название компонента",
+                "type": "string"
+              },
+              "entity": {
+                "title": "Представление компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "entity"
+            ]
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "title": "Компонент прикладной архитектуры",
+      "description": "Прикладные компоненты являются составными частями прикладного сервиса",
+      "objects": {
+        "component": {
+          "route": "/",
+          "title": "Арх. компонент",
+          "symbol": "(\n  /* Обрабатываем входящие параметры */\n  $manifest := $;\n  $component := $params.subject.$spread()[0].*;\n  $defConfig := $manifest.entities.contexts.config;\n\n  /* Высота строки аспекта */\n  $rowHeight := 14;\n  /* Отступы */\n  $padding := 8;\n  /* Отступы */\n  $headerOffset := 12;\n  /* Ширину символа */\n  $fontWidth := 7;\n  /* Высота символа */\n  $fontHeight := 12;\n\n  /* Определяем заголовок */\n  $header := $component.title;\n\n  /* Определяем количество аспектов для вычисления высоты символа */\n  $aspectCount := $count($component.aspects);\n\n  /* Формируем массив аспектов */\n  $aspects := $component.aspects.(\n    $aspect := $lookup($manifest.aspects, $);\n    {\n      \"id\" : $,\n      \"title\": $aspect.title ? $aspect.title : $ \n    }\n  );\n\n  /* Определяем максимальную длину текста для вычисления ширины символа */\n  $maxTitle := $max([$max($aspects.($length(title))), $length($header)]);\n\n  /* Вычисляем размеры символа */\n  $width := $maxTitle ? $maxTitle * $fontWidth + $padding * 2 : 64; /* Умножаем на ширину символа */   \n  $height := ($aspectCount + 1) * $rowHeight + $padding * 2 + $headerOffset; /* Умножаем на высоту строки */\n\n  /* Генерируем символ */\n  '<svg fill=\"#000000\" width=\"' & $width & 'px\" height=\"' & $height & 'px\" viewBox=\"0 0 ' & $width & ' ' & $height & '\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">' \n        & '<g>'\n            /* Создаем контейнер */\n            & '<rect width=\"' & $width & 'px\" height=\"' & $height & 'px\" fill=\\\"#eee\\\" stroke=\\\"#222\\\" rx=\"3\" />'\n            /* Создаем заголовок */\n            & '<text x=\"50%\" y=\"12\" style=\"font-size:' & $fontHeight & '\" fill=\"green\" text-anchor=\"middle\" dominant-baseline=\"middle\" >' & $header & '</text>'\n            /* Заполняем аспектами */\n            & $join($map($aspects, function($v, $i) {(\n                '<a href=\\\"/architect/aspects/' & $v.id & '\\\" >'\n                & '<text x=\"6\" y=\"' & ($i * $rowHeight + $padding + $rowHeight + $headerOffset) & '\" style=\"font-size:' & $fontHeight & '\" fill=\"blue\">' & $v.title & '</text>'\n                & '</a>'\n            )}))\n        & '</g>'\n  & '</svg>';\n)\n"
+        }
+      },
+      "menu": "(\n  [\n    {\n      \"link\": \"/entities/components/tree\",\n      \"location\": entities.components.config.root_menu\n    }\n  ]\n)\n"
+    }
+  }
+}

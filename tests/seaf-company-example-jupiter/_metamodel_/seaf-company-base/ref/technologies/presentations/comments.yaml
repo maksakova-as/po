@@ -1,0 +1,50 @@
+entities:
+  seaf.company.technologies:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          comments:
+            title: Комментарии
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: comments
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 1000
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      comments:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: comment
+            text: Комментарий
+
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          $obj2present.comments#$i.{
+                                  "number": $i+1,
+                                  "comment": $
+                                   }[];
+          )

@@ -1,0 +1,10 @@
+left to right direction
+
+@startuml
+!pragma layout elk
+{{#links}}
+    usecase {{from}}
+    usecase {{to}}
+    {{from}} --> {{to}}
+{{/links}}
+@enduml

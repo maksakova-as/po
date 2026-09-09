@@ -1,0 +1,38 @@
+seaf.company.da.logical_entities:
+  aaa.le.test1:
+    title: test1
+
+  aaa.le.test2:
+    title: test2
+
+  aaa.le.test3:
+    title: test3
+
+seaf.company.da.logical_links:
+  aaa.ll.test1_2:
+    title: 1_2
+    type: ассоциация
+    entity_a: aaa.le.test1
+    multiplicity_a: 1:1
+    entity_b: aaa.le.test2
+    multiplicity_b: 1:N
+
+  aaa.ll.test1_3:
+    title: 1_3
+    type: зависимость
+    entity_a: aaa.le.test1
+    multiplicity_a: 0:N
+    entity_b: aaa.le.test3
+    multiplicity_b: 1:N
+
+  aaa.ll.test2_3:
+    title: 2-3
+    type: наследование
+    entity_a: aaa.le.test2
+    multiplicity_a: 1:N
+    entity_b: aaa.le.test3
+    multiplicity_b: 0:1
+
+
+
+

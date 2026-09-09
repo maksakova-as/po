@@ -1,0 +1,64 @@
+rules:
+  validators:
+    seaf.validation.ta.services.cluster_virtualization_connection_check:
+      uid: SEAF-TA-CL-VIRT-CONN-001
+      title: Проверка корректности связи Кластера виртуализации с сетями
+      description: |
+        Проверяет, что у каждого Кластера виртуализации (seaf.company.ta.services.cluster_virtualization)
+        указано поле `network_connection`, оно не пустое и каждый его элемент
+        ссылается на реально существующую сеть.
+      correction: |
+        Убедитесь, что для каждого объекта типа `seaf.company.ta.services.cluster_virtualization` указано
+        непустое поле `network_connection` и что каждая указанная сеть
+        определена в `seaf.company.ta.services.networks`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.services.cluster_virtualization_connection_check";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.cluster_virtualizations";
+                  $entities := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $net_ds := $.datasets."seaf.company.ds.ta.networks";
+                  $networks := $eval($net_ds.source, { "objects": $, "data_lake": $ });
+                  $each($entities, function($entity, $entity_key) {
+                    (
+                        $connections := $entity.network_connection;
+                        $not($exists($connections)) or $count($connections) = 0 ? {
+                            "uid": "seaf.validation.ta.cluster_virtualization_connection_check.missing." & $entity_key,
+                            "title": "У Кластера виртуализации '" & $entity.title & "' отсутствует или не заполнено поле network_connection.",
+                            "correction": "ID: " & $entity_key & ". " & ("Необходимо указать хотя бы одну сеть для поля `network_connection`."),
+                            "description": "У Кластера виртуализации '" & $entity.title & "' (UID: " & $entity_key & ") отсутствует или не заполнено поле `network_connection`."
+                        } : (
+                            $defined_network_keys := $keys($networks);
+                            $invalid_connections := $filter($connections, function($c) { $not($c in $defined_network_keys) });
+                            $count($invalid_connections) > 0 ? {
+                                "uid": "seaf.validation.ta.cluster_virtualization_connection_check.notfound." & $entity_key,
+                                "title": "Кластер виртуализации '" & $entity.title & "' содержит ссылку на несуществующую сеть.",
+                                "correction": "ID: " & $entity_key & ". " & ("Проверьте все сети в поле `network_connection` для сущности '" & $entity.title & "'. Одна или несколько из них не определены в `seaf.company.ta.services.networks`."),
+                                "description": "Кластер виртуализации '" & $entity.title & "' (UID: " & $entity_key & ") ссылается на несуществующие сети: " & $join($invalid_connections, ", ")
+                            }
+                        )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

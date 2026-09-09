@@ -1,0 +1,72 @@
+entities:
+  seaf.company.da.logical_entities:
+    presentations:
+      diagram:
+        type: smartants
+        origin:
+          logical_entities: seaf.company.ds.da.logical_entities
+          logical_links: seaf.company.ds.da.logical_links
+
+        source: >
+          (
+          $logical_entities := logical_entities;
+          $logical_links := logical_links;
+          
+          $config := 
+              {
+                "distance": 80,
+                "trackWidth": 20,    
+                "lineOpacity": 0.8,    
+                "lineThin": true,    
+                "wrap": false,
+                "hideBoundaryTitles": true
+              };
+          
+          $header := 
+              {
+                "title": "Диаграмма Логической Модели Данных",
+                "style":  {
+                  "color": "#446EB1",
+                  "font-size": "18px",
+                  "font-weight": "800"
+                }
+              };
+          
+          $nodes := $each($logical_entities, function($val, $key) {(
+              $le_link := "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__;
+              {
+                $key: {
+                    "title": $val.title,
+                    "link": $le_link,
+                    "symbol": "system"
+                }
+              }
+          )}) ~> $merge();
+          
+          $links := [$each($logical_links, function($val, $key) {(
+              $ll_link := "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__;
+              {
+                "from": $val.entity_a, 
+                "to": $val.entity_b,
+                "link": $ll_link,
+                "title": (
+                           $mul_a := $exists($val.multiplicity_a) and $val.multiplicity_a != null and $val.multiplicity_a != "" ? $val.multiplicity_a : "";
+                           $mul_b := $exists($val.multiplicity_b) and $val.multiplicity_b != null and $val.multiplicity_b != "" ? $val.multiplicity_b : "";
+                           $title := $exists($val.title) and $val.title != null and $val.title != "" ? $val.title : "";
+                           $type := $exists($val.type) and $val.type != null and $val.type != "" ? $val.type : "";
+                           $mul_a & ' <' & $type & '> ' & $mul_b /*& $title*/
+                         ),
+                "style": $val.visual_style ? $val.visual_style: "-"
+              }
+          )})];
+          
+          
+          $data := 
+              {
+                "config": $config,
+                "header": $header,
+                "nodes": $nodes,
+                "links": $links
+              };
+          $data;
+          )

@@ -1,0 +1,30 @@
+entities:
+  seaf.company.functions:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: description
+            text: Описание
+            align: left
+
+        origin: seaf.company.ds.functions
+        source: >
+          (
+          $.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "description": $val.description
+          }[];
+          )

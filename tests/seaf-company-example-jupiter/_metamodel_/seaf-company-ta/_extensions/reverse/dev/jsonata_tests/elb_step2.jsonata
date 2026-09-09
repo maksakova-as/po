@@ -1,0 +1,21 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $elbs := $."seaf.ta.reverse.cloud_ru.advanced.elbs".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $elbs.(
+    $elb := value;
+    {
+      "component_id": "reverse.comp.elb." & $normalize($elb.id),
+      "network_connection": $elb.subnet_id,
+      "dc": $elb.DC
+    }
+  )
+)

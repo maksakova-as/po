@@ -1,0 +1,80 @@
+seaf.company.systems:
+  jupiter.cs_system.avpo_kasper:
+    title: АСкб АВПО Касперский
+    class: ИБ-Антивирусное ПО
+    criticality_level: Office Productivity
+    categories:
+      - jupiter.sys_group.internal_office
+    location: Внутренняя
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - role: Владелец от бизнеса
+        name: Петров Сидор
+    realizes_functions:
+      - function: jupiter.function.antivirus
+        service: jupiter.srv.antivirus
+
+  jupiter.cs_system.esign:
+    title: АСкб ЭЦП
+    class: ИБ-Криптография и шифрование
+    criticality_level: Office Productivity
+    categories:
+      - jupiter.sys_group.internal_dc
+    location: Внутренняя
+    lifecycle_stage: Промышленная эксплуатация
+    uses_technologies:
+      - technology: jupiter.technology.java
+    realizes_functions:
+      - service: jupiter.srv.esign
+        function: jupiter.function.esign
+
+  jupiter.cs_system.esign_uc:
+    title: ФПкб Удостоверяющий центр ЭЦП
+    class: ИБ-Криптография и шифрование
+    criticality_level: Office Productivity
+    categories:
+      - jupiter.sys_group.internal_dc
+    is_part_of: jupiter.cs_system.esign
+    location: Внутренняя
+    lifecycle_stage: Промышленная эксплуатация
+
+  jupiter.cs_system.esign_serts:
+    title: ФПкб Управление сертификатами ЭЦП
+    class: ИБ-Управление сертификатами
+    criticality_level: Office Productivity
+    categories:
+      - jupiter.sys_group.internal_dc
+    is_part_of: jupiter.cs_system.esign
+    location: Внутренняя
+    lifecycle_stage: Промышленная эксплуатация
+  
+# Сервисы систем
+seaf.company.services:
+  jupiter.srv.antivirus:
+    title: Антивирусная защита
+    lifecycle_stage: Используется
+
+  jupiter.srv.esign:
+    title: API ЭЦП
+    lifecycle_stage: Используется
+    integration_type: API
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

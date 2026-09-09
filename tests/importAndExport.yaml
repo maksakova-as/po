@@ -1,0 +1,286 @@
+# В данном примере описано использование плагина
+# В документе template-export описываем формируемый excel файл с пустыми ячейками
+# После сохранения заполняем файл
+# В документе template-import указываем имя таблицы из которой забираем данные и JSONata выражение по корому их преобразуем под данные для таблицы и сохраняем
+# В документе result-table описываем таблицу для вывода с выгруженными данными
+
+docs:
+  template-import-1:
+    type: excel-import
+    location: Пример использования/Импорт-1-динамическое имя
+    yaml:
+#      null_replace_string: "тест1"
+    tables:
+      - name: tableForImport
+        output: >
+          (
+            $name := table[0][1];
+            $id := table[0][0];
+            $new_path := "result/" & $name & "_" & $id & ".yaml";
+            $new_path
+                    )
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )
+
+  template-import-2:
+    type: excel-import
+    location: Пример использования/Импорт-2-имя с несколькими точками
+    yaml:
+      null_replace_string: "тест1"
+    tables:
+      - name: tableForImport
+        output: >
+          ("test.11.efrvae.qefveaqv.qef.yaml")
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )       
+
+  template-import-3:
+    type: excel-import
+    location: Пример использования/Импорт-3-имя 255 символов
+    yaml:
+      null_replace_string: "тест1"
+    tables:
+      - name: tableForImport
+        output: >
+          ("gkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbgkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbrbgrbrkgbirjbpirjbpijergjeo[wrbopqefbpihfpivuhqepirhpiqehrvphrvepivpequhvpqeuhvpieqpirhqepirhuvpqehrpiuheqpruhpierhugpqeurhgpqherpghqerheprghprhgpiuhihijjoijojijophhhhhhhh5.yaml")
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )      
+
+  template-import-4:
+    type: excel-import
+    location: Пример использования/Импорт-4-имя 256 символов
+    yaml:
+      null_replace_string: "тест1"
+    tables:
+      - name: tableForImport
+        output: >
+          ("gkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbgkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbrbgrbrkgbirjbpirjbpijergjeo[wrbopqefbpihfpivuhqepirhpiqehrvphrvepivpequhvpqeuhvpieqpirhqepirhuvpqehrpiuheqpruhpierhugpqeurhgpqherpghqerheprghprhgpiuhihijjoijojijopвhhhhhhhh6.yaml")
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )
+
+  template-import-5:
+    type: excel-import
+    location: Пример использования/Импорт-5-н.подчёркивание и пробел
+    yaml:
+      null_replace_string: "тест1"
+    tables:
+      - name: tableForImport
+        output: >
+          ("te_s t.yaml")
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )         
+
+  template-export-1:
+    type: excel-export
+    location: Пример использования/Экспорт-1
+
+    file_name: >
+      ("test.xls")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+              
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )
+
+  template-export-2:
+    type: excel-export
+    location: Пример использования/Экспорт-2-своё расширение
+
+    file_name: >
+      ("test.xlsx")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )  
+
+  template-export-3:
+    type: excel-export
+    location: Пример использования/Экспорт-3-имя 255 символов
+
+    file_name: >
+      ("gkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbgkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbrbgrbrkgbirjbpirjbpijergjeo[wrbopqefbpihfpivuhqepirhpiqehrvphrvepivpequhvpqeuhvpieqpirhqepirhuvpqehrpiuheqpruhpierhugpqeurhgpqherpghqerheprghprhgpiuhihijjoijojijophiuhhhhhh5.xls")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )
+
+  template-export-4:
+    type: excel-export
+    location: Пример использования/Экспорт-4-имя 256 символов
+
+    file_name: >
+      ("gkjdhfgkjsgjnrgnbpnsjgbonobnapovosbgkjdhfgkjsgjnrjbpjgnbpnsjgbonobnapovosbrbgrbrkgbirjbpirjbpijergjeo[wrbopqefbpihfpivuhqepirhpiqehrvphrvepivpequhvpqeuhvpieqpirhqepirhuvpqehrpiuheqpruhpierhugpqeurhgpqherpghqerheprghprhgpiuhihijjoijojijhophiuhhhhhhhhhh6.xls")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )
+
+  template-export-5:
+    type: excel-export
+    location: Пример использования/Экспорт-5-имя кириллица
+
+    file_name: >
+      ("тест.xls")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )

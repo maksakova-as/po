@@ -1,0 +1,5 @@
+docs:
+  seaf.ta.docs.schema_r41_reverse:
+    description: Схема Р41 (reverse only)
+    type: seaf2drawio
+    source: seaf.company.ds.ta.schema_r41_reverse_compat

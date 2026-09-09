@@ -1,0 +1,39 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.clients: seaf.company.ds.kadzo.clients
+
+  seaf.company.ds.kadzo.clients:
+    title: Клиенты КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.ba.clients
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+
+# Принятые допущения:
+#    - из массива метрик берем первое значение
+#
+# Требуется конверсия:
+#    -
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          $metric := $val.count_metrics[0];
+          /* формируем объект КАДЗО */
+          { $key: {
+              "title": $val.title,
+              "comments": $val.comments,
+              "type": $val.type,
+              "count": $metric.value,
+              "measure": $metric.units
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

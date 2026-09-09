@@ -1,0 +1,180 @@
+entities:
+  seaf.company.ta.services.monitorings:
+    presentations:
+      list:
+        title: Сервисы мониторинга
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: role
+            text: Роли
+          - value: ha
+            text: HA
+          - value: locations
+            text: Локации
+            link: location_link
+          - value: availability_zones
+            text: Зоны
+        origin:
+          monitoring: seaf.company.ds.ta.monitoring
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          azs: seaf.company.ds.ta.dc_azs
+        source: >
+          (
+            $monitoring := monitoring;
+            $dcs := dcs;
+            $offices := offices;
+            $azs := azs;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $monitoring.*@$svc.(
+              $location_objects := $exists($svc.location)
+                ? $svc.location[].($resolve_location($))
+                : [];
+              $az_titles := $exists($svc.availabilityzone)
+                ? $svc.availabilityzone[].($lookup($azs, $).title)
+                : [];
+              {
+                "id": $svc.__id__,
+                "link": "/entities/" & $svc.__entity_id__ & "/card?id=" & $svc.__id__,
+                "title": $svc.title,
+                "role": $svc.role ~> $join(", "),
+                "ha": $svc.ha ? "Да" : "Нет",
+                "locations": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "availability_zones": $az_titles ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сервиса мониторинга
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      details:
+        title: Атрибуты
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Поле
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+          networks: seaf.company.ds.ta.networks
+          azs: seaf.company.ds.ta.dc_azs
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $base_fields := [
+              {"field": "ID", "value": $obj.__id__},
+              {"field": "Название", "value": $obj.title},
+              {"field": "Описание", "value": $obj.description},
+              {"field": "Роль", "value": $obj.role ~> $join(", ")},
+              {"field": "HA", "value": $obj.ha ? "Да" : "Нет"},
+              {"field": "Адрес консоли", "value": $obj.monitoring_console},
+              {"field": "Хранение метрик (дни)", "value": $obj.metrics_retention_days},
+              {"field": "Частота сбора метрик (сек)", "value": $obj.metrics_collection_frequency_sec},
+              {"field": "Подключен к PAM", "value": $obj.is_pam_enabled ? "Да" : "Нет"},
+              {"field": "Подключен к SIEM", "value": $obj.is_siem_enabled ? "Да" : "Нет"}
+            ];
+
+            $links := $obj.network_connection.(
+                $net := $lookup(networks, $);
+                {
+                  "field": "Сеть",
+                  "value": $net.title,
+                  "link": "/entities/seaf.company.ta.services.networks/card?id=" & $
+                }
+            ) ~> $append(
+              $obj.availabilityzone.(
+                $az := $lookup(azs, $);
+                {
+                  "field": "Зона доступности",
+                  "value": $az.title,
+                  "link": "/entities/seaf.company.ta.services.dc_azs/card?id=" & $
+                }
+              )
+            ) ~> $append(
+              $obj.location.(
+                $loc := $lookup(objects, $);
+                {
+                  "field": "Локация",
+                  "value": $loc.title,
+                  "link": "/entities/" & $loc.__entity_id__ & "/card?id=" & $
+                }
+              )
+            ) ~> $append(
+              $obj.monitored_services.(
+                $svc := $lookup(objects, $);
+                {
+                  "field": "Мониторируемый сервис",
+                  "value": $svc.title,
+                  "link": "/entities/" & $svc.__entity_id__ & "/card?id=" & $
+                }
+              )
+            ) ~> $append(
+                $obj.cluster_ref ? {
+                    "field": "Вычислительный сервис мониторинга",
+                    "value": $lookup(objects, $obj.cluster_ref).title,
+                    "link": "/entities/seaf.company.ta.services.compute_services/card?id=" & $obj.cluster_ref
+                } : {}
+            );
+
+            $all_fields := $base_fields ~> $append($links);
+            $all_fields[$exists(value)];
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

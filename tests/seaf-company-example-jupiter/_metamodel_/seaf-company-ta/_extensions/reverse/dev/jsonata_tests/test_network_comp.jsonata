@@ -1,0 +1,84 @@
+(  $params := {"id": "reverse.netcomp.elb.6d174721-db0e-4758-9a96-2f626e1a6632"};
+  $devices := $."seaf.company.ds.ta.network_components";
+  $networks := $."seaf.company.ds.ta.networks";
+  $segments := $."seaf.company.ds.ta.network_segments";
+  
+            $dev := $lookup($devices, $params.id);
+            $has_dev := $exists($dev.__id__);
+            $to_array := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $sanitize_label := function($text){ $exists($text) ? $replace($string($text), '"', "'") : "" };
+            $clean_id := function($id) { $replace($string($id), "[^A-Za-z0-9_]", "_") };
+            $base := "@startuml\n" &
+              "left to right direction\n" &
+              "skinparam nodesep 60\n" &
+              "skinparam ranksep 60\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "";
+            $dev_node :=
+              $has_dev
+                ? "node \"Устройство: " & $sanitize_label($dev.title) & " (" & $dev.__id__ & ")\" as dev_" & $clean_id($dev.__id__) & "\n"
+                : "";
+            $net_nodes :=
+              $has_dev
+                ? $to_array($dev.network_connection).(
+                    $net := $lookup($networks, $);
+                    $exists($net.__id__)
+                      ? "node \"Сеть: " & $sanitize_label($net.title) & " (" & $net.__id__ & ")\" as net_" & $clean_id($net.__id__) & "\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $seg_nodes :=
+              $has_dev
+                ? $to_array($dev.network_connection).(
+                    $net := $lookup($networks, $);
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "node \"Сегмент: " & $sanitize_label($seg.title) & " (" & $seg.__id__ & ")\" as seg_" & $clean_id($seg.__id__) & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_dev_net :=
+              $has_dev
+                ? $to_array($dev.network_connection).(
+                    $net := $lookup($networks, $);
+                    $exists($net.__id__)
+                      ? "dev_" & $clean_id($dev.__id__) & " --> net_" & $clean_id($net.__id__) & "\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $edges_net_seg :=
+              $has_dev
+                ? $to_array($dev.network_connection).(
+                    $net := $lookup($networks, $);
+                    $net_id := $clean_id($net.__id__);
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "net_" & $net_id & " --> seg_" & $clean_id($seg.__id__) & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $diagram :=
+              $has_dev
+                ? $base & $dev_node & $net_nodes & $seg_nodes & $edges_dev_net & $edges_net_seg & "@enduml"
+                : "@startuml\nnot found "note "Устройство не найдено" as no_dev\n@enduml";
+            { "diagram": $diagram }
+)

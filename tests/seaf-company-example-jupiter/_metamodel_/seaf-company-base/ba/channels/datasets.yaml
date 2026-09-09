@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.ba.channels:
+    description: |
+      Датасет формирует коллекцию всех каналов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.ba.channels";
+      )

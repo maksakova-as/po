@@ -1,0 +1,65 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.all_objects` (all objects) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.all_objects
+datasets:
+  seaf.company.ds.ta.all_objects:
+    description: |
+      Все объекты технической архитектуры (для визуализаций/схем)
+    origin:
+      compute_services: seaf.company.ds.ta.compute_services
+      dc_regions: seaf.company.ds.ta.dc_regions
+      dc_azs: seaf.company.ds.ta.dc_azs
+      dcs: seaf.company.ds.ta.dcs
+      dc_offices: seaf.company.ds.ta.dc_offices
+      networks: seaf.company.ds.ta.networks
+      network_segments: seaf.company.ds.ta.network_segments
+      cluster_virtualizations: seaf.company.ds.ta.cluster_virtualizations
+      storages: seaf.company.ds.ta.storages
+      k8s: seaf.company.ds.ta.k8s
+      backup: seaf.company.ds.ta.backup
+      monitoring: seaf.company.ds.ta.monitoring
+      kb: seaf.company.ds.ta.kb
+      network_links: seaf.company.ds.ta.network_links
+      logical_links: seaf.company.ds.ta.logical_links
+      environments: seaf.company.ds.ta.environments
+      stands: seaf.company.ds.ta.stands
+      software: seaf.company.ds.ta.software
+      hw_storages: seaf.company.ds.ta.hw_storages
+      servers: seaf.company.ds.ta.servers
+      network_components: seaf.company.ds.ta.network_components
+      user_devices: seaf.company.ds.ta.user_devices
+      k8s_namespaces: seaf.company.ds.ta.k8s_namespaces
+      k8s_deployments: seaf.company.ds.ta.k8s_deployments
+      k8s_hpas: seaf.company.ds.ta.k8s_hpas
+      k8s_nodes: seaf.company.ds.ta.k8s_nodes
+    source: >
+      (
+        [
+          compute_services,
+          dc_regions,
+          dc_azs,
+          dcs,
+          dc_offices,
+          networks,
+          network_segments,
+          cluster_virtualizations,
+          storages,
+          k8s,
+          backup,
+          monitoring,
+          kb,
+          network_links,
+          logical_links,
+          environments,
+          stands,
+          software,
+          hw_storages,
+          servers,
+          network_components,
+          user_devices,
+          k8s_namespaces,
+          k8s_deployments,
+          k8s_hpas,
+          k8s_nodes
+        ] ~> $merge()
+      )

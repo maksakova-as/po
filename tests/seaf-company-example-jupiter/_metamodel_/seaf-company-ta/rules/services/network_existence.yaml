@@ -1,0 +1,41 @@
+rules:
+  validators:
+    seaf.validation.ta.services.network_existence:
+      uid: SEAF-TA-EXIST-NETWORK
+      title: Проверка наличия Сети (network)
+      description: |
+        Проверяет, что в архитектуре описана хотя бы одна Сеть (network).
+      correction: |
+        Убедитесь, что в файлах архитектуры (`/architecture/ta/`) создан
+        хотя бы один объект типа `seaf.company.ta.services.networks`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.services.network_existence";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                $count($.datasets."seaf.company.ds.ta.networks") = 0 ? {
+                    "uid": "seaf.validation.ta.existence.network",
+                    "title": "Отсутствует описание Сети (network)",
+                    "correction": "ID: " & "seaf.validation.ta.existence.network" & ". " & ("Необходимо описать хотя бы одну Сеть (seaf.company.ta.services.networks) в архитектуре."),
+                    "description": "В архитектуре не описано ни одной Сети."
+                }
+              ])
+            )
+            : []
+        )

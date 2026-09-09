@@ -1,0 +1,293 @@
+{
+  "seaf.company.app.services": {
+    "jupiter.app_service.api_news_publish": {
+      "title": "API публикации новостей",
+      "description": "Сервис публикации новостей",
+      "type": "API",
+      "lifecycle_stage": "Используется"
+    },
+    "jupiter.app_service.news_management": {
+      "title": "Ведение новостей",
+      "description": "Сервис по ведению новостей",
+      "type": "UI",
+      "lifecycle_stage": "Используется"
+    },
+    "jupiter.app_service.ai_news_summary": {
+      "title": "AI Агент Сводка новостей",
+      "description": "AI агент по созданию сводок новостей",
+      "type": "AI Agent",
+      "lifecycle_stage": "Используется"
+    },
+    "jupiter.app_service.lk_news_editor": {
+      "title": "ЛК редактора новостей",
+      "description": "Личный кабинет редактора новостей",
+      "type": "UI",
+      "lifecycle_stage": "Используется"
+    },
+    "jupiter.app_service.news_feed": {
+      "title": "Лента новостей",
+      "type": "UI",
+      "lifecycle_stage": "Используется"
+    }
+  },
+  "seaf.company.app.systems": {
+    "jupiter.app_system.test1": {
+      "title": "sdfsdfsdf",
+      "type": "DevOps система",
+      "class": "Управление внутрихозяйственной деятельностью",
+      "criticality_level": "Business Critical"
+    },
+    "jupiter.tech_system.test3": {
+      "title": "test3",
+      "type": "Прикладная система",
+      "class": "CMS (Content Management System)",
+      "criticality_level": "Office Productivity"
+    },
+    "jupiter.app_system.test4": {
+      "class": "Видеосвязь",
+      "criticality_level": "Mission Critical",
+      "type": "Прикладная система",
+      "title": "test"
+    },
+    "jupiter.cybersec_system.efs": {
+      "type": "Система кибербезопасности",
+      "class": "ИБ-Аутентификация пользователей",
+      "title": "АС Единый фронт сотрудника",
+      "target_status": "Целевая"
+    },
+    "jupiter.cybersec_system.test2": {
+      "title": "test",
+      "target_status": "Целевая",
+      "type": "Система кибербезопасности",
+      "is_part_of": "jupiter.cybersec_system.efs",
+      "class": "ИБ-Предотвращение мошенничества"
+    }
+  },
+  "seaf.company.ba.clients": {
+    "jupiter.client.natural_person": {
+      "title": "ФЛ",
+      "type": "Физические лица",
+      "description": "Роль - все клиенты физические лица"
+    },
+    "jupiter.client.young_person": {
+      "title": "Молодые люди",
+      "type": "Физические лица",
+      "is_part_of": "jupiter.client.natural_person",
+      "description": "Сегмент клиентов - молодые люди до 18 лет"
+    },
+    "jupiter.client.mature_person": {
+      "title": "Зрелые люди",
+      "type": "Физические лица",
+      "is_part_of": "jupiter.client.natural_person",
+      "description": "Сегмент клиентов - зрелые люди от 18 до 65 лет",
+      "uses_it_services": [
+        "jupiter.app_service.news_feed"
+      ]
+    },
+    "jupiter.client.elderly_person": {
+      "title": "Пожилые люди",
+      "type": "Физические лица",
+      "is_part_of": "jupiter.client.natural_person",
+      "description": "Сегмент клиентов - пожилые люди от 65 лет и старше"
+    },
+    "jupiter.client.employee": {
+      "title": "Сотрудник",
+      "type": "Сотрудники компании",
+      "is_part_of": "jupiter.client.natural_person",
+      "description": "Роль - штатные сотрудники компании"
+    },
+    "jupiter.client.employee.news_editor": {
+      "title": "Редактор новостей",
+      "type": "Сотрудники компании",
+      "is_part_of": "jupiter.client.employee",
+      "uses_it_services": [
+        "jupiter.app_service.lk_news_editor",
+        "jupiter.app_service.news_management"
+      ]
+    }
+  },
+  "seaf.company.ba.channels": {
+    "jupiter.channel.website": {
+      "title": "Вебсайт компании",
+      "type": "Цифровой",
+      "lifecycle_stage": "Используется",
+      "serves_clients": [
+        "jupiter.client.young_person",
+        "jupiter.client.mature_person"
+      ]
+    },
+    "jupiter.channel.shopping_centre": {
+      "title": "Магазин компании",
+      "type": "Физический",
+      "lifecycle_stage": "Используется",
+      "serves_clients": [
+        "jupiter.client.mature_person",
+        "jupiter.client.elderly_person"
+      ]
+    },
+    "jupiter.channel.company_office": {
+      "title": "Офис компании",
+      "type": "Физический",
+      "lifecycle_stage": "Используется",
+      "serves_clients": [
+        "jupiter.client.young_person",
+        "jupiter.client.employee"
+      ]
+    }
+  },
+  "seaf.company.ba.products": {
+    "jupiter.product.digital_content": {
+      "title": "Цифровой контент",
+      "lifecycle_stage": "Используется и развивается"
+    },
+    "jupiter.product.news": {
+      "title": "Новости",
+      "lifecycle_stage": "Используется и развивается",
+      "is_part_of": "ru.jupiter.product.digital_content",
+      "distributed_via": [
+        "jupiter.channel.website"
+      ],
+      "target_clients": [
+        "jupiter.client.mature_person"
+      ]
+    },
+    "jupiter.product.marketing_goods": {
+      "title": "Маркетинговые товары",
+      "lifecycle_stage": "Используется и развивается"
+    },
+    "jupiter.product.merch": {
+      "title": "Мерч",
+      "lifecycle_stage": "Используется и развивается",
+      "is_part_of": "ru.jupiter.product.marketing_goods",
+      "distributed_via": [
+        "jupiter.channel.shopping_centre",
+        "jupiter.channel.company_office"
+      ],
+      "target_clients": [
+        "jupiter.client.employee",
+        "jupiter.client.young_person"
+      ]
+    }
+  },
+  "seaf.company.ba.processes": {
+    "jupiter.process.news_production": {
+      "title": "Производство новостей",
+      "description": "Процесс подготовки, редактуры и публикации новостей в каналах компании",
+      "lifecycle_stage": "Используется и развивается",
+      "produces": [
+        "jupiter.product.news"
+      ],
+      "uses_it_services": [
+        "jupiter.app_service.lk_news_editor",
+        "jupiter.app_service.news_management",
+        "jupiter.app_service.ai_news_summary"
+      ]
+    },
+    "jupiter.process.merch_production": {
+      "title": "Производство мерчей",
+      "description": "Процесс производства и упаковки мерчей",
+      "lifecycle_stage": "Используется и развивается",
+      "produces": [
+        "jupiter.product.merch"
+      ]
+    }
+  },
+  "seaf.company.change.goals": {
+    "jupiter.goal.01": {
+      "title": "Охватить 30% рынка",
+      "type": "Бизнес цель",
+      "horizon": "2028"
+    },
+    "jupiter.goal.02": {
+      "title": "Уровень цифровизации бизнеса 90%",
+      "type": "Бизнес цель",
+      "horizon": "2028"
+    },
+    "jupiter.goal.03": {
+      "title": "Стать технологическим лидером отрасли",
+      "type": "Бизнес цель",
+      "horizon": "2028"
+    },
+    "jupiter.goal.03_01": {
+      "title": "Перейти на платформу Platform V",
+      "is_part_of": "jupiter.goal.03",
+      "type": "Технологическая цель",
+      "horizon": "2027Q3"
+    },
+    "jupiter.goal.03_02": {
+      "title": "Стать номером 1 среди соискателеей работы в области ИТ",
+      "is_part_of": "jupiter.goal.03",
+      "type": "Бизнес цель",
+      "horizon": "2027"
+    }
+  },
+  "seaf.company.change.activities": {
+    "jupiter.activity.2025_l2p": {
+      "title": "Миграция legacy на PV",
+      "description": "Программа миграции легаси приложений на новую технологическую платформу Platform V",
+      "type": "Программа",
+      "status": "Запланирована",
+      "realizes": [
+        "jupiter.goal.03_01"
+      ],
+      "planned_start_date": "2025Q2",
+      "planned_end_date": "2027Q2"
+    },
+    "jupiter.activity.2025_l2p_01": {
+      "title": "Миграция 1C.ERP на PV",
+      "description": "Проект миграции 1C.ERP на новую технологическую платформу Platform V",
+      "is_part_of": "jupiter.activity.2025_l2p",
+      "type": "Проект",
+      "status": "Запланирована",
+      "realizes": [
+        "jupiter.goal.03_01"
+      ],
+      "planned_start_date": "2025Q3",
+      "planned_end_date": "2026Q3"
+    },
+    "jupiter.activity.2025_l2p_02": {
+      "title": "Миграция АС Звезда на PV",
+      "description": "Проект миграции АС Звезда на новую технологическую платформу Platform V",
+      "is_part_of": "jupiter.activity.2025_l2p",
+      "type": "Проект",
+      "status": "Новая",
+      "realizes": [
+        "jupiter.goal.03_01"
+      ],
+      "planned_start_date": "2026Q1",
+      "planned_end_date": "2026Q4"
+    }
+  },
+  "seaf.company.change.artefacts": {
+    "jupiter.artefact.it_strategy2023": {
+      "title": "IT-стратегия 2023",
+      "type": "Стратегия",
+      "description": "Документ ИТ-стратегии компании",
+      "lifecycle_stage": "Используется",
+      "used_by": [
+        "jupiter.activity.2025_l2p"
+      ]
+    },
+    "jupiter.artefact.2025_sa_2028": {
+      "title": "Стратегическая архитектура 2025-2028",
+      "type": "Стратегическая архитектура",
+      "description": "Документ стратегической архитектуры компании",
+      "lifecycle_stage": "Используется и развивается",
+      "used_by": [
+        "jupiter.activity.2025_l2p"
+      ]
+    },
+    "jupiter.artefact.2025_kafo": {
+      "title": "Концептуальная архитектура программы",
+      "type": "Концептуальная архтитектура (КА)",
+      "lifecycle_stage": "Создается",
+      "uses": [
+        "jupiter.artefact.2025_sa_2028"
+      ],
+      "used_by": [
+        "jupiter.activity.2025_l2p_01",
+        "jupiter.activity.2025_l2p_02"
+      ]
+    }
+  }
+}

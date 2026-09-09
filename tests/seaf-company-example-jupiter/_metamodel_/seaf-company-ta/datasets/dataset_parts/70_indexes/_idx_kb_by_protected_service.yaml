@@ -1,0 +1,25 @@
+# Назначение: Индекс связей КБ по защищаемому сервису.
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._idx.kb_by_protected_service:
+    description: |
+      Индекс сервисов ИБ по защищаемому сервису.
+    origin:
+      kb: seaf.company.ds.ta.kb
+    source: >
+      (
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        (
+          kb.*.(
+            $kb := $;
+            $to_list($kb.protected_services).{
+              "service_id": $,
+              "row": {
+                "title": $kb.title,
+                "link": "/entities/" & $kb.__entity_id__ & "/card?id=" & $kb.__id__,
+                "type": "Security"
+              }
+            }
+          )
+        ){ service_id: row }
+      )

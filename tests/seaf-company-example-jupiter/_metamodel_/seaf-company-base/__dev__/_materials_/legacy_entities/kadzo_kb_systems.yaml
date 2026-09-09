@@ -1,0 +1,75 @@
+entities:
+  kadzo.v2023.kb_systems:
+    title: Системы кибербезопасности
+    description: Автоматизированные системы, используемые Компанией для обеспечения информационной безопасности. Системы КБ не должны участвовать в реализации бизнес-процессов, являться компонентами / модулями автоматизированных систем, иначе они должны рассматриваться как системы / компоненты, обеспечивающие выполнение бизнес-процессов и отображаться в Реестре АС
+    schema:
+      $defs:
+        kadzo.v2023.kb_systems.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Создается
+                - Используется
+                - Выводится
+                - В архиве
+          required:
+            - status
+        kadzo.v2023.kb_systems.ownership:
+          title: Модель владения
+          type: object
+          properties:
+            location:
+              title: Размещение
+              enum:
+                - Внутренняя
+                - Внешняя
+          required:
+            - location
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.kb_systems.livestage"
+            - $ref: "#/$defs/kadzo.v2023.kb_systems.ownership"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            class:
+              title: Класс систем КБ
+              enum:
+                - ИБ-Антивирусное ПО
+                - ИБ-Аудит действий персонала
+                - ИБ-Аутентификация пользователей
+                - ИБ-Биометрия
+                - ИБ-Защита от киберугроз
+                - ИБ-Защита от сетевых атак
+                - ИБ-Защита от утечек информации
+                - ИБ-Защита трафика
+                - ИБ-Криптография и шифрование
+                - ИБ-Предотвращение мошенничества
+                - ИБ-Управление доступом
+                - ИБ-Управление сертификатами
+                - ИБ-Управление событиями инф.безопасности
+                - Иное
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - description
+            - class
+    objects:
+      kb_systems:
+        route: "/"
+        title: Системы кибербезопасности
+        symbol: "kb_systems"

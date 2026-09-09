@@ -1,0 +1,100 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.cluster_virtualizations` (cluster virtualizations) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.cluster_virtualizations:
+    description: Aggregates Cloud.ru VM servers into virtualization clusters with DC/AZ and network references.
+    origin:
+      reverse_servers: reverse2seaf2.ds.ta.reverse.servers
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : "" 
+        };
+        $cluster_id := function($tenant, $type){
+          (
+            $tenant_norm := $normalize($tenant);
+            $type_norm := $normalize($type);
+            $parts := [
+              $tenant_norm != "" ? $tenant_norm : null,
+              $type_norm != "" ? $type_norm : null
+            ][ $ != null ];
+            $parts != [] ? "reverse.cluster_virtualization." & $join($parts, ".") : null
+          )
+        };
+        $to_list := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $servers := $exists(reverse_servers)
+          ? reverse_servers
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.servers".source);
+        $entries := $servers.$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vm_entries := $entries[
+          $lowercase($string(value.type)) = "vm"
+        ];
+        $cluster_keys := $distinct(
+          $vm_entries.(
+            $cluster := $cluster_id(value.__company_id__, value.type);
+            $cluster != null ? $cluster : null
+          )[ $ != null ]
+        );
+        $cluster_keys.(
+          $cid := $;
+          $members := $vm_entries[
+            $cluster_id(value.__company_id__, value.type) = $cid
+          ];
+          $member_objects := $members.value;
+          $tenant := $member_objects[0].__company_id__;
+          $type_label := $member_objects[0].type;
+          $location_refs := $distinct(
+            $member_objects.( $to_list(location) )[]
+          );
+          $az_refs := $distinct(
+            $member_objects.( $to_list(availabilityzone) )[]
+          );
+          $network_refs := $distinct(
+            $member_objects.( $to_list(subnets) )[]
+          );
+          $server_titles := $member_objects.title;
+          $description_parts := [
+            $tenant ? "Tenant: " & $tenant,
+            $type_label ? "Server Type: " & $type_label,
+            $count($members) > 0 ? "Servers: " & $count($members),
+            $count($server_titles) > 0 ? "Example servers: " & $join($distinct($server_titles), ", ")
+          ][ $ != "" ];
+          $description := $description_parts != [] ? $join($description_parts, "\n") : null;
+          {
+            ($cid): {
+              "__id__": $cid,
+              "__entity_id__": "seaf.company.ta.services.cluster_virtualizations",
+              "__entity_title__": "Virtualization Cluster (reverse import)",
+              "__company_id__": $tenant,
+              "__object_type__": "cluster_virtualization",
+              "__object_id__": $replace($cid, "reverse.cluster_virtualization.", ""),
+              "__link_to_card__": "/entities/seaf.company.ta.services.cluster_virtualizations/card?id=" & $cid,
+              "link": "/entities/seaf.company.ta.services.cluster_virtualizations/card?id=" & $cid,
+              "title": ($tenant ? $tenant : "Cloud.ru") & " virtualization cluster",
+              "description": $description,
+              "hypervisor": "Cloud.ru (reverse)",
+              "oversubscription_rate": null,
+              "drs_support": false,
+              "sdrs_support": false,
+              "virtualization_type": $type_label,
+              "network_connection": $network_refs,
+              "location": $location_refs,
+              "availabilityzone": $az_refs,
+              "resource_id": $cid,
+              "source_key": $cid,
+              "reverse_source": "seaf.ta.reverse.servers_list",
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+

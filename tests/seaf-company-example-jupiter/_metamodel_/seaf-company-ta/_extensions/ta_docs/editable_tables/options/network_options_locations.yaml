@@ -1,0 +1,24 @@
+datasets:
+  seaf.company.ds.ta.network_options.locations:
+    description: Локации (ЦОДы и офисы) для редактируемых таблиц сетей
+    origin:
+      dcs: seaf.company.ds.ta.dcs
+      offices: seaf.company.ds.ta.dc_offices
+    source: >
+      (
+        $dc_opts := $exists(dcs) ? $map($keys(dcs), function($dc_id){(
+          $dc := $lookup(dcs, $dc_id);
+          {
+            "value": $dc_id,
+            "text": $dc.title ? $dc.title : $dc_id
+          }
+        )}) : [];
+        $office_opts := $exists(offices) ? $map($keys(offices), function($office_id){(
+          $office := $lookup(offices, $office_id);
+          {
+            "value": $office_id,
+            "text": $office.title ? $office.title : $office_id
+          }
+        )}) : [];
+        $dc_opts ~> $append($office_opts)
+      )

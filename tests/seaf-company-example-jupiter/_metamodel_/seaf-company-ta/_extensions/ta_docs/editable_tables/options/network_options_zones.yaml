@@ -1,0 +1,14 @@
+datasets:
+  seaf.company.ds.ta.network_options.zones:
+    description: Значения зоны для редактируемых таблиц сетевых сегментов
+    origin:
+      segments: seaf.company.ds.ta.network_segments
+    source: >
+      (
+        $s := $exists(segments) ? segments : {};
+        $distinct($s.*.zone)[$exists($)].{
+          "value": $,
+          "text": $
+        }
+      )
+

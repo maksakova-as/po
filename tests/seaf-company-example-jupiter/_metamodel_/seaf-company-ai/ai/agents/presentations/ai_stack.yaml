@@ -1,0 +1,67 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          ai_stack:
+            title: ИИ технологический стек
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: ai_stack
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 470
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      ai_stack:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: technology
+            text: Технология
+          - value: description
+            text: Описание
+          - value: build_type
+            text: Тип разработки
+          - value: delivery_type
+            text: Способ поставки
+
+        origin:
+          objects: seaf.company.ds.ai.agents
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.ai_stack;
+          $data2present = "Не используется"
+          ? { "title": "Не используется" }
+          : $map($data2present, function($val, $i) {(
+              {
+                "number": $i+1,
+                "technology": $val.technology,
+                "description": $val.description,
+                "build_type": $val.build_type,
+                "delivery_type": $val.delivery_type
+              }
+            )})[];
+          )

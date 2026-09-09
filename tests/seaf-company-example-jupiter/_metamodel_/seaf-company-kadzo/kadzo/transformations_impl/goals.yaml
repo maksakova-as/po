@@ -1,0 +1,30 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.goals: seaf.company.ds.kadzo.goals
+
+  seaf.company.ds.kadzo.goals:
+    title: Цели КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.change.goals
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* формируем объект КАДЗО */
+          { $key: {
+              "goal": $val.title,
+              "description": $val.description,
+              "comments": $val.comments,
+              "horizont": $val.horizon
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

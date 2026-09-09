@@ -1,0 +1,53 @@
+datasets:
+  seaf.company.ds.ai.models:
+    description: >
+      Датасет формирует коллекцию всех клиентов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.ai.models";
+      )
+
+  seaf.company.ds.ai.models.by_agents:
+    description:
+      Датасет формирует коллекцию всех моделей, описанных в агентах
+
+    origin:
+      agents: seaf.company.ds.ai.agents
+      models: seaf.company.ds.ai.models
+      all_objects: seaf.ds.objects
+
+    source: >
+      (
+      $agents := agents;
+      $models := models;
+      $all_objects := all_objects;
+      $arr := $each($agents, function($val, $key){(
+          $val.models = "Не используется"
+          ? [{ "__id__": $key, "model": "Не используется" }]
+          : $map($val.models, function($m){(
+                $model_obj := $models.$lookup($m.model);
+                $model_info := $exists($model_obj) ? $seaf_fn_get_object_info($m.model, $all_objects);
+                $r_in := $exists($m.realized_in) 
+                    ? $seaf_fn_get_object_info($m.realized_in, $all_objects)
+                    : $exists($model_obj.realized_in)
+                        ? $seaf_fn_get_object_info($model_obj.realized_in, $all_objects);
+                {
+                  "__id__": $key,
+                  "model": $exists($model_obj) ? $model_info.title : $m.model,
+                  "model_id": $m.model,
+                  "model_link": $exists($model_obj) ? $model_info.link_to_card,
+                  "description": $m.description,
+                  "lifecycle_stage": $m.lifecycle_stage,
+                  "realized_in": $r_in.__id__,
+                  "realized_in_title": $r_in.title,
+                  "realized_in_link": $r_in.link_to_card
+                }
+            )})[];
+      )})[]; 
+      /* превращаем массив массивов в плоский массив */
+      $arr := $arr@$i.$append($a, $i);
+      /* аггрегируем по id */
+      $arr{__id__: [$]};
+      )

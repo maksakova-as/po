@@ -1,0 +1,42 @@
+entities:
+  kadzo.components:
+    presentations:
+      summary:
+        title: Сводка по компоненту
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор компонента
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../templates/summary.md
+        origin:
+          components: kadzo.components
+          kadzo: kadzo.v2023
+          schema: kadzo.v2023.entities.schema
+          refs: kadzo.v2023.entities.__refs__
+        source: >
+          (
+            $system_id := $params.id;
+            $ctx:= $;
+            $append(
+              [
+                {
+                    "title": "Идентификатор",
+                    "data": [{"content": $system_id}]
+                }
+              ],
+              $props_to_summary($system_id,
+                              components."kadzo.components",
+                              [
+                               schema."kadzo.components".schema.patternProperties.*.properties, 
+                               schema."kadzo.components".schema."$defs".technologyGroupLabel.properties,
+                               schema."kadzo.components".schema."$defs".technologyTypeLabel.properties
+                              ]
+                              ~> $merge(),
+                              [components, kadzo] ~> $merge(), refs)
+            );
+          )

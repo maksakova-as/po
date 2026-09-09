@@ -1,0 +1,45 @@
+# Назначение: Индекс ресурсов TA по location/segment для быстрых выборок в виджетах.
+# Используется: app.
+datasets:
+  seaf.company.ds.ta._idx.resources_by_location_segment:
+    description: |
+      Индекс TA-ресурсов по системе с предрассчитанными _loc_id/_net_id/_seg_id.
+    origin:
+      resources_by_app: seaf.company.ds.ta._idx.resources_by_app_component
+      dcs: seaf.company.ds.ta.dcs
+      offices: seaf.company.ds.ta.dc_offices
+      segments: seaf.company.ds.ta.network_segments
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $normalize := function($value){ $type($value) = "array" ? $value : ($exists($value) ? [$value] : []) };
+        $system_ids := $keys(resources_by_app);
+        $system_ids.{
+          $: (
+            $sys_id := $;
+            $resources := $normalize($lookup(resources_by_app, $sys_id));
+            $resources.(
+              $loc_id := (
+                $loc := location[0];
+                $exists($lookup(dcs, $loc)) or $exists($lookup(offices, $loc)) ? $loc : "unknown"
+              );
+              $net_id := (
+                $net := network_connection[0];
+                $exists($lookup(networks, $net)) ? $net : "unknown"
+              );
+              $seg_id := (
+                $seg := $exists($lookup(networks, $net_id).segment[0]) ? $lookup(networks, $net_id).segment[0] : "unknown";
+                $exists($lookup(segments, $seg)) ? $seg : "unknown"
+              );
+              $merge([
+                $,
+                {
+                  "_loc_id": $loc_id,
+                  "_net_id": $net_id,
+                  "_seg_id": $seg_id
+                }
+              ])
+            )
+          )
+        } ~> $merge()
+      )

@@ -1,0 +1,88 @@
+entities:
+  kadzo.v2023.tech_services:
+    title: Технологические сервисы
+    description: Перечень технологических систем и сервисов, обеспечивающих функционирование ИТ-ландшафта компании. Технологические сервисы не должны непосредственно учувствовать в бизнес-процессах компании, иначе они должны рассматриваться как системы / компоненты, обеспечивающие выполнение бизнес-процессов и отображаться в Реестре АС
+    schema:
+      $defs:
+        kadzo.v2023.tech_services.ownership:
+          title: Модель владения
+          type: object
+          properties:
+            location:
+              title: Размещение
+              enum:
+                - Внешняя
+                - Внутренняя
+          required:
+            - location
+        kadzo.v2023.tech_services.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Создается
+                - Используется
+                - Выводится
+                - В архиве
+          required:
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.ta_props.scalability"
+            - $ref: "#/$defs/kadzo.ta_props.ha"
+            - $ref: "#/$defs/kadzo.ta_props.dr"
+            - $ref: "#/$defs/kadzo.ta_props.backup"
+            - $ref: "#/$defs/kadzo.ta_props.monitoring"
+            - $ref: "#/$defs/kadzo.v2023.tech_services.ownership"
+            - $ref: "#/$defs/kadzo.v2023.tech_services.livestage"
+            - $ref: "#/$defs/kadzo.includes.softwares"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            class:
+              title: Класс систем
+              enum:
+                - Средства коммуникации
+                - Средства (инструменты) управления разработкой и хранения кода
+                - Системы резервного/архивного копирования
+                - Системы логирования
+                - Средства мониторинга
+                - Средства управления и автоматизации
+                - Инфраструктура удаленного доступа
+                - Средства управления ИТ-службой, ИТ-инфраструктурой и ИТ-активами
+                - Сервера/кластеры серверов приложений
+                - Шлюзы, Балансировщики, Proxy
+                - Файловый ресурс
+                - Интеграционная шина
+                - Системы управления большими данными и аналитической обработки больших объёмов данных
+                - СУБД
+                - Кэш, распределенный кеш
+            provides:
+              title: Обеспечивает работу систем
+              type: array
+              items:
+                 oneOf:
+                   - $ref: "#/$rels/kadzo.v2023.systems.systems"
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - class
+            - softwares
+    objects:
+      tech_services:
+        route: "/"
+        title: Технологические сервисы
+        symbol: "tech_services"

@@ -1,0 +1,10 @@
+@startwbs
+{{#objects}}
+{{#object_title}}
+{{stars}}{{style}} [[{{{object_link}}} {{{object_title}}}]]
+{{/object_title}}
+{{^object_title}}
+{{stars}}{{style}} [[{{{object_link}}} {{object_id}}]]
+{{/object_title}}
+{{/objects}}
+@endwbs

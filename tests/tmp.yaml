@@ -1,0 +1,18 @@
+docs:
+  something.for_drawio.doc:
+    type: seaf2drawio
+    location: Whenever/You/Need/Test
+    origin:
+      dataset: something.for_drawio
+    source: >
+      (
+        {
+          "title": "seaf2drawio example with links",
+          "dataset": dataset,
+          "with-save": true
+        }
+      )
+
+datasets:
+  something.for_drawio:
+    source: ./seaf_example.yaml

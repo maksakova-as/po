@@ -1,0 +1,78 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.endpoints: seaf.company.ds.kadzo.endpoints
+
+  seaf.company.ds.kadzo.endpoints:
+    title: Точки взаимодействия КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.services
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      kadzo_status_enum:
+        "Идея в проработке": Планируется
+        "Создается": Разрабатывается
+        "Тестируется": Разрабатывается
+        "Используется и развивается": Модифицируется
+        "Используется": Используется
+        "В архиве": В архиве / Удалено
+        "Выведен из эксплуатации": Выводится из эксплуатации / Удаляется
+      kadzo_technology_enum:
+        "API": API
+        "Очереди": Очереди
+        "Файлы": Файлы
+        "Базы данных": Базы данных
+        "Почта": Почта
+        "RPA": RPA
+        "UI": Ручное
+      kadzo_tech_use_enum:
+        "По запросу (pull)": Pull
+        "По событию (push)": Push
+        "По расписанию": Push
+
+    # Принятые допущения:
+    #    - uri берем - первое значение из массива endpoint_uri
+    #    - technical-use = Pull - чтобы в КА ДЗО корректно отрисовывалась стрелка
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $kadzo_status_enum := kadzo_status_enum;
+      $kadzo_technology_enum := kadzo_technology_enum;
+      $kadzo_tech_use_enum := kadzo_tech_use_enum;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          /* формируем массив ИД систем, которые публикуют функции через данный сервис (АС-поставщики)*/
+          $sys_arr := [$lookup($objects_links, $key)[link_attr="realizes_functions.service" and link_dir="reverse"].linked_id] ~> $distinct();
+          /* формируем массив ИД систем, которые реализуют обеспечивающие сервисы для нашего (обеспечивающие АС)*/
+          $supp_sys_arr := [$val.supporting_services[type="Интеграционный транспорт" or type="Шлюз"].service@$srv.$lookup($objects_links, $srv)[link_attr="realizes_functions.service" and link_dir="reverse"].linked_id];
+          /* формируем объект КАДЗО */
+          { $key: {
+              "title": $val.title,
+              "comments": $val.comments,
+              "uri": $val.endpoint_uri[0],
+              "owners": $sys_arr != [] ? $sys_arr,
+              "gates": $supp_sys_arr != [] ? $supp_sys_arr,
+              "protected": $val.protection_methods,
+              "technology": (
+                $attr_val := $val.integration_type;
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_technology_enum, $attr_val, [$key, "атрибут integration_type", $attr_val])
+              ),
+              "technical-use": "Pull",
+      /*        "technical-use": (*/
+      /*          $attr_val := $val.trigger_type;*/
+      /*          $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_tech_use_enum, $attr_val, [$key, "атрибут trigger_type", $attr_val])*/
+      /*        ),*/
+              "status": (
+                $attr_val := $val.lifecycle_stage;
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_status_enum, $attr_val, [$key, "атрибут lifecycle_stage", $attr_val])
+              )
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.ba.products:
+    description: |
+      Датасет формирует коллекцию всех продуктов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.ba.products";
+      )

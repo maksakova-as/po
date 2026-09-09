@@ -1,0 +1,97 @@
+entities:
+  seaf.company.da.logical_entities:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          logical_links:
+            title: Cвязи
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: logical_links
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 20
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      logical_links:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+            align: left
+          - value: id
+            text: Идентификатор
+            link: object_link
+          - value: type
+            text: Тип
+            align: left
+          - value: entity_a
+            text: Сущность A
+            link: entity_a_link
+            align: left
+          - value: multiplicity_a
+            text: Множ. A
+            link: multiplicity_a_link
+            align: left
+          - value: entity_b
+            text: Сущность B
+            link: entity_b_link
+            align: left
+          - value: multiplicity_b
+            text: Множ. B
+            link: multiplicity_b_link
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin:
+          objects_links: seaf.ds.objects_links
+          logical_links: seaf.company.ds.da.logical_links
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects_links := objects_links;
+          $logical_links := logical_links;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $reverse_links := $lookup($objects_links, $id)[linked_entity_id="seaf.company.da.logical_links" and link_dir="reverse"] ;
+          $map($reverse_links, function($val, $i) {(
+              $ll := $logical_links.$lookup($val.linked_id);
+              $ea := $seaf_fn_get_object_info($ll.entity_a, $all_objects);
+              $eb := $seaf_fn_get_object_info($ll.entity_b, $all_objects);
+              {
+                  "number": $i+1,
+                  "id": $ll.__id__,
+                  "object_link": "/entities/" & $ll.__entity_id__ & "/card?id=" & $ll.__id__,
+                  "type": $ll.type,
+                  "entity_a": $ea.title,
+                  "entity_a_link": $ea.link_to_card,
+                  "multiplicity_a": $ll.multiplicity_a,
+                  "entity_b": $eb.title,
+                  "entity_b_link": $eb.link_to_card,
+                  "multiplicity_b": $ll.multiplicity_b,
+                  "lifecycle_stage": $ll.lifecycle_stage,
+                  "description": $ll.description
+              }
+          )})[];
+          )

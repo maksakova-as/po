@@ -1,0 +1,55 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.k8s_cluster_objects` (k8s cluster objects) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.k8s_cluster_objects
+datasets:
+  seaf.company.ds.ta.k8s_cluster_objects:
+    description: |
+      Kubernetes объекты (ноды/неймспейсы/деплойменты/HPA) с привязкой к кластеру
+    origin:
+      k8s_nodes: seaf.company.ds.ta.k8s_nodes
+      k8s_namespaces: seaf.company.ds.ta.k8s_namespaces
+      k8s_deployments: seaf.company.ds.ta.k8s_deployments
+      k8s_hpas: seaf.company.ds.ta.k8s_hpas
+    source: >
+      (
+        $nodes := k8s_nodes;
+        $namespaces := k8s_namespaces;
+        $deployments := k8s_deployments;
+        $hpas := k8s_hpas;
+        $first_id := function($v){
+          (
+            $type($v) = "array" ? $v : ($exists($v) ? [$v] : [])
+          ).(
+            $type($) = "object"
+              ? ($exists($.id) ? $.id : ($exists($.__id__) ? $.__id__ : $))
+              : $
+          )[0]
+        };
+        [
+          $nodes.*.{
+            "cluster": $first_id(cluster_ref),
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Node"
+          },
+          $namespaces.*.{
+            "cluster": $first_id(cluster_ref),
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Namespace"
+          },
+          $deployments.*.{
+            "cluster": $first_id(cluster_ref),
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Deployment"
+          },
+          $hpas.*.{
+            "cluster": $first_id(cluster_ref),
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "HPA"
+          }
+        ][]
+      )
+

@@ -1,0 +1,18 @@
+# Метаданные пакета
+$package:
+  seaf-company-kadzo: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF company kadzo
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Пакет для формирования арх. данных ДЗО Группы Сбер в формате КА ДЗО
+    # Версия
+    version: 1.0.0-beta.2
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.21.1"
+      seaf-common: ">=1.1.0"
+
+imports:
+  - kadzo/_root.yaml

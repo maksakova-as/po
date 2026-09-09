@@ -1,0 +1,2215 @@
+{
+  "entities": {
+    "kadzo.v2023.systems": {
+      "presentations": {
+        "tech_landscape": {
+          "widgets": {
+            "system_l2_components": {
+              "title": "Компоненты системы",
+              "entity": "kadzo.components",
+              "presentation": "components_by_system",
+              "order": 10,
+              "align": ">",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "l2_context": {
+              "title": "Схема уровня L2",
+              "entity": "kadzo.components_context_system_view_schema",
+              "presentation": "system_l2_context_select",
+              "order": 15,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "summary_performance": {
+              "title": "Параметры производительности и надежности",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "summary_performance",
+              "order": 10,
+              "align": "<",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "tech_params": {
+              "title": "Параметры ТА",
+              "entity": "kadzo.v2023.tech_params",
+              "presentation": "tech_params_by_systems",
+              "order": 20,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "title": "Технические характеристики",
+          "params": {
+            "type": "object",
+            "properties": {
+              "system_id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "system_id"
+            ]
+          },
+          "type": "mkr-grid",
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n  $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.tech_landscape\"), $params.system_id);\n)\n"
+        },
+        "validation.errors_md": {
+          "type": "markdown",
+          "template": "templates/systems_errors.md",
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(          \n    $domain_errors := $[domain=$params.domain and validator_type=\"systems\"];\n\n    $errors := $domain_errors {$.error_group_code : 1};\n    {\n        \"domain\": $params.domain,\n        \"general\" : $errors.\"general\",\n        \"fp\" : $errors.\"fp\",\n        \"change-type\" : $errors.\"change-type\",\n        \"ownership\" : $errors.\"ownership\",\n        \"lifecycle\" : $errors.\"lifecycle\",\n        \"criticality\" : $errors.\"criticality\",\n        \"functionalities\" : $errors.\"functionalities\",\n        \"groups\" : $errors.\"groups\",\n        \"ls_vs_lst\" : $errors.\"ls_vs_lst\",\n        \"performance\" : $errors.\"performance\",\n        \"sla\" : $errors.\"sla\",\n        \"rto\" : $errors.\"rto\",\n        \"rpo\" : $errors.\"rpo\",\n        \"monitoring\" : $errors.\"monitoring\",\n        \"fp_live_stage\" : $errors.\"fp_live_stage\",\n        \"tech_params\" : $errors.\"tech_params\",\n        \"iserrors\" : $boolean($errors)\n    }\n)\n"
+        },
+        "validation.parent_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"fp\"] ];\n)\n"
+        },
+        "validation.base_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"general\"] ];\n)\n"
+        },
+        "validation.change-type_old": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"change-type\"] ];\n)\n"
+        },
+        "validation.ownership_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"ownership\"] ];\n)\n"
+        },
+        "validation.lifecycle_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"lifecycle\"] ];\n)\n"
+        },
+        "validation.criticality_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"criticality\"] ];\n)\n"
+        },
+        "validation.without_functions": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС/ФП"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"functionalities\"] ];\n)\n"
+        },
+        "validation.without_groups": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"groups\"] ];\n)\n"
+        },
+        "validation.change-type": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"change-type\"] ];\n)\n"
+        },
+        "validation.ls_vs_lst": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"ls_vs_lst\"] ];\n)\n"
+        },
+        "validation.performance": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"performance\"] ];\n)\n"
+        },
+        "validation.sla": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"sla\"] ];\n)\n"
+        },
+        "validation.rto": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"rto\"] ];\n)\n"
+        },
+        "validation.rpo": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"rpo\"] ];\n)\n"
+        },
+        "validation.monitoring": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"monitoring\"] ];\n)\n"
+        },
+        "validation.fp_live_stage": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id ФП",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название ФП"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"fp_live_stage\"] ];\n)\n"
+        },
+        "validation.tech_params": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id АС",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название АС"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.systems",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"systems\" and error_group_code=\"tech_params\"] ];\n)\n"
+        },
+        "sm_landscape": {
+          "title": "Характеристики в Service Management",
+          "params": {
+            "type": "object",
+            "properties": {
+              "system_id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "system_id"
+            ]
+          },
+          "widgets": {
+            "summary_sm": {
+              "title": "Параметры Service Management",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "summary_sm",
+              "order": 10,
+              "align": "<",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "type": "mkr-grid",
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n  $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.sm_landscape\"), $params.system_id);\n)\n"
+        },
+        "app_landscape": {
+          "title": "Характеристики системы в IT-ландшафте",
+          "params": {
+            "type": "object",
+            "properties": {
+              "system_id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "system_id"
+            ]
+          },
+          "type": "mkr-grid",
+          "widgets": {
+            "summary_ownership": {
+              "title": "Модель владения",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "summary_ownership",
+              "order": 10,
+              "align": "<",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "summary_livestage": {
+              "title": "Жизненный цикл",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "summary_livestage",
+              "order": 10,
+              "align": ">",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "system_context": {
+              "title": "Контекст системы",
+              "presentation": "contexts",
+              "entity": "kadzo.v2023.systems",
+              "order": 20,
+              "style": {
+                "border": true,
+                "margin": "4px"
+              }
+            },
+            "integrations": {
+              "title": "Интеграционные потоки",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "integrations",
+              "order": 30,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "system_data_objects": {
+              "title": "Объекты данных в системе",
+              "entity": "kadzo.v2023.data_objects",
+              "presentation": "system_data_objects",
+              "order": 40,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n    $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.app_landscape\"), $params.system_id);\n)\n"
+        },
+        "business_landscape": {
+          "title": "Встраивание в бизнес-ландшафт",
+          "params": {
+            "type": "object",
+            "properties": {
+              "system_id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "system_id"
+            ]
+          },
+          "widgets": {
+            "system_channels": {
+              "title": "Каналы взаимодействия с системой",
+              "entity": "kadzo.v2023.channels",
+              "presentation": "system_channels",
+              "order": 10,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "processes_by_system": {
+              "title": "Бизнес-процессы, обеспечиваемые системой",
+              "entity": "kadzo.v2023.processes",
+              "presentation": "processes_by_system",
+              "order": 20,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "type": "mkr-grid",
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n    $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.business_landscape\"), $params.system_id);\n)\n"
+        },
+        "system_in_landscapes": {
+          "title": "Система в IT-ландшафте",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-select",
+          "source": "(\n    $system := $params.id;\n    [\n        {\n            \"title\": \"Прикладной ландшафт\",\n            \"src\": \"@entity/kadzo.v2023.systems/app_landscape?system_id=\" & $system\n        },\n        {\n            \"title\": \"Бизнес ландшафт\",\n            \"src\": \"@entity/kadzo.v2023.systems/business_landscape?system_id=\" & $system\n        },\n        {\n            \"title\": \"Технический ландшафт\",\n            \"src\": \"@entity/kadzo.v2023.systems/tech_landscape?system_id=\" & $system\n        },\n        {\n            \"title\": \"Дополнительные характеристики\",\n            \"src\": \"@entity/kadzo.v2023.systems/sm_landscape?system_id=\" & $system\n        }\n    ]\n)\n"
+        },
+        "integrations": {
+          "title": "Интеграционные потоки",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-select",
+          "source": "(\n  $system := $params.id;\n  [\n      {\n          \"title\": \"Все интеграционные потоки\",\n          \"src\": \"@entity/kadzo.v2023.integrations/in_and_out_integrations?system_id=\" & $system\n      },\n      {\n          \"title\": \"Исходящие интеграционные потоки\",\n          \"src\": \"@entity/kadzo.v2023.integrations/integrations_by_src?system_id=\" & $system\n      },\n      {\n          \"title\": \"Входящие интеграционные потоки\",\n          \"src\": \"@entity/kadzo.v2023.integrations/integrations_by_consumer?system_id=\" & $system\n      }\n  ]\n)\n"
+        },
+        "contexts": {
+          "title": "Контекст системы",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-select",
+          "source": "(\n    $system := $params.id;\n    [\n        {\n            \"title\": \"Текущий контекст системы\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context_asis?system=\" & $system\n        },\n        {\n            \"title\": \"Текущий контекст системы (без ФП)\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context_asis_exclude_details?system=\" & $system\n        },\n        {\n            \"title\": \"Текущий контекст системы (view данные)\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context_data_view_asis?system=\" & $system\n        },\n        {\n            \"title\": \"Целевой контекст системы\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context?system=\" & $system\n        },\n        {\n            \"title\": \"Целевой контекст системы (без ФП)\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context_exclude_details?system=\" & $system\n        },\n        {\n            \"title\": \"Целевой контекст системы (view данные)\",\n            \"src\": \"@entity/kadzo.v2023.system_context/system_context_data_view_tobe?system=\" & $system\n        }\n    ]   \n)\n"
+        },
+        "systems_by_group": {
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор группы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left",
+              "link": "link"
+            },
+            {
+              "value": "description",
+              "text": "Описание",
+              "align": "left"
+            },
+            {
+              "value": "parent",
+              "text": "Родительская АС",
+              "link": "parent_link",
+              "align": "left"
+            },
+            {
+              "value": "class",
+              "text": "Класс",
+              "align": "left"
+            },
+            {
+              "value": "location",
+              "text": "Размещение",
+              "align": "left"
+            },
+            {
+              "value": "ownership",
+              "text": "Степень владения",
+              "align": "left"
+            },
+            {
+              "value": "live-stage",
+              "text": "Этап жизненного цикла",
+              "align": "left"
+            },
+            {
+              "value": "live-stage-target",
+              "text": "Этап жизненного цикла на горизонт планирования",
+              "align": "left"
+            },
+            {
+              "value": "status",
+              "text": "Целевой статус (решение принято)",
+              "align": "left"
+            },
+            {
+              "value": "change-type",
+              "text": "Тип изменений",
+              "align": "left"
+            },
+            {
+              "value": "criticality",
+              "text": "Уровень критичности",
+              "align": "left"
+            },
+            {
+              "value": "performance",
+              "text": "Производительность"
+            },
+            {
+              "value": "rto",
+              "text": "RTO (час)"
+            },
+            {
+              "value": "rpo",
+              "text": "RPO (час)"
+            },
+            {
+              "value": "sla",
+              "text": "SLA"
+            },
+            {
+              "value": "monitoring",
+              "text": "Средства мониторинга"
+            },
+            {
+              "value": "changes",
+              "text": "Описание изменений"
+            }
+          ],
+          "origin": "kadzo.v2023.systems.united",
+          "source": "(\n    [ $sift($.\"kadzo.v2023.systems\", function ($v, $k){ $v.group=$params.id })\n        ~> $each(?, function($v, $k){(\n          {\n              \"id\": $k,\n              \"link\": \"/entities/kadzo.v2023.systems/card?id=\" & $k,\n              \"title\": $v.title,\n              \"description\": $v.description,\n              \"parent\": $v.parent,\n              \"parent_link\": $exists($v.parent) ? \"/entities/kadzo.v2023.systems/card?id=\" & $v.parent,\n              \"class\": $v.class,\n              \"location\": $v.location,\n              \"group\": $v.group,\n              \"ownership\": $v.ownership,\n              \"live-stage\": $v.\"live-stage\",\n              \"live-stage-target\": $v.\"live-stage-target\",\n              \"status\": $v.\"target-status\",\n              \"change-type\": $v.\"change-type\",\n              \"criticality\": $v.criticality,\n              \"performance\": $v.performance,\n              \"rto\": $v.rto,\n              \"rpo\": $v.rpo,\n              \"sla\": $v.sla,\n              \"monitoring\": $v.monitoring,\n              \"changes\": $v.changes\n          }\n        )})\n    ]\n)\n"
+        },
+        "systems_by_functions": {
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор функциональности",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left",
+              "link": "link"
+            },
+            {
+              "value": "description",
+              "text": "Описание",
+              "align": "left"
+            },
+            {
+              "value": "parent",
+              "text": "Родительская АС",
+              "link": "parent_link",
+              "align": "left"
+            },
+            {
+              "value": "class",
+              "text": "Класс",
+              "align": "left"
+            },
+            {
+              "value": "location",
+              "text": "Размещение",
+              "align": "left"
+            },
+            {
+              "value": "group",
+              "text": "Группа систем",
+              "align": "left",
+              "link": "group_link"
+            },
+            {
+              "value": "ownership",
+              "text": "Степень владения",
+              "align": "left"
+            },
+            {
+              "value": "live-stage",
+              "text": "Этап жизненного цикла",
+              "align": "left"
+            },
+            {
+              "value": "live-stage-target",
+              "text": "Этап жизненного цикла на горизонт планирования",
+              "align": "left"
+            },
+            {
+              "value": "status",
+              "text": "Целевой статус (решение принято)",
+              "align": "left"
+            },
+            {
+              "value": "criticality",
+              "text": "Уровень критичности",
+              "align": "left"
+            }
+          ],
+          "origin": {
+            "functions": "kadzo.v2023.functions.united",
+            "systems": "kadzo.v2023.systems.united"
+          },
+          "source": "(\n    $system_function := [$lookup(functions.\"kadzo.v2023.functions\", $params.id).systems];\n    [$sift(systems.\"kadzo.v2023.systems\", function($v, $k) {$k in $system_function})\n        ~> $each(?, function ($v, $k){(\n          {\n              \"id\": $k,\n              \"link\": \"/entities/kadzo.v2023.systems/card?id=\" & $k,\n              \"title\": $v.title,\n              \"description\": $v.description,\n              \"parent\": $v.parent,\n              \"parent_link\": $exists($v.parent) ? \"/entities/kadzo.v2023.systems/card?id=\" & $v.parent,\n              \"class\": $v.class,\n              \"location\": $v.location,\n              \"group\": $V.group,\n              \"group_link\": \"/entities/kadzo.v2023.groups/card?id=\" & $v.group,\n              \"ownership\": $v.ownership,\n              \"live-stage\": $v.\"live-stage\",\n              \"live-stage-target\": $v.\"live-stage-target\",\n              \"status\": $v.\"target-status\",\n              \"criticality\": $v.criticality\n          }\n      )})\n    ]\n)\n"
+        },
+        "summary_sm": {
+          "title": "Параметры Service Management",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= base;\n  $props_to_summary($system_id,\n                  $ctx.\"kadzo.v2023.systems\",\n                  schema.\"kadzo.v2023.systems\".schema.\"$defs\".\"kadzo.v2023.systems.service_management\".properties,\n                  $ctx, refs);\n)\n"
+        },
+        "wide_summary": {
+          "title": "Описание системы",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "widgets": {
+            "summary": {
+              "title": "Сводка по системе",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "summary",
+              "align": "<",
+              "order": 10,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "system_functions": {
+              "title": "Функции системы",
+              "entity": "kadzo.v2023.functions",
+              "presentation": "system_functions",
+              "align": ">",
+              "order": 10,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "type": "mkr-grid",
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n  $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.wide_summary\"), $params.id);\n)\n"
+        },
+        "summary": {
+          "title": "Сводка по системе",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= base;\n  $append(\n    [\n      {\n          \"title\": \"Идентификатор\",\n          \"data\": [{\"content\": $system_id}]\n      }\n    ],\n    $props_to_summary($system_id,\n                    $ctx.\"kadzo.v2023.systems\",\n                    schema.\"kadzo.v2023.systems\".schema.patternProperties.*.properties,\n                    $ctx, refs)\n  );\n)\n"
+        },
+        "summary_livestage": {
+          "title": "Жизненный цикл",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= base;\n  $props_to_summary($system_id,\n                  $ctx.\"kadzo.v2023.systems\",\n                  schema.\"kadzo.v2023.systems\".schema.\"$defs\".\"kadzo.v2023.systems.lifestage\".properties,\n                  $ctx, refs);\n)\n"
+        },
+        "summary_ownership": {
+          "title": "Модель владения",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= base;\n  $props_to_summary($system_id,\n                  $ctx.\"kadzo.v2023.systems\",\n                  schema.\"kadzo.v2023.systems\".schema.\"$defs\".\"kadzo.v2023.systems.ownership\".properties,\n                  $ctx, refs);\n)\n"
+        },
+        "summary_performance": {
+          "title": "Параметры производительности и надежности",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= base;\n  $props_to_summary($system_id,\n                  $ctx.\"kadzo.v2023.systems\",\n                  schema.\"kadzo.v2023.systems\".schema.\"$defs\".\"kadzo.v2023.systems.performance\".properties,\n                  $ctx, refs);\n)\n"
+        },
+        "card": {
+          "title": "Карточка системы",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-grid",
+          "widgets": {
+            "summary": {
+              "title": "Описание системы",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "wide_summary",
+              "order": 10
+            },
+            "landscape": {
+              "title": "Характеристики системы в IT-ландшафте",
+              "entity": "kadzo.v2023.systems",
+              "presentation": "system_in_landscapes",
+              "order": 20
+            }
+          },
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(          \n  $lookup( $lookup($, \"__widgets__.kadzo.v2023.systems.card\"), $params.id);\n)\n"
+        },
+        "domain_registry": {
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "domain": {
+                "title": "Идентификатор домена",
+                "type": "string"
+              }
+            },
+            "required": [
+              "domain"
+            ]
+          },
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left",
+              "link": "link"
+            },
+            {
+              "value": "description",
+              "text": "Описание",
+              "align": "left"
+            },
+            {
+              "value": "parent",
+              "text": "Родительская АС",
+              "link": "parent_link",
+              "align": "left"
+            },
+            {
+              "value": "class",
+              "text": "Класс",
+              "align": "left"
+            },
+            {
+              "value": "location",
+              "text": "Размещение",
+              "align": "left"
+            },
+            {
+              "value": "group",
+              "text": "Группа систем",
+              "align": "left"
+            },
+            {
+              "value": "ownership",
+              "text": "Степень владения",
+              "align": "left"
+            },
+            {
+              "value": "live-stage",
+              "text": "Этап жизненного цикла",
+              "align": "left"
+            },
+            {
+              "value": "live-stage-target",
+              "text": "Этап жизненного цикла на горизонт планирования",
+              "align": "left"
+            },
+            {
+              "value": "status",
+              "text": "Целевой статус (решение принято)",
+              "align": "left"
+            },
+            {
+              "value": "change-type",
+              "text": "Тип изменений",
+              "align": "left"
+            },
+            {
+              "value": "criticality",
+              "text": "Уровень критичности",
+              "align": "left"
+            },
+            {
+              "value": "performance",
+              "text": "Производительность"
+            },
+            {
+              "value": "rto",
+              "text": "RTO (час)"
+            },
+            {
+              "value": "rpo",
+              "text": "RPO (час)"
+            },
+            {
+              "value": "sla",
+              "text": "SLA"
+            },
+            {
+              "value": "monitoring",
+              "text": "Средства мониторинга"
+            },
+            {
+              "value": "changes",
+              "text": "Описание изменений"
+            },
+            {
+              "value": "comments",
+              "text": "Комментарии, риски, проблемы"
+            }
+          ],
+          "origin": {
+            "systems": "kadzo.v2023.systems",
+            "groups": "kadzo.v2023.groups"
+          },
+          "source": "(\n    $matcher := $eval('/^' & $params.domain & '\\\\./i');\n    [$$.systems.\"kadzo.v2023.systems\".$spread()[$.$keys() ~> $matcher].{\n        \"id\": $keys()[0],\n        \"link\": \"/entities/kadzo.v2023.systems/card?id=\" & $keys()[0],\n        \"title\": *.title,\n        \"description\": *.description,\n        \"parent\": ($title := $lookup($$.systems.\"kadzo.v2023.systems\", *.parent).title; $title ? $title : \"\" & *.parent),\n        \"parent_link\": $exists(*.parent) ? \"/entities/kadzo.v2023.systems/card?id=\" & *.parent,\n        \"class\": *.class,\n        \"location\": *.location,\n        \"group\": (*.group ? ($title := $map(*.group, function($v){$lookup($$.groups.\"kadzo.v2023.groups\", $v).title}); $title ? $title : \"Группы не найдены: \" & *.group) : \"\"),\n        \"ownership\": *.ownership,\n        \"live-stage\": *.\"live-stage\",\n        \"live-stage-target\": *.\"live-stage-target\",\n        \"status\": *.\"target-status\",\n        \"change-type\": *.\"change-type\",\n        \"criticality\": *.criticality,\n        \"performance\": *.performance,\n        \"rto\": *.rto,\n        \"rpo\": *.rpo,\n        \"sla\": *.sla,\n        \"monitoring\": *.monitoring,\n        \"changes\": *.changes,\n        \"comments\": *.comments\n    }]\n)\n"
+        }
+      },
+      "title": "Системы",
+      "description": "Автоматизированная система - самостоятельный объект управления в ИТ-процессах, представляющий собой набор разработанных или заимствованных компонентов Программного Обеспечения, реализующих логически связанный набор функциональности для выполнения необходимых бизнес-задач, а также для поддержки других АС. Функциональная подсистема - Дополнительный к АС объект управления в ИТ-процессах, представляющий собой совокупность компонентов ПО, реализующую логически связанное подмножество функциональности АС. В контексте КА ДЗО функциональная подсистема обладает такими же характеристиками, как и АС",
+      "schema": {
+        "$defs": {
+          "kadzo.v2023.systems.ownership": {
+            "title": "Модель владения",
+            "type": "object",
+            "properties": {
+              "location": {
+                "title": "Размещение",
+                "enum": [
+                  "Внутренняя",
+                  "Внешняя"
+                ]
+              },
+              "ownership": {
+                "title": "Степень владения",
+                "enum": [
+                  "Владеем исходным кодом",
+                  "Владеем экземпляром",
+                  "SaaS",
+                  "Система партнера"
+                ]
+              },
+              "group": {
+                "title": "Группа систем",
+                "$ref": "#/$rels/kadzo.v2023.groups.groups"
+              }
+            }
+          },
+          "kadzo.v2023.systems.lifestage": {
+            "title": "Управление жизненным циклом объекта",
+            "type": "object",
+            "properties": {
+              "live-stage": {
+                "title": "Этап жизненного цикла (текущий)",
+                "enum": [
+                  "Эскиз",
+                  "В разработке / приобретение",
+                  "Внедрение / Не введена в эксплуатацию",
+                  "Опытная эксплуатация",
+                  "Промышленная эксплуатация",
+                  "Архивная",
+                  "Отменена"
+                ]
+              },
+              "live-stage-target": {
+                "title": "Этап жизненного цикла на горизонт планирования",
+                "enum": [
+                  "Эскиз",
+                  "В разработке / приобретение",
+                  "Внедрение / Не введена в эксплуатацию",
+                  "Опытная эксплуатация",
+                  "Промышленная эксплуатация",
+                  "Архивная",
+                  "Отменена"
+                ]
+              },
+              "target-status": {
+                "title": "Целевой статус (решение принято)",
+                "enum": [
+                  "Целевая",
+                  "Не целевая"
+                ]
+              },
+              "change-type": {
+                "title": "Тип изменений",
+                "enum": [
+                  "Планируется",
+                  "Разрабатывается",
+                  "Модифицируется",
+                  "Используется",
+                  "Выводится из эксплуатации"
+                ]
+              },
+              "changes": {
+                "title": "Описание изменений",
+                "type": "string"
+              }
+            }
+          },
+          "kadzo.v2023.systems.performance": {
+            "title": "Параметры производительности и надежности",
+            "type": "object",
+            "properties": {
+              "performance": {
+                "title": "Производительность",
+                "type": "string"
+              },
+              "rto": {
+                "title": "RTO (час)",
+                "type": "integer"
+              },
+              "rpo": {
+                "title": "RPO (час)",
+                "type": "integer"
+              },
+              "sla": {
+                "title": "Уровень доступности",
+                "type": "integer"
+              },
+              "monitoring": {
+                "title": "Средства мониторинга",
+                "type": "string"
+              }
+            }
+          },
+          "kadzo.v2023.systems.service_management": {
+            "title": "Параметры сервисного обслуживания",
+            "type": "object",
+            "properties": {
+              "ihci": {
+                "title": "Идентификатор IHCI в ITSM",
+                "type": "string"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "patternProperties": {
+          "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/$defs/kadzo.v2023.systems.ownership"
+              },
+              {
+                "$ref": "#/$defs/kadzo.v2023.systems.lifestage"
+              },
+              {
+                "$ref": "#/$defs/kadzo.v2023.systems.performance"
+              },
+              {
+                "$ref": "#/$defs/kadzo.v2023.systems.service_management"
+              }
+            ],
+            "properties": {
+              "title": {
+                "title": "Наименование",
+                "type": "string",
+                "minLength": 2
+              },
+              "description": {
+                "title": "Описание",
+                "type": "string",
+                "minLength": 2
+              },
+              "parent": {
+                "title": "ID родительской АС (для ФП)",
+                "$ref": "#/$rels/kadzo.v2023.systems.systems"
+              },
+              "class": {
+                "title": "Класс",
+                "enum": [
+                  "BPM (Business Process Management)",
+                  "CRM-аналитический",
+                  "CRM-операционный",
+                  "ECM (Документооборот)",
+                  "RPA (Robotic process automation)",
+                  "Workforce Management",
+                  "Аналитика данных",
+                  "Бизнес-планирование",
+                  "Биллинг",
+                  "Бухгалтерия и финансы",
+                  "Бюджетирование и контроль",
+                  "Взаимоотношения с поставщиками",
+                  "Гео-информационные системы",
+                  "Клиентский профиль (Customer Information File)",
+                  "Контакт-центр",
+                  "Корпоративная база знаний",
+                  "Корпоративная отчетность",
+                  "Корпоративный портал",
+                  "Маркетинг",
+                  "Маркетплейс компании",
+                  "Мессенджеры",
+                  "Нормативная документация",
+                  "Обмен данными с контрагентами",
+                  "Получение сведений о юрлицах",
+                  "Продуктовая фабрика (основная деятельность)",
+                  "Продуктовый каталог",
+                  "Регуляторная отчетность",
+                  "Сайт компании",
+                  "Системы принятия решений",
+                  "Скоринг и рейтинг клиентов",
+                  "Совместная работа (collaboration)",
+                  "Управление активами",
+                  "Управление внутрихозяйственной деятельностью",
+                  "Управление задачами и проектами",
+                  "Управление обучением",
+                  "Управление персоналом",
+                  "Учет судебных дел",
+                  "Финансовый мониторинг и AML",
+                  "CMS (Content Management System)",
+                  "E-mail",
+                  "Service Desk",
+                  "Видеосвязь",
+                  "Мониторинг",
+                  "Рассылка SMS/Push",
+                  "Системы генерации документов",
+                  "Телефония",
+                  "ИБ-Антивирусное ПО",
+                  "ИБ-Аудит действий персонала",
+                  "ИБ-Аутентификация пользователей",
+                  "ИБ-Биометрия",
+                  "ИБ-Защита от киберугроз",
+                  "ИБ-Защита от сетевых атак",
+                  "ИБ-Защита от утечек информации",
+                  "ИБ-Защита трафика",
+                  "ИБ-Криптография и шифрование",
+                  "ИБ-Предотвращение мошенничества",
+                  "ИБ-Управление доступом",
+                  "ИБ-Управление сертификатами",
+                  "ИБ-Управление событиями инф. безопасности",
+                  "Архитектурный репозиторий",
+                  "Бэкапирование и восстановление данных",
+                  "Виртуализация",
+                  "Контейнеризация",
+                  "Логгирование",
+                  "Удалённый доступ",
+                  "Управление конфигурациями",
+                  "Управление облачной инфраструктурой",
+                  "Каналы обслуживания клиентов (фронтальные решения)",
+                  "BigData",
+                  "CDC (Change Data Capture)",
+                  "DWH (Хранилище данных)",
+                  "ETL",
+                  "FTP/SFTP/FTPS серверы",
+                  "MDM (Master Data Management)",
+                  "Message Queue",
+                  "NoSQL СУБД",
+                  "OLAP & BI",
+                  "Proxy-серверы",
+                  "Web-серверы",
+                  "Балансировка нагрузки (load balancers)",
+                  "Интеграционная шина",
+                  "Проверка и очистка данных",
+                  "Распределенный кэш",
+                  "Реляционные СУБД",
+                  "Серверы приложений (Application Servers)",
+                  "Файловое хранилище",
+                  "Иное"
+                ]
+              },
+              "criticality": {
+                "title": "Уровень критичности",
+                "enum": [
+                  "Mission Critical",
+                  "Business Critical",
+                  "Business Operational",
+                  "Office Productivity"
+                ]
+              },
+              "comments": {
+                "title": "Комментарии, риски, проблемы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "description",
+              "class"
+            ]
+          }
+        }
+      },
+      "objects": {
+        "systems": {
+          "route": "/",
+          "title": "Системы",
+          "symbol": "sys"
+        }
+      }
+    },
+    "kadzo.components": {
+      "presentations": {
+        "components_by_system": {
+          "title": "Таблица компонентов системы",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор системы",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "table",
+          "headers": [
+            {
+              "value": "__id__",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left"
+            },
+            {
+              "value": "description",
+              "text": "Описание",
+              "align": "left"
+            }
+          ],
+          "origin": {
+            "components": "kadzo.components"
+          },
+          "source": "(\n    (components.\"kadzo.components\" ~> $sift(?, function ($v, $k) {$v.is_part_of = $params.id}) ).* \n        ~> | $ | {\"link\": \"/entities/kadzo.components/card?id=\" & $.__id__}, $.$keys() ~> $filter(?, function ($v) { $not($v  in [\"__id__\", \"link\", \"title\", \"description\"])}) |\n)\n"
+        },
+        "tech_interactions": {
+          "title": "Технологические взаимодействия",
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "headers": [
+            {
+              "value": "__id__",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование"
+            },
+            {
+              "value": "to",
+              "text": "Компонент, c которым осуществляется взаимодействие",
+              "link": "to_link"
+            }
+          ],
+          "source": "(\n    $id := $params.id;\n    $component := $lookup($.\"kadzo.components\", $id);\n    $exists($component) ? $component.technical_usage  \n                            ~> $each(?, function ($v, $k) {( $tmp_to := $lookup($$.\"kadzo.components\", $v.to).title; \n                                                             $v ~> | $ | {\"__id__\": $k, \"link\": \"/entities/kadzo.components.tech_interactions/card?id=\" & $k, \"to\": $tmp_to, \"to_link\": \"/entities/kadzo.components/card?id=\" & $.to }|  \n                                                          )});\n)\n"
+        },
+        "interactions": {
+          "title": "Исходящие взаимодействия",
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "headers": [
+            {
+              "value": "__id__",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование"
+            },
+            {
+              "value": "description",
+              "text": "Описание"
+            },
+            {
+              "value": "to",
+              "text": "Компонент, c которым осуществляется взаимодействие",
+              "link": "to_link"
+            },
+            {
+              "value": "point",
+              "text": "Точка взаимодействия"
+            }
+          ],
+          "origin": "kadzo.components",
+          "source": "(\n    $id := $params.id;\n    $component := $lookup($.\"kadzo.components\", $id);\n    $exists($component) ? $component.interactions  \n                            ~> $each(?, function ($v, $k) {( $tmp_to := $lookup($$.\"kadzo.components\", $v.to).title; \n                                                             $v ~> | $ | {\"__id__\": $k, \"link\": \"/entities/kadzo.components.interactions/card?id=\" & $k, \"to\": $tmp_to, \"to_link\": \"/entities/kadzo.components/card?id=\" & $.to }|  \n                                                          )});\n)\n"
+        },
+        "summary": {
+          "title": "Сводка по компоненту",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../templates/summary.md",
+          "origin": {
+            "components": "kadzo.components",
+            "kadzo": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n  $system_id := $params.id;\n  $ctx:= $;\n  $append(\n    [\n      {\n          \"title\": \"Идентификатор\",\n          \"data\": [{\"content\": $system_id}]\n      }\n    ],\n    $props_to_summary($system_id,\n                    components.\"kadzo.components\",\n                    [\n                     schema.\"kadzo.components\".schema.patternProperties.*.properties, \n                     schema.\"kadzo.components\".schema.\"$defs\".technologyGroupLabel.properties,\n                     schema.\"kadzo.components\".schema.\"$defs\".technologyTypeLabel.properties\n                    ]\n                    ~> $merge(),\n                    [components, kadzo] ~> $merge(), refs)\n  );\n)\n"
+        },
+        "card": {
+          "widgets": {
+            "summary": {
+              "title": "Описание компонента",
+              "entity": "kadzo.components",
+              "presentation": "summary",
+              "align": "<",
+              "order": 10
+            },
+            "interactions": {
+              "title": "Исходящие взаимодействия",
+              "entity": "kadzo.components",
+              "presentation": "interactions",
+              "order": 20
+            },
+            "tech_interactions": {
+              "title": "Технологические взаимодействия",
+              "entity": "kadzo.components",
+              "presentation": "tech_interactions",
+              "order": 20
+            },
+            "schema": {
+              "title": "Схема взаимодействий",
+              "entity": "kadzo.components_context_schema",
+              "presentation": "component_context_select",
+              "order": 30
+            }
+          },
+          "title": "Карточка компонента",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор компонента",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-grid",
+          "source": "(\n    $ctx := $;\n    $id := $params.id;\n    $widgets_on_card($ctx.entities.\"kadzo.components\".presentations.card, \"id\", $id);\n)\n"
+        },
+        "domain_registry": {
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "domain": {
+                "title": "Идентификатор домена",
+                "type": "string"
+              }
+            },
+            "required": [
+              "domain"
+            ]
+          },
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование"
+            },
+            {
+              "value": "description",
+              "text": "Описание"
+            }
+          ],
+          "origin": {
+            "components": "kadzo.components"
+          },
+          "source": "(\n    $matcher := $eval('/^' & $params.domain & '\\\\./i');\n    [ components.\"kadzo.components\" \n        ~> $sift(?, function ($v, $k) {$k ~> $matcher})\n            ~> $each(?, function ($v, $k) {(\n                {\n                    \"id\": $k,\n                    \"link\": \"/entities/kadzo.components/card?id=\" & $k,\n                    \"title\": $v.title,\n                    \"description\": $v.description\n                }\n            )})\n    ]\n)\n"
+        }
+      },
+      "title": "Технические компоненты",
+      "description": "Технический компонент - объект управления в IT-архитектуре, имеющий один или несколько исполняемых экземпляров на вычислительных ресурсах и/или ресурсах хранения данных.",
+      "schema": {
+        "$defs": {
+          "kadzo.components_interactions": {
+            "title": "Исходящие взаимодействия",
+            "type": "object",
+            "patternProperties": {
+              "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "title": "Наименование",
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "description": {
+                    "title": "Описание",
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "to": {
+                    "title": "Компонент, c которым осуществляется взаимодействие",
+                    "type": "string",
+                    "$ref": "#/$rels/kadzo.components.component"
+                  },
+                  "point": {
+                    "title": "Точка взаимодействия",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "title"
+                ],
+                "anyOf": [
+                  {
+                    "required": [
+                      "to"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "point"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "kadzo.components_technical_usage": {
+            "title": "Использование тех сервиса",
+            "type": "object",
+            "patternProperties": {
+              "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "title": "Наименование",
+                    "type": "string",
+                    "minLength": 2
+                  },
+                  "to": {
+                    "title": "Компонент, c которым осуществляется взаимодействие",
+                    "type": "string",
+                    "$ref": "#/$rels/kadzo.v2023.tech_services.tech_services"
+                  }
+                },
+                "required": [
+                  "to"
+                ]
+              }
+            }
+          },
+          "props_interactions": {
+            "type": "object",
+            "properties": {
+              "interactions": {
+                "title": "Исходящие взаимодействия",
+                "type": "object",
+                "$ref": "#/$defs/kadzo.components_interactions"
+              }
+            }
+          },
+          "props_technical_usage": {
+            "type": "object",
+            "properties": {
+              "technical_usage": {
+                "title": "Технологические взаимодействия",
+                "type": "object",
+                "$ref": "#/$defs/kadzo.components_technical_usage"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "patternProperties": {
+          "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/$defs/props_interactions"
+              },
+              {
+                "$ref": "#/$defs/props_technical_usage"
+              }
+            ],
+            "properties": {
+              "title": {
+                "title": "Наименование",
+                "type": "string",
+                "minLength": 2
+              },
+              "description": {
+                "title": "Описание",
+                "type": "string",
+                "minLength": 2
+              },
+              "is_part_of": {
+                "title": "Логический родитель (объект управления), в состав которого входит технический компонент",
+                "type": "string",
+                "oneOf": [
+                  {
+                    "$ref": "#/$rels/kadzo.v2023.systems.systems"
+                  },
+                  {
+                    "$ref": "#/$rels/kadzo.v2023.kb_systems.kb_systems"
+                  },
+                  {
+                    "$ref": "#/$rels/kadzo.v2023.tech_services.tech_services"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "objects": {
+        "component": {
+          "route": "/",
+          "title": "Прикладные компоненты",
+          "symbol": "cmp"
+        }
+      }
+    },
+    "kadzo.v2023.endpoints": {
+      "presentations": {
+        "validation.errors_md": {
+          "type": "markdown",
+          "template": "templates/endpoints_errors.md",
+          "origin": "kadzo.v2023.validators.endpoints",
+          "source": "(\n    $domain_errors := $[domain=$params.domain and validator_type=\"endpoints\"];\n\n    $errors := $domain_errors {$.error_group_code : 1};\n    {\n        \"domain\": $params.domain,\n        \"general\" : $errors.\"general\",\n        \"owners\" : $errors.\"owners\",\n        \"gates\" : $errors.\"gates\",\n        \"iserrors\" : $boolean($errors)\n    }\n\n)\n"
+        },
+        "validation.base_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id точки взаимодействия",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название точки взаимодействия"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.endpoints",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"endpoints\" and error_group_code=\"general\"] ];\n)\n"
+        },
+        "validation.owners_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id точки взаимодействия",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название точки взаимодействия"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.endpoints",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"endpoints\" and error_group_code=\"owners\"] ];\n)\n"
+        },
+        "validation.gates_attrib": {
+          "type": "table",
+          "headers": [
+            {
+              "value": "id",
+              "text": "Id точки взаимодействия",
+              "link": "link"
+            },
+            {
+              "value": "name",
+              "text": "Название точки взаимодействия"
+            },
+            {
+              "value": "attr_id",
+              "text": "Id атрибута"
+            },
+            {
+              "value": "attr_name",
+              "text": "Название атрибута"
+            },
+            {
+              "value": "error_text",
+              "text": "Текст ошибки"
+            }
+          ],
+          "origin": "kadzo.v2023.validators.endpoints",
+          "source": "(\n    $domain := $params.domain;\n    $domain_errors := [ $[domain=$params.domain and validator_type=\"endpoints\" and error_group_code=\"gates\"] ];\n)\n"
+        },
+        "summary_tech": {
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор точки взаимодействия",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n    $endpoint_id := $params.\"id\";\n    $ctx := base;\n          \n      $props_to_summary($endpoint_id,\n                        $ctx.\"kadzo.v2023.endpoints\",\n                        schema.\"kadzo.v2023.endpoints\".schema.\"$defs\".\"kadzo.v2023.endpoints.tech\".properties,\n                        $ctx, refs);\n)\n"
+        },
+        "summary": {
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор точки взаимодействия",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "markdown",
+          "template": "../templates/summary.md",
+          "origin": {
+            "base": "kadzo.v2023",
+            "schema": "kadzo.v2023.entities.schema",
+            "refs": "kadzo.v2023.entities.__refs__"
+          },
+          "source": "(\n    $endpoint_id := $params.\"id\";\n    $ctx := base;\n        \n    $append(\n      [\n          {\n              \"title\": \"Идентификатор\",\n              \"data\": [{\"content\": $endpoint_id}]\n          }\n      ],\n      $props_to_summary($endpoint_id,\n                        $ctx.\"kadzo.v2023.endpoints\",\n                        schema.\"kadzo.v2023.endpoints\".schema.patternProperties.*.properties,\n                        $ctx, refs) \n    );\n)\n"
+        },
+        "card": {
+          "widgets": {
+            "summary": {
+              "title": "Сводная информация",
+              "entity": "kadzo.v2023.endpoints",
+              "presentation": "summary",
+              "order": 10,
+              "align": "<",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "summary_tech": {
+              "title": "Технологическая информация",
+              "entity": "kadzo.v2023.endpoints",
+              "presentation": "summary_tech",
+              "order": 10,
+              "align": ">",
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            },
+            "integrations_usage": {
+              "title": "Использование в интеграционных потоках",
+              "entity": "kadzo.v2023.integrations",
+              "presentation": "by_endpoint",
+              "order": 20,
+              "style": {
+                "margin": "4px",
+                "border": true
+              }
+            }
+          },
+          "title": "Карточка точки взаимодействия",
+          "params": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "title": "Идентификатор точки взаимодействия",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          },
+          "type": "mkr-grid",
+          "origin": "kadzo.v2023.__presentations__.widgets",
+          "source": "(\n    $lookup( $lookup($, \"__widgets__.kadzo.v2023.endpoints.card\"), $params.id);\n)\n"
+        },
+        "domain_registry": {
+          "type": "table",
+          "params": {
+            "type": "object",
+            "properties": {
+              "domain": {
+                "title": "Идентификатор домена",
+                "type": "string"
+              }
+            },
+            "required": [
+              "domain"
+            ]
+          },
+          "headers": [
+            {
+              "value": "id",
+              "text": "Идентификатор",
+              "link": "link"
+            },
+            {
+              "value": "title",
+              "text": "Наименование",
+              "align": "left"
+            },
+            {
+              "value": "uri",
+              "text": "URI",
+              "align": "left"
+            },
+            {
+              "value": "status",
+              "text": "Статус"
+            },
+            {
+              "value": "owners",
+              "text": "АС, обеспечивающие функционирование точки взаимодействия"
+            },
+            {
+              "value": "gates",
+              "text": "АС / тех сервисы, обеспечивающие транспорт точки взаимодействия"
+            },
+            {
+              "value": "technology",
+              "text": "Технология интеграции"
+            },
+            {
+              "value": "technical-use",
+              "text": "Механизм использования"
+            },
+            {
+              "value": "protected",
+              "text": "Средства защиты точки взаимодействия"
+            },
+            {
+              "value": "comments",
+              "text": "Комментарии, риски, проблемы"
+            }
+          ],
+          "origin": "kadzo.v2023",
+          "source": "(\n    $matcher := $eval('/^' & $params.domain & '\\\\./i');\n    $systems := $.\"kadzo.v2023.systems\";\n    $tech_services := $.\"kadzo.v2023.tech_services\";\n    [$.\"kadzo.v2023.endpoints\".$spread()[$.$keys() ~> $matcher].{\n            \"id\": $keys()[0],\n            \"link\": \"/entities/kadzo.v2023.endpoints/card?id=\" & $keys()[0],\n            \"title\": *.title,\n            \"uri\": *.uri,\n            \"status\": *.status,\n            \"owners\": $join([\n                        *.owners.(\n                            $var := $lookup($systems, $);\n                            $exists($var) ? $var.title : $)\n                        ], \"\\n\"),\n            \"gates\": $join([\n                    *.gates.(\n                            $var := $lookup($systems, $);\n                            $exists($var) ? $var.title : \n                                (\n                                    $tech_var := $lookup($tech_services, $);\n                                    $exists($tech_var) ? $tech_var.title : $; \n                                )\n                            )\n                        ], \"\\n\"),\n            \"technology\": *.technology,\n            \"technical-use\": *.\"technical-use\",\n            \"protected\": $join([*.protected], \"\\n\"),\n            \"comments\": $join([*.comments], \"\\n\")\n        }\n    ];\n)\n"
+        }
+      },
+      "title": "Точка взаимодействия",
+      "description": "Дополнительные характеристики интеграций, агрегированные в понятие - точки взаимодействия",
+      "schema": {
+        "type": "object",
+        "$defs": {
+          "kadzo.v2023.endpoints.tech": {
+            "title": "Технологические атрибуты точки взаимодействия",
+            "type": "object",
+            "properties": {
+              "technology": {
+                "title": "Технология интеграции",
+                "enum": [
+                  "API",
+                  "Очереди",
+                  "Файлы",
+                  "Базы данных",
+                  "Почта",
+                  "Ручное",
+                  "RPA"
+                ]
+              },
+              "technical-use": {
+                "title": "Механизм использования",
+                "enum": [
+                  "Pull",
+                  "Push"
+                ]
+              },
+              "protected": {
+                "title": "Средства защиты точки взаимодействия",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "patternProperties": {
+          "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+            "type": "object",
+            "$ref": "#/$defs/kadzo.v2023.endpoints.tech",
+            "properties": {
+              "title": {
+                "title": "Наименование",
+                "type": "string"
+              },
+              "uri": {
+                "title": "URI endpoint",
+                "type": "string"
+              },
+              "gates": {
+                "type": "array",
+                "title": "АС / тех сервисы, обеспечивающие транспорт точки взаимодействия",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$rels/kadzo.v2023.systems.systems"
+                    },
+                    {
+                      "$ref": "#/$rels/kadzo.v2023.tech_services.tech_services"
+                    }
+                  ]
+                }
+              },
+              "owners": {
+                "title": "АС, обеспечивающие функционирование точки взаимодействия",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$rels/kadzo.v2023.systems.systems"
+                }
+              },
+              "status": {
+                "title": "Статус",
+                "enum": [
+                  "Планируется",
+                  "Разрабатывается",
+                  "Модифицируется",
+                  "Используется",
+                  "Выводится из эксплуатации / Удаляется",
+                  "В архиве / Удалено"
+                ]
+              },
+              "comments": {
+                "title": "Комментарии, риски, проблемы",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "title",
+              "uri"
+            ]
+          }
+        }
+      },
+      "objects": {
+        "endpoint": {
+          "route": "/",
+          "title": "Точка взаимодействия"
+        }
+      }
+    }
+  }
+}

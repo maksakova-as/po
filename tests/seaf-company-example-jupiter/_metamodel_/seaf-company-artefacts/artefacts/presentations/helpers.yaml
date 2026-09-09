@@ -1,0 +1,331 @@
+entities:
+  seaf.company.artefacts:
+
+    presentations:
+      doc_header:
+        title: Шапка документа
+        type: markdown
+        template: templates/doc_header.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+
+        origin:
+          objects: seaf.company.ds.artefacts
+        source: >
+          (                    
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup(objects, $params.id);
+          
+          /*  Формируем объект для визуализации */
+          {
+              "__id__": $obj2present.__id__,
+              "title": $obj2present.title,
+              "type": $obj2present.type,
+              "date_created": $obj2present.date_created,
+              "version": $obj2present.version,
+              "status": $obj2present.status,
+              "authors": $obj2present.authors#$i.[$merge([$, {"number": $i+1}])],
+              "show_stakeholders": ($exists($obj2present.stakeholders) and $obj2present.stakeholders != [] and $obj2present.stakeholders != null) ? true : false,
+              "stakeholders": $obj2present.stakeholders#$i.[$merge([$, {"number": $i+1}])]
+          }
+          )
+
+      ref_list:
+        title: Ссылки на материалы
+        type: markdown
+        template: templates/ref_list.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+
+        origin:
+          objects: seaf.company.ds.artefacts
+        source: >
+          (                    
+          /*  ищем объект для презентации */          
+          $objects := objects;
+          $obj2present := $lookup($objects, $params.id);
+          
+          $show_refs := function($obj) {
+              $exists($obj.references) and $obj.references != [] and $obj.references != null 
+              ? true
+              : false
+          };
+          
+          $refs := (
+              $map($obj2present.references, function ($r, $i) {(
+                  $exists($r.artefact) 
+                  ? (     $a := $lookup($objects, $r.artefact);               
+                          {   "number": $i+1,
+                              "ref_id": $r.artefact,
+                              "ref_title": (
+                                  $exists($a)  
+                                  ? $a.title &" (" & $r.artefact & ")"
+                                  : $r.title &" (" & $r.artefact & ")"
+                              ),
+                              "ref_link": (
+                                  $exists($a) ? "/entities/" & $a.__entity_id__ & "/main?id=" & $a.__id__
+                              ),     
+                              "comment": $r.comment
+                          }
+                    )
+                  : $exists($r.url)
+                      ? {
+                          "number": $i+1,
+                          "ref_id": $r.url,
+                          "ref_title": ($r.title ? $r.title : $r.url),
+                          "ref_link": $r.url,
+                          "comment": $r.comment
+                      }
+              )}) 
+          );
+          
+          /*  Формируем объект для визуализации */
+          {
+              "__id__": $obj2present.__id__,
+              "title": $obj2present.title,
+              "show_refs": $show_refs($obj2present),
+              "refs": $refs
+          }
+          )
+
+      change_scope:
+        title: Рамки изменений
+        type: markdown
+        template: templates/change_scope.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+
+        origin:
+          objects: seaf.ds.objects
+
+        source: >
+          (
+          $objects := objects;
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup($objects, $params.id);
+          
+          $activities := (
+              $map($obj2present.change_activities, function ($item, $i) {(
+                  $a_obj := $lookup($objects, $item.activity);
+                  $exists($a_obj) and $a_obj != null
+                  ?   {
+                          "number": $i+1,
+                          "activity_id": $a_obj.__id__,
+                          "activity_link": "/entities/" & $a_obj.__entity_id__ & "/card?id=" & $a_obj.__id__,
+                          "activity_title": $a_obj.title,
+                          "activity_type": $a_obj.type,
+                          "activity_status": $a_obj.status,
+                          "comment": $item.comment
+                      }          
+              )})[]; 
+          );
+          
+          /*  Формируем объект для визуализации */
+          {
+              "__id__": $obj2present.__id__,
+              "title": $obj2present.title,
+              "change_start_date": $obj2present.change_start_date,
+              "change_finish_date": $obj2present.change_finish_date,
+              "show_activities": ($activities != [] ? true : false),
+              "activities": $activities
+          }
+          )
+
+      changed_ba_objects:
+        title: Реестр изменяемых объектов БА
+        type: markdown
+        template: templates/changed_objects.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup($objects, $params.id);
+          $changed_objects := (
+              $map($obj2present.changed_ba_objects, function ($item, $i) {(
+                  $o_obj := $lookup($objects, $item.object);
+                  $exists($o_obj) and $o_obj != null
+                  ?   {
+                          "number": $i+1,
+                          "object_id": $o_obj.__id__,
+                          "object_link": "/entities/" & $o_obj.__entity_id__ & "/card?id=" & $o_obj.__id__,
+                          "object_title": $o_obj.title,
+                          "object_type": $o_obj.__entity_title__,
+                          "change_type": $item.change_type,
+                          "change_finish_date": (
+                              $exists($item.change_finish_date)
+                              ? $item.change_finish_date
+                              : $obj2present.change_finish_date
+                          ),
+                          "change_description": $item.change_description
+                      }          
+              )})[]; 
+          );
+          /*  Формируем объект для визуализации */
+          {
+              "show": ($changed_objects != [] ? true : false),
+              "changed_objects": $changed_objects
+          }
+          )
+
+      changed_da_objects:
+        title: Реестр изменяемых объектов АД
+        type: markdown
+        template: templates/changed_objects.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (                    
+          $objects := objects;
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup($objects, $params.id);
+          $changed_objects := (
+              $map($obj2present.changed_da_objects, function ($item, $i) {(
+                  $o_obj := $lookup($objects, $item.object);
+                  $exists($o_obj) and $o_obj != null
+                  ?   {
+                          "number": $i+1,
+                          "object_id": $o_obj.__id__,
+                          "object_link": "/entities/" & $o_obj.__entity_id__ & "/card?id=" & $o_obj.__id__,
+                          "object_title": $o_obj.title,
+                          "object_type": $o_obj.__entity_title__,
+                          "change_type": $item.change_type,
+                          "change_finish_date": (
+                              $exists($item.change_finish_date)
+                              ? $item.change_finish_date
+                              : $obj2present.change_finish_date
+                          ),
+                          "change_description": $item.change_description
+                      }          
+              )})[];
+          );
+          /*  Формируем объект для визуализации */
+          {
+              "show": ($changed_objects != [] ? true : false),
+              "changed_objects": $changed_objects
+          }
+          )
+
+      changed_app_objects:
+        title: Реестр изменяемых объектов ПА
+        type: markdown
+        template: templates/changed_objects.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+
+        origin:
+          objects: seaf.ds.objects
+
+        source: >
+          (                    
+          /*  ищем объект для презентации */          
+          $objects := objects;
+          $obj2present := $lookup($objects, $params.id);
+          $changed_objects := (
+              $map($obj2present.changed_app_objects, function ($item, $i) {(
+                  $o_obj := $lookup($objects, $item.object);
+                  $exists($o_obj) and $o_obj != null
+                  ?   {
+                          "number": $i+1,
+                          "object_id": $o_obj.__id__,
+                          "object_link": "/entities/" & $o_obj.__entity_id__ & "/card?id=" & $o_obj.__id__,
+                          "object_title": $o_obj.title,
+                          "object_type": $o_obj.__entity_title__,
+                          "change_type": $item.change_type,
+                          "change_finish_date": (
+                              $exists($item.change_finish_date)
+                              ? $item.change_finish_date
+                              : $obj2present.change_finish_date
+                          ),
+                          "change_description": $item.change_description
+                      }          
+              )})[];
+          );
+          /*  Формируем объект для визуализации */
+          {
+              "show": ($changed_objects != [] ? true : false),
+              "changed_objects": $changed_objects
+          }
+          )
+
+      changed_ta_objects:
+        title: Реестр изменяемых объектов ТА
+        type: markdown
+        template: templates/changed_objects.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+
+        origin:
+          objects: seaf.ds.objects
+
+        source: >
+          (                    
+          $objects := objects;
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup($objects, $params.id);
+          $changed_objects := (
+              $map($obj2present.changed_ta_objects, function ($item, $i) {(
+                  $o_obj := $lookup($objects, $item.object);
+                  $exists($o_obj) and $o_obj != null
+                  ?   {
+                          "number": $i+1,
+                          "object_id": $o_obj.__id__,
+                          "object_link": "/entities/" & $o_obj.__entity_id__ & "/card?id=" & $o_obj.__id__,
+                          "object_title": $o_obj.title,
+                          "object_type": $o_obj.__entity_title__,
+                          "change_type": $item.change_type,
+                          "change_finish_date": (
+                              $exists($item.change_finish_date)
+                              ? $item.change_finish_date
+                              : $obj2present.change_finish_date
+                          ),
+                          "change_description": $item.change_description
+                      }          
+              )})[];
+          );
+          /*  Формируем объект для визуализации */
+          {
+              "show": ($changed_objects != [] ? true : false),
+              "changed_objects": $changed_objects
+          }
+          )

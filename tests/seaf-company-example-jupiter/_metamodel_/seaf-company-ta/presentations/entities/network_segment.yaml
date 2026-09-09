@@ -1,0 +1,102 @@
+entities:
+  seaf.company.ta.services.network_segments:
+    presentations:
+      list:
+        title: Сетевые сегменты
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: zone
+            text: Зона
+          - value: location_title
+            text: Локация
+            link: location_link
+          - value: id
+            text: ID
+        origin:
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $segments.*@$segment.(
+              $location := $lookup($dcs, $segment.location);
+              $location := $exists($location) ? $location : $lookup($offices, $segment.location);
+              {
+                "id": $segment.__id__,
+                "link": "/entities/" & $segment.__entity_id__ & "/card?id=" & $segment.__id__,
+                "title": $segment.title,
+                "zone": $segment.zone,
+                "location_title": $location.title,
+                "location_link": $exists($location) ? "/entities/" & $location.__entity_id__ & "/card?id=" & $location.__id__ : null
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сетевого сегмента
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: network_segment_card_details
+            align: "v"
+            order: 10
+          topology:
+            title: Сети в сегменте
+            presentation: network_segment_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

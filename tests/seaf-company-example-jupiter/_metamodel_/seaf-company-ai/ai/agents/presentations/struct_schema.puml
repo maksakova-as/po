@@ -1,0 +1,184 @@
+skinparam {
+
+    sameClassWidth true
+    sameClassHeight true
+
+	defaultfontname Arial
+
+	nodesep 5
+
+	ranksep 5
+
+	shadowing true
+
+	'padding 10
+}
+
+<style>
+    classDiagram{
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 5
+
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            fontsize 8
+            header {
+                fontsize 13
+            }
+            .model {
+                backgroundcolor #9cd1d7
+            }
+            .tool {
+                backgroundcolor %darken("#fcfcee", 10)
+            }
+            .memory {
+                backgroundcolor #b0e8aa
+            }
+            .flow {
+                backgroundcolor #f0dea7
+            }
+            .feedback {
+                backgroundcolor %lighten("#f4cdf4", 10)
+            }
+            .guardrails {
+                backgroundcolor %lighten("#f7a6ab", 10)
+            }
+            .interface {
+                backgroundcolor %lighten("#7facfa", 10)
+            }
+        }
+        rectangle {
+            .model {
+                backgroundcolor %lighten("#9cd1d7", 10)
+            }
+            .tool {
+                backgroundcolor %lighten("#fcfcee", 0)
+            }
+            .memory {
+                backgroundcolor %lighten("#b0e8aa", 10)
+            }
+            .flow {
+                backgroundcolor %lighten("#f0dea7", 10)
+            }
+            .feedback {
+                backgroundcolor %lighten("#f4cdf4", 5)
+            }
+            .guardrails {
+                backgroundcolor %lighten("#f7a6ab", 5)
+            }
+            .interface {
+                backgroundcolor %lighten("#7facfa", 5)
+            }
+            .hidden {
+                linethickness 0
+            }
+        }
+    }
+
+</style>
+
+allowmixing
+set namespaceSeparator none
+top to bottom direction
+'left to right direction
+
+hide circle
+
+hide empty members
+hide stereotype
+hide << model >> stereotype
+hide << tool >> stereotype
+hide << memory >> stereotype
+hide << flow >> stereotype
+hide << hidden >> stereotype
+hide << feedback >> stereotype
+
+title "{{&title}}"
+
+rectangle " " as agent << hidden >> {
+rectangle "Обязательные функциональные блоки" as req_block{
+rectangle "Модели" as model_boundary << model >> {
+    {{#models}}
+    class "{{&title}}" as {{id}} << model >> {
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/models}}
+}
+rectangle "Tools\n(Инструменты)" as tools_boundary << tool >> {
+    {{#tools}}
+    class "{{&title}}" as tool_{{id}} << tool >> {
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/tools}}
+}
+model_boundary -[hidden]right- tools_boundary
+rectangle "Memory\n(Память)" as memory_boundary << memory >> {
+    {{#memory}}
+    class "{{&title}}" as memory_{{id}} << memory >>{
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/memory}}
+}
+model_boundary -[hidden]down- memory_boundary
+tools_boundary -[hidden]down- memory_boundary
+rectangle "Control Flow\n (Поток исполнения)" as control_flow_boundary << flow >> {
+    {{#flows}}
+    class "{{&title}}" as flow_{{id}} << flow >>{
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/flows}}
+}
+memory_boundary -[hidden]right- control_flow_boundary
+tools_boundary -[hidden]down- control_flow_boundary
+}
+'req_block -[hidden]down- model_boundary
+rectangle "Опциональные функциональные блоки" as opt_block{
+rectangle "Feedback\n(Обратная связь)" as feedback_boundary << feedback >> {
+    {{#feedback}}
+    class "{{&title}}" as feedback_{{id}} << feedback >>{
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/feedback}}
+}
+
+rectangle "Guardrails\n(Защитные ограничения)" as guardrails_boundary << guardrails >> {
+    {{#guardrails}}
+    class "{{&title}}" as guardrails_{{id}} << guardrails >>{
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/guardrails}}
+}
+feedback_boundary -[hidden]right- guardrails_boundary
+
+rectangle "Интерфейс взаимодействия" as interface_boundary << interface >> {
+    {{#input_interfaces}}
+    class "{{&title}}" as interfaces_{{id}} << interface >>{
+        {{#description}}
+            {field} <U+25E6> {{&.}}
+        {{/description}}
+    }
+    {{/input_interfaces}}
+}
+feedback_boundary -[hidden]down- interface_boundary
+}
+req_block -[hidden]down- opt_block
+opt_block -[hidden]up- req_block
+control_flow_boundary -[hidden]down- feedback_boundary
+memory_boundary -[hidden]down- feedback_boundary
+control_flow_boundary -[hidden]down- guardrails_boundary
+memory_boundary -[hidden]down- guardrails_boundary
+}

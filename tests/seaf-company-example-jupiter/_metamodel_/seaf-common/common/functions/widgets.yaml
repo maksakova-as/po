@@ -1,0 +1,116 @@
+functions:
+  __seaf_fn_get_widget_matrix__:
+    title: Внутренняя функция формирования матрицы виджетов
+    params:
+      - alias: entity_id
+        type: string
+        title: Идентификатор сущности, для которой будет вызываться презентация виджета
+      - alias: object_id
+        type: string
+        title: Идентификатор объекта, для которого будет вызываться презентация виджета
+      - alias: wtop
+        type: array
+        title: Массив виджетов
+      - alias: wleft
+        type: array
+        title: Массив виджетов
+      - alias: wright
+        type: array
+        title: Массив виджетов
+      - alias: wbottom
+        type: array
+        title: Массив виджетов
+    result:
+      type: object
+    code: >
+      (      
+          $param_name := "id";
+          $entity_id := entity_id;
+          $object_id := object_id;
+          $wtop := wtop;
+          $wleft := wleft;
+          $wright := wright;
+          $wbottom := wbottom;
+      
+          /* Функция генерации  профиля виджета для секции разметки */
+          $makeWidget := function($widgets) {(
+              $widgets.{
+                  "title": title,
+                  "icon": icon,
+                  "style": style ? style : {},
+                  "src": "@entity/" & $entity_id & "/" & presentation & "?" & $param_name & "=" & $object_id
+              }[];
+          )};
+      
+          $rows := $append(
+              /* Добавляем топовые виджеты */
+              $makeWidget($wtop),
+              /* Добавляем виджеты в середину*/
+              [
+                  {
+                      "type": "columns",
+                      "items": [
+                          {
+                              "type": "rows",
+                              "width": "50%",
+                              /* Строим список виджетов левой секции */
+                              "items": $makeWidget($wleft)
+                          },
+                          {
+                              "type": "rows",
+                              "width": "50%",
+                              /* Строим список виджетов правой секции */
+                              "items": $makeWidget($wright)
+                          }
+                      ]
+                  }
+              ]
+          );      
+          /* Добавляем остальные виджеты внизу по центру */
+          $rows := $append($rows, $makeWidget($wbottom));      
+          /* Строим разметку страницы */
+          {
+            "type": "rows",
+            "items": $rows
+          }
+      )
+
+  seaf_fn_combine_widgets:
+    title: Функция формирования комбинации виджетов с опциональной фильтрацией по имени виджетов
+    params:
+      - alias: mkr_grid_presentation
+        type: object
+        title: Представление, кля которого строится разбивка на виджеты
+      - alias: entity_id
+        type: string
+        title: Идентификатор сущности, для которой будет вызываться презентация виджета
+        minLength: 1
+      - alias: object_id
+        type: string
+        title: Идентификатор объекта, для которого будет вызываться презентация виджета
+        minLength: 1
+      - alias: filter
+        type: string
+        title: Фильтр виджетов
+        description: |
+          Если строка фильтра есть в имени виджета, то он включается в представление mkr_grid_presentation, иначе игнорируется
+          Если параметр не задан или равен "", то в представление mkr_grid_presentation включаются все имеющиеся виджеты
+        minLength: 1
+    result:
+      type: object
+    code: >
+      (      
+          $mkr_grid_presentation := mkr_grid_presentation;
+          $param_name := "id";
+          $entity_id := entity_id;
+          $object_id := object_id;
+          $filter := $exists(filter) and filter != "" and filter != null ? filter : "";
+          
+          /* Получаем виджеты, которые нужно отобразить */
+          $widgets := $mkr_grid_presentation.widgets.$sift( function($v, $k){$contains($k, $filter)} );
+          $wtop := $widgets.*[align="^"]^(order)[];
+          $wleft := $widgets.*[align="<"]^(order)[];
+          $wright := $widgets.*[align=">"]^(order)[];
+          $wbottom := $widgets.*[align="v" or $not(align=">" or align="<" or align="^")]^(order)[];
+          $__seaf_fn_get_widget_matrix__($entity_id, $object_id, $wtop, $wleft, $wright, $wbottom);
+      )

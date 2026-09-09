@@ -1,0 +1,113 @@
+imports: []
+
+entities:
+  seaf.company.ta.services.softwares:
+
+    presentations:
+      software_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Поле
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          software: seaf.company.ds.ta.software
+        source: >
+          (
+            $item := $lookup(software, $params.id);
+            $exists($item)
+              ? [
+                  {"field": "ID", "value": $item.__id__},
+                  {"field": "Название", "value": $item.title},
+                  {"field": "Описание", "value": $item.description},
+                  {"field": "Производитель", "value": $item.vendor},
+                  {"field": "Тип лицензии", "value": $item.type},
+                  {"field": "Поддержка", "value": $item.support},
+                  {"field": "Истечение", "value": $item.expiration},
+                  {"field": "Количество лицензий", "value": $item.lic_qty}
+                ]
+              : []
+          )
+
+      software_related_services:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Техсервис
+            link: link
+          - value: entity
+            text: Сущность
+          - value: id
+            text: ID
+        origin:
+          compute_services: seaf.company.ds.ta.compute_services
+          k8s: seaf.company.ds.ta.k8s
+          storages: seaf.company.ds.ta.storages
+          backup: seaf.company.ds.ta.backup
+          monitoring: seaf.company.ds.ta.monitoring
+          kb: seaf.company.ds.ta.kb
+          cluster_virtualizations: seaf.company.ds.ta.cluster_virtualizations
+        source: >
+          (
+            $software_id := $params.id;
+            $to_array := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $collect := function($dataset, $fallback_entity){
+              $dataset.*@$obj.(
+                $linked :=
+                  ($software_id in $to_array($obj.softwares))
+                  or $obj.software = $software_id;
+                $linked
+                  ? {
+                      "title": $obj.title ? $obj.title : $obj.__id__,
+                      "link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__,
+                      "entity": $obj.__entity_title__ ? $obj.__entity_title__ : $fallback_entity,
+                      "id": $obj.__id__
+                    }
+                  : null
+              )[$ != null]
+            };
+            (
+              $collect(compute_services, "Вычислительный сервис") ~>
+              $append($collect(k8s, "Kubernetes кластер")) ~>
+              $append($collect(storages, "Хранилище")) ~>
+              $append($collect(backup, "Резервное копирование")) ~>
+              $append($collect(monitoring, "Мониторинг")) ~>
+              $append($collect(kb, "База знаний")) ~>
+              $append($collect(cluster_virtualizations, "Кластер виртуализации"))
+            )
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

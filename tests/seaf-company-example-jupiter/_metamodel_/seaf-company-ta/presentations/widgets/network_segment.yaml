@@ -1,0 +1,148 @@
+entities:
+  seaf.company.ta.services.network_segments:
+
+    presentations:
+      network_segment_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $segment := $lookup($segments, $params.id);
+            $location := $exists($segment) ? $lookup($dcs, $segment.location) : {};
+            $location := $exists($location) ? $location : ($exists($segment) ? $lookup($offices, $segment.location) : {});
+            $exists($segment)
+              ? [
+                  {"field": "ID", "value": $segment.__id__},
+                  {"field": "Название", "value": $segment.title},
+                  {"field": "Описание", "value": $segment.description},
+                  {"field": "Зона", "value": $segment.zone},
+                  {
+                    "field": "Локация",
+                    "value": $location.title,
+                    "link": $exists($location) ? "/entities/" & $location.__entity_id__ & "/card?id=" & $location.__id__ : null
+                  },
+                  {"field": "Внешний ID", "value": $segment.external_id}
+                ]
+              : []
+          )
+
+      network_segment_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          segments: seaf.company.ds.ta.network_segments
+          networks: seaf.company.ds.ta.networks
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $is_present := function($val){ $val != null and $val != "" };
+            $segments := segments;
+            $networks := networks;
+            $dcs := dcs;
+            $offices := offices;
+            $segment := $lookup($segments, $params.id);
+            $has_segment := $exists($segment.__id__);
+            $location := $has_segment ? $lookup($dcs, $segment.location) : {};
+            $location := $exists($location.__id__) ? $location : ($has_segment ? $lookup($offices, $segment.location) : {});
+            $segment_id := $segment.__id__;
+            $nets_for_segment := $networks.*[($type(segment) = "array" and $segment_id in segment) or ($type(segment) = "string" and segment = $segment_id)];
+            $has_networks := $exists($nets_for_segment[0].__id__);
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              ($exists($location.__id__)
+                ? "node \"ЦОД/Локация: [[/entities/" & $location.__entity_id__ & "/card?id=" & $location.__id__ & " " & $location.title & "]]\" as loc_node #bbdefb\n"
+                : ""
+              ) &
+              ($has_segment
+                ? "node \"Сегмент: [[/entities/" & $segment.__entity_id__ & "/card?id=" & $segment.__id__ & " " & $segment.title & "]]\" as seg_node #d1c4e9\n"
+                : ""
+              );
+            $network_nodes := $nets_for_segment.(
+              "node \"Сеть: [[/entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]" &
+              ($is_present(ipnetwork) ? "\\n" & ipnetwork : "") &
+              "\" as net_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+            ) ~> $distinct();
+            $edges :=
+              ($exists($location.__id__) and $has_segment ? "loc_node --> seg_node\n" : "") &
+              ($has_segment and $has_networks
+                ? ($nets_for_segment.("seg_node --> net_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n") ~> $distinct() ~> $join(""))
+                : "");
+            $diagram :=
+              $has_segment
+                ? ($base & ($network_nodes ~> $join("")) & $edges & "@enduml")
+                : "@startuml\nnote \"Сегмент не найден\" as no_segment\n@enduml";
+            {
+              "diagram": $diagram
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

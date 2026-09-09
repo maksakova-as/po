@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.change.activities:
+    description: |
+      Датасет формирует коллекцию всех change-активностей
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.change.activities";
+      )

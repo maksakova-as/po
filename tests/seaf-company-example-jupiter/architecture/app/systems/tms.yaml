@@ -1,0 +1,68 @@
+seaf.company.systems:
+  jupiter.app_system.tms:
+    title: АС TMS
+    description: Система управления транспортом и логистикой
+    target_status: Целевая
+    location: Внутренняя
+    class: Продуктовая фабрика (основная деятельность)
+    categories:
+      - jupiter.fo.logistics
+      - jupiter.sys_group.internal_cloudru
+    criticality_level: Business Critical
+    lifecycle_stage: Промышленная эксплуатация
+
+  jupiter.app_system.tms_logistics:
+    title: ФП Логистика
+    description: Подсистема управления логистикой
+    class: Продуктовая фабрика (основная деятельность)
+    location: Внутренняя
+    categories:
+      - jupiter.fo.logistics
+      - jupiter.sys_group.internal_cloudru
+    criticality_level: Business Operational
+    lifecycle_stage: Промышленная эксплуатация
+    is_part_of: jupiter.app_system.tms
+    realizes_functions:
+      - function: jupiter.function.shipping
+        service: jupiter.srv.shipping
+      - function: jupiter.function.shipping_person
+        service: jupiter.srv.shipping4person
+        description: Реализация доставки физлицу. Ограничение посылки 1 кг
+        target_status: Целевая
+        lifecycle_stage: Опытная эксплуатация
+
+  jupiter.app_system.tms_routes:
+    title: ФП Маршртуты
+    description: Подсистема управления маршрутами
+    class: Продуктовая фабрика (основная деятельность)
+    location: Внутренняя
+    categories:
+      - jupiter.fo.logistics
+      - jupiter.sys_group.internal_cloudru
+    criticality_level: Business Operational
+    lifecycle_stage: Промышленная эксплуатация
+    is_part_of: jupiter.app_system.tms
+
+# Сервисы системы
+seaf.company.services:
+  jupiter.srv.shipping:
+    title: API Доставка грузов
+    description: Сервис по оформлению и исполнению заказа на доставку груза
+    integration_type: API
+    data_flow:
+      - data_object: jupiter.le.designer
+        direction: Вход
+        description: Информация о клиенте
+    supporting_services:
+      - service: jupiter.srv.mq_via_esb
+        description: Синхронная перечача сообщений через КСШ
+        type: Интеграционный транспорт
+      - service: jupiter.srv.gateway_vorona17
+        type: Шлюз
+    lifecycle_stage: Используется и развивается
+
+  jupiter.srv.shipping4person:
+    title: UI Доставка для ФЛ
+    description: Сервис по оформлению и исполнению заказа на доставку груза, товара, заказа для ФЛ
+    integration_type: UI
+    lifecycle_stage: Идея в проработке

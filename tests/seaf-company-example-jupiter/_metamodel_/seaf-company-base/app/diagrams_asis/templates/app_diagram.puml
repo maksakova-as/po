@@ -1,0 +1,277 @@
+{{#config.elk}}
+!pragma layout elk
+{{/config.elk}}
+!pragma horizontalLineBetweenDifferentPackageAllowed
+
+'Общее позиционирование
+allowmixing
+top to bottom direction
+'left to right direction
+hide circle
+hide empty members
+set namespaceSeparator none
+
+'Стили общие
+skinparam {
+    titleFontSize 26
+	'maxMessageSize 200
+	'hide stereotype
+	tabSize 5
+	defaultfontname Arial
+	linetype ortho
+	'linetype polyline
+	nodesep 20
+	ranksep 20
+	shadowing false
+	stereotypefontsize 8
+	'padding 10
+    'hyperlinkColor black
+    hyperlinkUnderline false
+}
+
+'Стили регионов
+skinparam rectangle {
+	borderthickness 0.5
+	'borderColor black
+	backgroundcolor #F2F2F2
+	shadowing true
+	fontstyle bold
+	attributefontsize 11
+	'sameClassWidth true
+	'padding 200
+	'ranksep 10
+}
+
+<style>
+    classDiagram {
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 10
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            linecolor #4e4948
+
+            'stereotypefontsize 9
+            header {
+                fontstyle bold
+                fontsize 11
+            }
+            .Внешняя ПРОМ {
+                linecolor gray
+                header {
+                    backgroundcolor lightblue/%lighten("#lightblue", 40)
+                }
+            }
+            .Внутренняя ПРОМ {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+            .УДАЛЕНА {
+                'linestyle 4
+                backgroundcolor #fcfcee
+                header {
+                    backgroundcolor #fcfcee
+                }
+            }
+            .В РАЗРАБОТКЕ {
+                linestyle 4
+                backgroundcolor #fcfcee
+                header {
+                    backgroundcolor #fcfcee
+                }
+            }
+            .Нецелевая {
+                linecolor gray
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600-%lighten("#006600", 40)
+                }
+            }
+            .Нецелевая модифицируется {
+                linecolor red
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600/%lighten("#006600", 40)
+                }
+            }
+            .Целевая требуется выбор {
+                linecolor red
+                header {
+                    backgroundcolor orange/%lighten("#orange", 40)
+                }
+            }
+            .Целевая разработка {
+                linecolor red
+                header {
+                    backgroundcolor ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+            .Целевая частично внедрена {
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+            .Целевая частично внедрена модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+            .Целевая внедрена полностью {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+            .Целевая внедрена полностью модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+            .Технический сервис {
+                header {
+                    backgroundcolor de924b/%lighten("de924b", 40)
+                }
+            }
+        }
+
+        node {
+            fontstyle bold
+            fontsize 14
+            linestyle 2
+            shadowing false
+            linethickness 1
+            backgroundcolor #GreenYellow/LightGoldenRodYellow
+            'backgroundcolor #84b5f5
+        }
+
+        frame {
+            fontstyle bold
+            fontsize 11
+            linestyle 1
+            linethickness 1.5
+            'backgroundColor #ffcc66
+        }
+
+        file {
+            backgroundcolor transparent
+            'borderColor transparent
+            linethickness 2
+            textcolor white
+            fontcolor transparent
+            fontsize 0
+        }
+
+        component {
+            .Person {
+                backgroundcolor transparent
+                lineColor transparent
+                linethickness 1
+                fontsize 14
+                fontstyle Bold
+            }
+        }
+    }
+</style>
+
+hide <<>> stereotype
+hide <<Person>> stereotype
+
+'***** НАЧАЛО ДИАГРАММЫ *****
+title {{&title}}
+
+@startuml
+
+'*** КЛИЕНТЫ ***
+{{#clients}}
+    component {{__id__}} <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..{{&title}}..
+    ]
+{{/clients}}
+
+'*** КАНАЛЫ ***
+{{#has_channels}}
+node "Каналы взаимодействия с клиентом" as channels_boundary {
+    {{#channels}}
+        rectangle "{{&title}}" as {{__id__}}
+    {{/channels}}
+}
+{{/has_channels}}
+
+'*** СИСТЕМЫ ***
+{{#systems}}
+
+    '*** система: {{&title}} ***
+{{#groups}}
+    rectangle "{{&group_title}}" as {{group_id}} {
+{{/groups}}
+{{#has_subsystems}}
+        frame "{{&title}}" as {{__id__}}.frame {
+            class "{{&title}}" as {{__id__}} << {{notation}} >> [[{{{__link_to_card__}}}]] {
+            {{#has_functions}}
+            {{#functions}}
+                {field} <color:{{color}}><size:8>{{&title}}</size></color>
+            {{/functions}}
+            {{/has_functions}}
+            {{^has_functions}}
+                {field}<size:8></size>
+            {{/has_functions}}
+            }
+            'отключено рисование фрейма для подсистем
+            'frame "Подсистемы {{&title}}" as {{__id__}}.sub {
+            {{#subsystems}}
+                class "{{&title}}" as {{__id__}} << {{notation}} >> [[{{{__link_to_card__}}}]] {
+                {{#has_functions}}
+                {{#functions}}
+                    {field} <color:{{color}}><size:8>{{&title}}</size></color>
+                {{/functions}}
+                {{/has_functions}}
+                {{^has_functions}}
+                    {field}<size:8></size>
+                {{/has_functions}}
+            }
+            {{/subsystems}}
+            'отключено рисование фрейма для подсистем
+            '}
+        }
+{{/has_subsystems}}
+{{^has_subsystems}}
+        class "{{&title}}" as {{__id__}} << {{notation}} >> [[{{{__link_to_card__}}}]] {
+        {{#has_functions}}
+        {{#functions}}
+            {field} <color:{{color}}><size:8>{{&title}}</size></color>
+        {{/functions}}
+        {{/has_functions}}
+        {{^has_functions}}
+            {field}<size:8></size>
+        {{/has_functions}}
+        }
+{{/has_subsystems}}
+{{#groups}}
+    }
+{{/groups}}
+{{/systems}}
+
+'*** ИНТЕГРАЦИИ СИСТЕМ ***
+{{#integrations}}
+    "{{from}}" {{&direction}} "{{to}}" {{{style}}} : [[{{{__link_to_card__}}} {{{label}}}]]
+{{/integrations}}
+
+'*** связи КЛИЕНТЫ-КАНАЛЫ ***
+{{#clients_links}}
+    "{{client}}" -[dotted]down- "{{channel}}"
+{{/clients_links}}
+
+'*** связи КАНАЛЫ-СИСТЕМЫ ***
+{{#channels_links}}
+    "{{channel}}" -[dotted]down- "{{system}}"
+{{/channels_links}}
+
+@enduml

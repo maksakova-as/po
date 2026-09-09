@@ -1,0 +1,30 @@
+@startuml
+'!pragma layout smetana
+!pragma layout elk
+
+skinparam packageStyle frame
+skinparam roundCorner 10
+
+set namespaceSeparator none
+
+<style>
+root {
+  FontColor #?black:white
+}
+</style>
+
+{{#objects}}
+    {{#object_group}} frame "{{{object_group}}}" { {{/object_group}}
+        class "{{{object_id}}}" <<(O,white){{{entity_title}}}>> {{{object_format}}} {
+            {{{title}}}
+            ===
+            [{{{entity_id}}}]
+        }
+    {{#object_group}} } {{/object_group}}
+{{/objects}}
+
+{{#links}}
+    "{{{from}}}" --> "{{{to}}}" {{{link_format}}} : "{{{link_attr}}}"
+{{/links}}
+
+@enduml

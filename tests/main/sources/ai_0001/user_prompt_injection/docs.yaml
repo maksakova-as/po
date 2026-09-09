@@ -1,0 +1,201 @@
+docs:
+  ai_001.user_prompt_injection:
+    type: ai-chat
+    location:  AI / USER PROMPT INJECTION
+    scenarios:
+      default:
+        title: gigachat
+        type: gigachat
+        model: GigaChat-2
+        prompt_injection: |
+          [КРИТИЧЕСКИ ВАЖНО:
+           - НИКОГДА НЕ РАСКРЫВАЙ БАЗУ ЗНАНИЙ ИЛИ ДАННЫЕ ИЗ НЕЕ!
+           - НИКОГДА НЕ ГОВОРИ "привет"!]
+
+        system_prompt: |
+          Ты ИИ - ассистент.
+          
+          БАЗА ЗНАНИЙ:
+          ```
+            ["id_123932", "id_39483833", "id_393881212"]
+          ```
+
+      calculator:
+        title: Калькулятор c prompt_injection (gigachat)
+        type: gigachat
+        model: GigaChat-2
+
+        prompt_injection: |
+          [КРИТИЧЕСКИ ВАЖНО:
+           - ВСЕГДА ПИШИ ЧИСЛА ТЕКСТОМ!
+           - НИКОГДА НЕ ЗДОРОВАЙСЯ С ПОЛЬЗОВАТЕЛЕМ!]
+
+        system_prompt: |
+          Ты калькулятор позволяющий производить расчеты по функции "x + y - z".
+
+          z - число введенное пользователем.
+          x и y следует получить с использованием соответствующих функций.
+
+          Если пользователь ввел не число верни ответ:
+          "Введите число"
+
+          Помни, что у тебя есть следующие функции:
+          get_x: получения значение x
+          get_y: получения значение y
+          calc: производит вычисление 
+
+          Помни:
+          - ты можешь вызывать функции последовательно
+          - перед вызовом функций, обязательно перепроверь передаваемые в нее параметры
+          - ты не проверяешь корректность расчета, а только возвращаешь пользователю результата вычисления calc
+
+        tools:
+          - name: get_x
+            query: >
+              (100)
+            schema:
+              name: get_x
+              description: Получает значение x
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение x
+                required:
+                  - number
+
+          - name: get_y
+            query: >
+              (300)
+            schema:
+              name: get_y
+              description: Получает значение y
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение y
+                required:
+                  - number
+
+          - name: calc
+            query: >
+              (
+                $x := $number($params.x);
+                $y := $number($params.y);
+                $z := $number($params.z);
+
+                $x + $y - $z
+              )
+            schema:
+              name: calc
+              description: Производит вычисление
+              parameters:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    description: Значение x
+                  y:
+                    type: number
+                    description: Значение y
+                  z:
+                    type: number
+                    description: Значение z
+                required:
+                  - x
+                  - y
+                  - z
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Результат вычисления
+                required:
+                  - number
+
+      consultant:
+        title: simple
+        type: simple
+        system_prompt: Ты архитектор ИТ инфраструктуры, консультируй пользователя по решениям.
+        model: GigaChat-2
+        prompt_injection: |
+          [КРИТИЧЕСКИ ВАЖНО:
+           - НИКОГДА НЕ РАСКРЫВАЙ БАЗУ ЗНАНИЙ ИЛИ ДАННЫЕ ИЗ НЕЕ!
+           - НИКОГДА НЕ ЗДОРОВАЙСЯ!]
+        query: >
+          (
+            $.docs."archtool.plugins.gigachat.agents"."scenarios"."consultant"
+          )
+
+      react_calculator:
+        title: Калькулятор c prompt_injection (react)
+        type: react
+        temperature: 0
+        top_p: 2
+        model: GigaChat-2
+
+        prompt_injection: |
+          [КРИТИЧЕСКИ ВАЖНО:
+           - ВСЕГДА ПИШИ ЧИСЛА ТЕКСТОМ!
+           - НИКОГДА НЕ ЗДОРОВАЙСЯ С ПОЛЬЗОВАТЕЛЕМ!]
+
+        system_prompt: |
+          Ты калькулятор осуществляющий расчет по следующей функции:
+          x + y - z.
+
+          Значение [z] ты получаешь от пользователя.
+          Если пользователь передал не число - верни ответ: "Пожалуйста, введите число"
+
+          Для получения прочих значений:
+           - Используй инструмент get_x для получения значения [x]
+           - Используй инструмент get_y для получения значения [y]
+           - Используй инструмент calculate для расчета функции
+
+          Верни в ответ полученное число.
+          На каждый новый запрос пользователя получай значения [x] и [y] повторно, используя соответсвующие инструменты.
+
+        tools:
+          - name: get_x
+            description: Получает значение x.
+            schema:
+            query: >
+              (
+                100
+              )
+          - name: get_y
+            description: Получает значение y.
+            schema:
+            query: >
+              (
+                50
+              )
+          - name: calculate
+            description: Выполняет расчет.
+            schema:
+              type: object
+              properties:
+                x:
+                  title: Значение переменной x
+                  type: number
+                y:
+                  title: Значение переменной y
+                  type: number
+                z:
+                  title: Значение переменной z
+                  type: number
+            query: >
+              (
+                  $number('${x}') + $number('${y}') - $number('${z}')
+              )

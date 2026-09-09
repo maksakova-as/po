@@ -1,0 +1,61 @@
+entities:
+  kadzo.v2023.data_objects:
+    title: Объекты данных
+    description: Объектом данных является определенная часть (логически связанный набор атрибутов) бизнес-объекта, который или обрабатывается в определенной системе, или передается в рамках определенной интеграции. При этом предполагается, что объект данных декомпозирует бизнес-объект, т.е. отношение бизнес-объекта к объекту данных должно быть как 1 к n. (Один бизнес объект может содержать от 1 до n объектов данных, при этом объект данных может принадлежать только одному бизнес-объекту). В широком смысле объектом данных можно считать элемент логической модели данных, которая была сформирована в разрезе систем и интеграций.
+    schema:
+      $defs:
+        kadzo.v2023.data_objects.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Планируется
+                - Разрабатывается или модифицируется
+                - Используется
+                - Выводится из эксплуатации
+                - В архиве
+          required:
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.data_objects.livestage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            category:
+              title: Категория
+              enum:
+                - Перс данные
+                - Медицинские данные
+                - Платежные данные (карты)
+                - Коммерческая тайна
+                - Прочее
+            business_object:
+              title: Родительский бизнес-объект
+              type: string
+              $ref: "#/$rels/kadzo.v2023.business_objects.business_objects"
+            master_system:
+              title: АС, являющаяся мастер системой для объекта данных
+              type: string
+              $ref: "#/$rels/kadzo.v2023.systems.systems"
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - category
+            - business_object
+            - master_system
+    objects:
+      data_objects:
+        route: "/"
+        title: Объект данных
+        symbol: "do"

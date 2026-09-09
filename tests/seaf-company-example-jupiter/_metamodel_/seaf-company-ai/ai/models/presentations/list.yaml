@@ -1,0 +1,66 @@
+entities:
+  seaf.company.ai.models:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        params:
+          type: object
+          properties:
+            domain:
+              title: Домен компании
+              type: string
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: vendor
+            text: Поставщик
+            align: left
+          - value: description
+            text: Описание
+            align: left
+          - value: delivery_type
+            text: Вариант поставки
+            align: left
+          - value: realized_in
+            text: Реализуется в
+            align: left
+            link: realized_in_link
+
+        origin:
+          objects: seaf.company.ds.ai.models
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $data2present := $exists($params.domain) 
+              ? 
+                ( 
+                $matcher := $eval("/^" & $params.domain & "\\./i");
+                $sift($objects, function($v, $k) {$k ~> $matcher})
+                )
+              : $objects;
+          
+          $each($data2present, function($val, $key) {(
+              $ri := $seaf_fn_get_object_info($val.realized_in, $all_objects);    
+              {
+                  "id": $val.__id__,
+                  "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "title": $val.title,
+                  "vendor": $val.vendor,
+                  "delivery_type": $val.delivery_type,
+                  "realized_in": $ri.title,
+                  "realized_in_link": $ri.link_to_card,
+                  "description": $val.description
+              }
+          )})[];
+          )

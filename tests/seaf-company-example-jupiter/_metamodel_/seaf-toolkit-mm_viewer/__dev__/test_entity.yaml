@@ -1,0 +1,120 @@
+entities:
+  seaf.toolkit.def.data_types:
+    title: Типы данных
+    schema:
+      $defs:
+        seaf.toolkit.def.date_type:
+          oneOf:
+            - pattern: "^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}$"  # YYYY.MM.DD
+            - pattern: "^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$"  # YYYY.MM.DD HH:MM:SS
+            - pattern: "^[0-9]{4}Q[1-4]{1}$"  # YYYYQN
+            - pattern: "^[0-9]{4}$"  # YYYY
+          type: string
+
+  seaf.toolkit.test_entities:
+    title: Тестовые сущности
+    description: Роль - потребитель продуктов Компании
+    schema:
+      type: object
+      description: >
+        Ключ объекта вида: 
+          \nкомпания.test.имя
+      additionalProperties: false
+      patternProperties:
+        "^[a-zA-Z0-9_]{3,}\\.(test)\\.[a-zA-Z0-9_]*$":
+          title: "СУЩНОСТЬ"
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              title: Название
+              type: string
+
+            field1:
+              title: Поле 1
+              $ref: "#/$defs/seaf.toolkit.def.date_type"
+
+            field2:
+              title: Поле 2
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+                - type: number
+
+                - type: object
+                  additionalProperties: false
+                  properties:
+                    tit:
+                      type: string
+                    tut:
+                      type: number
+
+                - type: object
+                  additionalProperties: false
+                  patternProperties:
+                    "^sss\\.[a-zA-Z0-9_]+$":
+                      title: ключ sss
+                      type: string
+
+                - type: object
+                  additionalProperties: false
+                  patternProperties:
+                    "^nnn\\.[a-zA-Z0-9_]+$":
+                      type: number
+
+            field3:
+              title: Поле 3
+              oneOf:
+                - $ref: "#/$rels/seaf.company.change.goals.goal"
+                - type: array
+                  items:
+                    $ref: "#/$rels/seaf.company.change.ffff.rrrr"
+                - type: number
+
+            field4:
+              type: object
+              additionalProperties: false
+              patternProperties:
+                "^(sss)\\.[a-zA-Z0-9_]+$":
+                  title: "sss"
+                  type: string
+
+                "^(ttt)\\.[a-zA-Z0-9_]+$":
+                  type: string
+
+                "^(uuu)\\.[a-zA-Z0-9_]+$":
+                  title: "uuu"
+                  type: string
+
+            field5:
+              oneOf:
+                - pattern: "^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2}$"  # YYYY.MM.DD
+                - pattern: "^[0-9]{4}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$"  # YYYY.MM.DD HH:MM:SS
+                - type: number
+                - type: string
+
+    objects:
+      test:
+        route: "/"
+        title: test
+        symbol: "test"
+
+
+# **********************************************8
+seaf.toolkit.test_entities:
+  ddd.test.ttt:
+    title: Тестовый объект 1
+    field4:
+      sss.ert: dfgdfgdfg
+      sss.444: dsfgdfgfd
+      sss.567: fdgoretporei
+      ttt.rrr: dffdggfdg
+      ttt.rrr1: fgfgfg
+      uuu.444: dsfsdfsdf
+
+    field2:
+      sss.rtyur: dfgdfg
+      sss.rrr: 123d
+

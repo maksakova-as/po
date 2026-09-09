@@ -1,0 +1,22 @@
+@startuml
+'!pragma layout smetana
+!pragma layout elk
+skinparam linetype ortho
+'set namespaceSeparator none
+skinparam packageStyle frame
+skinparam roundCorner 5
+
+{{#entities}}
+  entity "{{{__id__}}}" {{{object_format}}} {
+    {{{title}}}
+    ---
+    {{#props}}
+       {{{__id__}}} : {{{value_type}}}
+    {{/props}}
+    }
+{{/entities}}
+
+{{#links}}
+    "{{{from}}}" --> "{{{to}}}" {{{link_format}}} : "{{{__id__}}} ({{{link_type}}})"
+{{/links}}
+@enduml

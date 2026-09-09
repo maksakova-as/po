@@ -1,0 +1,62 @@
+seaf.company.categories:
+  jupiter.sys_group.root:
+    title: Группы систем
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Корень дерева
+
+  jupiter.sys_group.internal:
+    title: Периметр компании ООО Юпитер
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Внутренние системы компании
+    is_part_of: jupiter.sys_group.root
+
+  jupiter.sys_group.internal_cloudru:
+    title: Cloud.ru
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Внутренние системы в Cloud.ru
+    is_part_of: jupiter.sys_group.internal
+
+  jupiter.sys_group.internal_dc:
+    title: ЦОД компании
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Системы, размещенные в ЦОДе компании
+    is_part_of: jupiter.sys_group.internal
+
+  jupiter.sys_group.internal_office:
+    title: Офис
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Внутренние системы в офисе
+    is_part_of: jupiter.sys_group.internal
+
+  jupiter.sys_group.external_ecosystem:
+    title: Экосистема Сбер
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Внешние системы у партнеров Экосистемы
+    is_part_of: jupiter.sys_group.root
+
+  jupiter.sys_group.external_enablers:
+    title: Объединяющие элементы Экосистемы
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Объединяющие элементы Экосистемы
+    is_part_of: jupiter.sys_group.root
+
+  jupiter.sys_group.external_partners:
+    title: Внешние партнеры
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Системы внешних партнеров
+    is_part_of: jupiter.sys_group.root
+
+  jupiter.sys_group.external_gov:
+    title: Государство
+    description: |
+      Групировка систем для визуализации на схемах прикладной архитектуры.
+      Внешние системы, принадлежащие государству
+    is_part_of: jupiter.sys_group.root

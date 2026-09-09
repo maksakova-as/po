@@ -1,0 +1,42 @@
+entities:
+  kadzo.v2023.clients:
+    title: Клиенты
+    description: Физическое или юридическое лицо, использующее как внешние, так и внутренние продукты Компании
+    schema:
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          properties:
+            title:
+              title: Клиенты
+              type: string
+            type:
+              title: Тип клиентов
+              enum:
+                - Физические лица
+                - Микро/Малый бизнес
+                - Крупный и средний бизнес
+                - Крупнейшие клиенты и финансовые институты
+                - Сотрудники компании / компаний Группы
+            count:
+              title: Количественная оценка
+              type: integer
+            measure:
+              title: Ед. измерения количественной оценки клиентов
+              type: string
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - type
+            - count
+            - measure
+    objects:
+      clients:
+        route: "/"
+        title: Клиенты
+        symbol: "clt"

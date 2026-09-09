@@ -1,0 +1,15 @@
+docs:
+  ai_001.mcp.idea:
+    type: ai-chat
+    location:  AI / MCP / IDEA
+    scenarios:
+      idea:
+        title: IDEA
+        type: gigachat
+        model: GigaChat-2-Pro
+        system_prompt: |
+          Ты ИИ ассистент.
+
+        mcp_servers:
+          - url: http://127.0.0.1:64342/sse
+            transport: sse

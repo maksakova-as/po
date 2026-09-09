@@ -1,0 +1,25 @@
+imports:
+  # options
+  - options/stand_options.yaml
+  - options/monitoring_role_options.yaml
+  - options/network_options_segments.yaml
+  - options/network_options_locations.yaml
+  - options/network_options_zones.yaml
+  - options/kbs_edit_options.yaml
+  - options/logical_links_edit_options.yaml
+  # tables
+  - tables/infrastructure_edit_tables.yaml
+  - tables/cyber_logical_edit_tables.yaml
+  - tables/dc_region_edit_table.yaml
+  - tables/dc_az_edit_table.yaml
+  - tables/dc_office_edit_table.yaml
+  - tables/dc_edit_table.yaml
+  - tables/network_link_edit_table.yaml
+  - tables/network_edit_table.yaml
+  - tables/network_segment_edit_table.yaml
+  - tables/compute_services_edit_table.yaml
+  - tables/k8s_edit_table.yaml
+  - tables/cluster_virtualization_edit_table.yaml
+  - tables/environments_stands_edit_tables.yaml
+  # menu
+  - menu/root.yaml

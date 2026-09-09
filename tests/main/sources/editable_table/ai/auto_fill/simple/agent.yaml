@@ -1,0 +1,88 @@
+editable_table.ai.auto_fill.simple.agent.request_data:
+  default: DEFAULT
+  text: Hello World
+  fn: FN MOCK DATA
+  checkbox: true
+  select: blue
+
+  multiple_select:
+    - КрасНый
+    - blue
+    - asd
+
+  #  colors:
+  #    - КрасНый
+  #    - blue
+  #    - asd
+
+  # ПУСТОЙ ЭЛЕМЕНТ ПРОБЕМ null
+  #  colors:
+  #    - КрасНый
+  #    - blue
+  #    - asd
+  #    -
+
+  #  colors:
+  #    - КрасНый КрасНый, КрасНый КрасНый
+  #    - blue
+  #    - asd
+  #    -
+
+  colors:
+    - КрасНый КрасНый, КрасНый КрасНый
+    - blue
+    - asd
+    - 34535345
+
+  color: white
+  link: https://ya.ru
+
+docs:
+  editable_table__ai__auto_fill__simple__agent:
+    type: ai-chat
+    location: TABLE / AI / AUTO FILL / SIMPLE AGENT / AGENT
+    scenarios:
+      simple_agent:
+        history: false
+        title: simple_agent
+        type: simple
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент. 
+          В системном промпте тебе задан "Контекст, полученный из базы знаний"!
+          На любой запрос ты должен вернуть данные из базы знаний пользователю!
+          КРИТИЧЕСКИ ВАЖНО: 
+            - Ответ пользователю может быть ИСКЛЮЧИТЕЛЬНО данными из базы знаний!
+            - Ты НЕ должен форматировать, изменять, менять структуру данных указанную в базе знаний при ответе пользователю!
+
+        asd: null
+#        system_prompt: |
+#          Ты ИИ - ассистент.
+#          От пользователя ты получаешь запрос который может иметь одно из содежаний:
+#            1. Значение "true"
+#            2. Любой другой текст
+#            3. Пустая строка (символы пробела или переноса строк)
+#
+#          Алгорит действий в зависимости от содержания сообщения пользователя:
+#            1. Ты должен вернуть "None".
+#            2. Ты должен вернуть "None".
+#            3. Ты должен вернуть контекст, полученный из базы знаний.
+#
+#          КРИТИЧЕСКИ ВАЖНО:
+#            - Ответ пользователю может быть ИСКЛЮЧИТЕЛЬНО: "None" ИЛИ данные из базы знаний (указан в системном промпте)!
+#            - Ты НЕ должен форматировать, изменять, менять структуру данных указанную в системном промпте!
+
+        query: >
+          (
+            $prop := $params.prop ? $params.prop : "default";
+            $ctx := $."editable_table.ai.auto_fill.simple.agent.request_data";
+          
+          
+            $log("============== CTX =================");
+            $log($ctx);
+          
+            $log("============== PROP =================");
+            $log($prop);
+          
+            $lookup($ctx, $prop)
+          )

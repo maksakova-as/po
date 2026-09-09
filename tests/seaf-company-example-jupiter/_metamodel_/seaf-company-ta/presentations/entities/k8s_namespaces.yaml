@@ -1,0 +1,232 @@
+entities:
+  seaf.company.ta.components.k8s_namespaces:
+    presentations:
+      list:
+        title: Kubernetes namespaces
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: cluster
+            text: Кластер
+            link: cluster_link
+          - value: labels
+            text: Labels
+          - value: id
+            text: ID
+        origin:
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          k8s: seaf.company.ds.ta.k8s
+        source: >
+          (
+            $namespaces := namespaces;
+            $k8s := k8s;
+            $namespaces.*@$ns.(
+              $cluster := $lookup($k8s, $ns.cluster);
+              {
+                "id": $ns.__id__,
+                "link": "/entities/" & $ns.__entity_id__ & "/card?id=" & $ns.__id__,
+                "title": $ns.title,
+                "cluster": $cluster.title,
+                "cluster_link": $exists($cluster)
+                  ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__
+                  : null,
+                "labels": $ns.labels ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка namespace
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: k8s_namespace_details
+            align: "v"
+            order: 10
+          topology:
+            title: Размещение
+            presentation: k8s_namespace_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      k8s_namespace_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          k8s: seaf.company.ds.ta.k8s
+        source: >
+          (
+            $ns := $lookup(namespaces, $params.id);
+            $cluster := $exists($ns) ? $lookup(k8s, $ns.cluster) : {};
+            $exists($ns)
+            ? [
+                {"field": "ID", "value": $ns.__id__},
+                {"field": "Название", "value": $ns.title},
+                {"field": "Описание", "value": $ns.description},
+                {
+                  "field": "Кластер",
+                  "value": $cluster.title,
+                  "link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null
+                },
+                {"field": "Labels", "value": $ns.labels ~> $join(", ")}
+              ]
+            : []
+          )
+
+      k8s_namespace_topology:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: ../widgets/templates/server_location.puml
+        origin:
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          k8s: seaf.company.ds.ta.k8s
+          dcs: seaf.company.ds.ta.dcs
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $namespaces := namespaces;
+            $k8s := k8s;
+            $dcs := dcs;
+            $azs := azs;
+            $regions := regions;
+            $ns := $lookup($namespaces, $params.id);
+            $cluster := $exists($ns) ? $lookup($k8s, $ns.cluster) : {};
+            $sanitize := function($value){ $replace($value, /[^A-Za-z0-9_]/, "_") };
+            $dc_ids := $exists($cluster.location)
+              ? ($type($cluster.location) = "array" ? $cluster.location : [$cluster.location])
+              : [];
+
+            $region_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__)
+                ? "node \"Регион: [[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_" & $sanitize($region.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__)
+                ? "node \"ЦОД: [[/entities/" & $dc.__entity_id__ & "/card?id=" & $dc.__id__ & " " & $dc.title & "]]\" as dc_" & $sanitize($dc.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_node := $exists($cluster.__id__)
+              ? "node \"K8s: [[/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ & " " & $cluster.title & "]]\" as k8s_" & $sanitize($cluster.__id__) & " #d1c4e9\n"
+              : "";
+            $ns_node := $exists($ns.__id__)
+              ? "node \"Namespace: [[/entities/" & $ns.__entity_id__ & "/card?id=" & $ns.__id__ & " " & $ns.title & "]]\" as ns_" & $sanitize($ns.__id__) & " #ffecb3\n"
+              : "";
+
+            $region_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__) and $exists($dc.__id__)
+                ? "region_" & $sanitize($region.__id__) & " --> dc_" & $sanitize($dc.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__) and $exists($cluster.__id__)
+                ? "dc_" & $sanitize($dc.__id__) & " --> k8s_" & $sanitize($cluster.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_ns_edge := $exists($cluster.__id__) and $exists($ns.__id__)
+              ? "k8s_" & $sanitize($cluster.__id__) & " --> ns_" & $sanitize($ns.__id__) & "\n"
+              : "";
+
+            $diagram :=
+              $exists($ns.__id__)
+                ? (
+                    "@startuml\n" &
+                    "left to right direction\n" &
+                    "skinparam nodesep 60\n" &
+                    "skinparam ranksep 60\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    $region_nodes & $dc_nodes & $k8s_node & $ns_node &
+                    $region_edges & $dc_edges & $k8s_ns_edge &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Namespace не найден\" as no_obj\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

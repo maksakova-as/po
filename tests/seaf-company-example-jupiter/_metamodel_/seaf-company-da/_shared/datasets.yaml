@@ -1,0 +1,36 @@
+# В этом разделе дополняем параметры общих датасетов, объявленных в модуле seaf-common,
+# чтобы объекты нашего модуля появились в этих датасетам и с ними можно было работать стандартным образом
+datasets:
+  seaf.ds.entities:
+    origin:
+      # перечисляем SEAF сущности нашего модуля
+      seaf_entities:
+        - seaf.company.da.aggregats
+        - seaf.company.da.business_terms
+        - seaf.company.da.logical_entities
+        - seaf.company.da.logical_links
+        - seaf.company.da.physical_tables
+
+      # перечисляем сущности внешних (не SEAF) модулей, с которыми мы работаем в нашем модуле
+      non_seaf_entities:
+        - kadzo.v2023.systems.systems
+        - kadzo.v2023.kb_systems.kb_systems
+        - kadzo.v2023.tech_services.tech_services
+
+  seaf.ds.objects_links:
+    origin:
+      attr2check:
+        # задаем массив имен атрибутов сущностей нашего модуля, в которых может встречаться ссылка на объект
+        # (такая ссылка задается в схеме выражением типа $ref: "#/$rels/seaf.company.app.systems.system")
+        # если не задать имя атрибута, то по такому атрибуту - если в нем была ссылка на объект - данная информация не попадет
+        # в датасет seaf.ds.objects_links
+        - aggregat
+        - business_term
+        - business_terms
+        - entity_a
+        - entity_b
+        - is_part_of
+        - linked_table
+        - logical_entities
+        - master_system
+        - system

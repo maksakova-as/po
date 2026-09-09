@@ -1,0 +1,41 @@
+datasets:
+  seaf.company.ds.artefacts:
+    description: >
+      Датасет формирует коллекцию всех артефактов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.artefacts";
+      )
+
+  seaf.company.ds.artefacts.by_changed_objects:
+    description:
+      Датасет формирует коллекцию изменений, описанных во всех артефактах в разрезе объектов.
+      Датасет используется для презентаций и запросов, где нужно показать связь объекта с артефактами,
+      где описаны изменения этого объекта
+
+    origin: seaf.company.ds.artefacts
+    source: >
+      (
+      /* Формируем массив изменяемых объектов по всем артефактам */
+      $arr := $.* ~> $map(function($a){(
+          $a.**.object.{
+                          "__id__": $,
+                          "__link_attr__": "changed_*_objects",
+                          "__linked_id__": $a.__id__,
+                          "__linked_title__": $a.title,
+                          "__linked_entity_id__": $a.__entity_id__,
+                          "change_type": %.change_type,
+                          "change_description": %."change_description",
+                          "change_finish_date": ($exists(%.change_finish_date)
+                              ? %.change_finish_date
+                              : $a.change_finish_date)
+                       }    
+      )});
+      /* превращаем массив массивов в плоский массив */
+      $arr := $arr@$i.$append($a, $i);
+      /* аггрегируем по id */
+      $arr{__id__: [$]};
+      )
+      

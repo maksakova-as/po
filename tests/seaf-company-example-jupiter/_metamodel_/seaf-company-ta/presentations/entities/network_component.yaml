@@ -1,0 +1,122 @@
+entities:
+  seaf.company.ta.components.networks:
+    presentations:
+      list:
+        title: Сетевые устройства
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: type
+            text: Тип
+          - value: model
+            text: Модель
+          - value: location
+            text: Локации
+            link: location_link
+          - value: segment
+            text: Сегмент
+            link: segment_link
+        origin:
+          devices: seaf.company.ds.ta.network_components
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          segments: seaf.company.ds.ta.network_segments
+        source: >
+          (
+            $devices := devices;
+            $dcs := dcs;
+            $offices := offices;
+            $segments := segments;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $devices.*@$dev.(
+              $location_objects := $exists($dev.location)
+                ? $dev.location[].($resolve_location($))
+                : [];
+              $segment := $lookup($segments, $dev.segment);
+              {
+                "id": $dev.__id__,
+                "link": "/entities/" & $dev.__entity_id__ & "/card?id=" & $dev.__id__,
+                "title": $dev.title,
+                "type": $dev.type,
+                "model": $dev.model,
+                "location": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "segment": $segment.title,
+                "segment_link": $exists($segment) ? "/entities/" & $segment.__entity_id__ & "/card?id=" & $segment.__id__ : null
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сетевого устройства
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: network_component_details
+            align: "v"
+            order: 10
+          location_topology:
+            title: Где расположен
+            presentation: network_component_location_topology
+            align: "v"
+            order: 20
+          network_connections:
+            title: Подключения к сетям
+            presentation: network_component_connections
+            align: "v"
+            order: 30
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

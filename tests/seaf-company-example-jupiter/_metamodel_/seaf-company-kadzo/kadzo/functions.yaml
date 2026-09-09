@@ -1,0 +1,54 @@
+functions:
+  seaf_company_fn_kadzo_log_error:
+    title: Логирует ошибку
+    description: |
+      Функция формирует информативное сообщение в лог ошибок конвертации
+    params:
+      - alias: context
+        type: [ string, number, boolean, array ]
+        title: Контекст для формирования ошибок
+      - alias: msg
+        type: [ string ]
+        title: Сообщение об ошибке
+    result:
+      type: [ string ]
+    code: >
+      (      
+      $context := context;
+      $msg := msg;
+      
+      $ctx := $type($context) = "array" ? $context.$string() ~> $join(", ") : $string($context);
+      $log_msg := "Ошибка конвертации: " & $msg & ". Контекст: " & $ctx;
+      $log($log_msg, "seaf2->kadzo");
+      $log_msg
+      )
+
+  seaf_company_fn_kadzo_convert_enum:
+    title: Конвертирует одно значение enum в другое
+    description: |
+      Функция возвращает сконвертированную строку
+    params:
+      - alias: cnv_table
+        type: object
+        title: Таблица соответствий
+      - alias: item_in
+        type: [string, number, boolean]
+        title: Исходная строка
+      - alias: context
+        type: [string, number, boolean, array, object]
+        title: Контекст для формирования ошибок
+    result:
+      type: [string, number, boolean]
+    code: >
+      (      
+      $cnv_table := cnv_table;
+      $item_in := item_in;
+      $context := context;
+      $result := $cnv_table.$lookup($item_in);
+      $exists($result) and $result != null and $result != "" 
+      ? $result 
+      : (
+          $seaf_company_fn_kadzo_log_error($context, "не найдено соответствие для значения enum");
+          "!!!"
+        )
+      )

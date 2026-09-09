@@ -1,0 +1,28 @@
+# Назначение: Индекс алиасов сетей VMware reverse для ускорения резолвинга связей.
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._idx.network_vmware_alias:
+    description: |
+      Индекс сопоставления alias VMware-сетей в canonical network id.
+    origin:
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        networks
+          ? (
+              networks.$spread().(
+                $nid := $keys()[0];
+                $nobj := $.*[0];
+                [
+                  $normalize($nobj.legacy_id) != "" ? { ("reverse.network.vmwareonprem." & $normalize($nobj.legacy_id)): $nid } : {},
+                  $normalize($nobj.source_key) != "" ? { ("reverse.network.vmwareonprem." & $normalize($nobj.source_key)): $nid } : {},
+                  $normalize($nobj.external_id) != "" ? { ("reverse.network.vmwareonprem." & $normalize($nobj.external_id)): $nid } : {},
+                  $normalize($nobj.resource_id) != "" ? { ("reverse.network.vmwareonprem." & $normalize($nobj.resource_id)): $nid } : {}
+                ]
+              )[] ~> $merge()
+            )
+          : {}
+      )

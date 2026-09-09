@@ -1,0 +1,112 @@
+entities:
+  seaf.company.da.physical_tables:
+    presentations:
+      diagram:
+        type: smartants
+        origin:
+          configs: seaf.ds.configs
+          all_objects: seaf.ds.objects
+          physical_tables: seaf.company.ds.da.physical_tables
+        source: >
+          (
+          $configs := configs;
+          $all_objects := all_objects;
+          $physical_tables := physical_tables;
+          
+          $config := 
+              {
+                "distance": 200,
+                "trackWidth": 20,    
+                "lineOpacity": 0.8,
+          /*      "wrap": false,*/
+                "lineThin": true   
+              };
+          
+          $header := 
+              {
+                "title": "Диаграмма Физической Модели Данных",
+                "style":  {
+                  "color": "#446EB1",
+                  "font-size": "18px",
+                  "font-weight": "800"
+                }
+              };
+          /* Подготавбливаем данные */
+          $prep_data := $each($physical_tables, function($val, $key) {(
+              $pht_seg := $seaf_fn_split_object_key($key, $configs);
+              $pht_id := $pht_seg.object_id;
+              $company_id := $pht_seg.company_id;
+              $company_name := $seaf_fn_get_company_title($company_id, $configs);
+              $system_seg := $seaf_fn_split_object_key($val.system, $configs);
+              $system_id := $system_seg.object_id;
+              $system_name := $seaf_fn_get_object_info($val.system, $all_objects).title;
+              $diagram_pht_id := $join([$company_id, $system_id, $pht_id], ".");
+              $diagram_system_id := $join([$company_id, $system_id], ".");
+              /* сканируем атрибуты для поиска связей между таблицами */
+              $links := [(
+                  $each($val.attributes, function($attr_val, $attr_key) {(
+                      $linked_table_obj := $lookup($physical_tables, $attr_val.linked_table);
+                      $exists($linked_table_obj)
+                      ? (
+                          $linked_pht_seg := $seaf_fn_split_object_key($attr_val.linked_table, $configs);
+                          $linked_pht_id := $linked_pht_seg.object_id;
+                          $linked_company_id := $linked_pht_seg.company_id;
+                          $linked_system_id := $seaf_fn_split_object_key($linked_table_obj.system, $configs).object_id;
+                          $diagram_linked_pht_id := $join([$linked_company_id, $linked_system_id, $linked_pht_id], ".");
+                          {
+                              "from": $diagram_pht_id, 
+                              "to": $diagram_linked_pht_id,
+                              "title": $attr_val.title & " (" & $attr_val.linked_key & ")",
+                              "style": "->"
+                          }
+                      )
+                  )});        
+              )];
+              /* формируем коллекцию */
+              {
+                  "nodes": [
+                      { $company_id: {"title": $company_name } },
+                      { $diagram_system_id: {"title": $system_name } },
+                      { $diagram_pht_id: {
+                          "title": $val.title,
+                          "symbol": "table"
+                          } 
+                      }
+                  ],
+                  "links": $links
+              }
+          )});
+          $symbols := 
+              {
+                "table": '<g xmlns=\"http://www.w3.org/2000/svg">
+                            <svg width="63" height="53" viewBox="0 0 630 530" xmlns="http://www.w3.org/2000/svg" class="icon">
+                              <g>
+                                  <title>background</title>
+                                  <rect fill="none" id="canvas_background" height="532" width="632" y="-1" x="-1"/>
+                              </g>
+                              <g>
+                                  <title>Layer 1</title>
+                                  <path stroke="null" id="svg_1" fill="#E1F0FF" d="m20.08335,10.20374l594.06666,0l0,513.9l-594.06666,0l0,-513.9z"/>
+                                  <path id="svg_2" fill="#446EB1" d="m22.74999,-2.90001l587.4,0l0,97.9l-587.4,0l0,-97.9zm587.4,0l24.5,0l0,538.4l-24.5,0l0,-538.4zm-611.9,0l24.5,0l0,538.4l-24.5,0l0,-538.4z"/>
+                                  <path stroke="null" id="svg_3" fill="#6D9EE8" d="m22.42305,160.66578l587.4,0l0,13.9582l-587.4,0l0,-13.9582zm0,83.69221l587.4,0l0,13.9582l-587.4,0l0,-13.9582z"/>
+                                  <path stroke="null" id="svg_4" fill="#6D9EE8" d="m108.30933,94.93229l19.12064,0l0,421.74073l-19.12064,0l0,-421.74073zm171.92967,0l19.12064,0l0,421.74073l-19.12064,0l0,-421.74073z"/>
+                                  <path stroke="null" id="svg_5" fill="#446EB1" d="m20.50004,515.99999l592.39996,0l0,24.5l-592.39996,0l0,-24.5z"/>
+                                  <path stroke="null" id="svg_6" fill="#6D9EE8" d="m22.42305,325.66485l587.4,0l0,13.9582l-587.4,0l0,-13.9582zm0,83.69222l587.4,0l0,13.95819l-587.4,0l0,-13.95819z"/>
+                                  <text style="cursor: move;" stroke="null" transform="matrix(1,0,0,1.1649553775787354,0,-19.614450638449853) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_7" y="133.23036" x="36.11192" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">№</text>
+                                  <text stroke="null" transform="matrix(1,0,0,1.1649553775787354,0,-19.614450638449853) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_8" y="133.23036" x="137.59311" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">Атрибут 1</text>
+                                  <text style="cursor: move;" stroke="null" transform="matrix(1,0,0,1.1649553775787354,0,-19.614450638449853) " xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_10" y="134.50206" x="314.62964" fill-opacity="null" stroke-opacity="null" stroke-width="0" fill="#000000">Атрибут 2</text>
+                              </g>
+                            </svg>
+                          </g>'
+              };
+            
+          $data := 
+              {
+                "config": $config,
+                "header": $header,
+                "symbols": $symbols,
+                "nodes": $distinct($prep_data.nodes) ~> $merge(),
+                "links": $prep_data.links[]
+              };
+          $data
+          )

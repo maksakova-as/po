@@ -1,0 +1,7 @@
+imports:
+  - services_locations.yaml
+  - services_network.yaml
+  - services_platform.yaml
+  - services_infra.yaml
+  - services_other.yaml
+  - components.yaml

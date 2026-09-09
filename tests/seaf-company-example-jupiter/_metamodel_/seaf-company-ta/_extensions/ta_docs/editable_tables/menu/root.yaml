@@ -1,0 +1,20 @@
+imports:
+  - dc_regions.yaml
+  - dc_azs.yaml
+  - dcs.yaml
+  - dc_offices.yaml
+  - network_segments.yaml
+  - networks_lan.yaml
+  - networks_wan.yaml
+  - k8s.yaml
+  - compute_services.yaml
+  - cluster_virtualizations.yaml
+  - storages.yaml
+  - backup.yaml
+  - monitoring.yaml
+  - kbs.yaml
+  - software.yaml
+  - network_links.yaml
+  - logical_links.yaml
+  - environments.yaml
+  - stands.yaml

@@ -1,0 +1,59 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.da.physical_tables:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      attr_card:
+        widgets:
+          attr_tech_params:
+            title: Технические параметры
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: attr_tech_params
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      attr_tech_params:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+            attr_id:
+              title: ID атрибута
+              type: string
+          required:
+            - id
+            - attr_id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+        origin:
+          objects: seaf.company.ds.da.physical_tables
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $objects := objects;
+          $all_objects := all_objects;
+          $object_id := $params.id;
+          $attr_id := $params.attr_id;
+          $obj2present := $lookup($objects, $object_id);
+          $attr2present := $obj2present.attributes.$lookup($attr_id);
+          [
+              { "field_name": "Тип", "field_content": { "value": $attr2present.type } },
+              { "field_name": "Оганичения (constraints)", "field_content": { "value": $attr2present.constraints ~> $join(", ") } },
+              { "field_name": "PRIMARY KEY", "field_content": { "value": $attr2present.pk_flag ? "ДА" : "НЕТ"} },
+              { "field_name": "FOREIGN KEY", "field_content": { "value": $attr2present.fk_flag ? "ДА" : "НЕТ"} },
+              { "field_name": "Связанная таблица", "field_content": ( $o := $seaf_fn_get_object_info($attr2present.linked_table, $all_objects); {"value": $o.title, "link": $o.link_to_card }) },
+              { "field_name": "Ключ в связанной таблице", "field_content": { "value": $attr2present.linked_key } }
+          ];
+          )
+          

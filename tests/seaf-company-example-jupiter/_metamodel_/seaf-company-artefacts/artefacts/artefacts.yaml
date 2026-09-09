@@ -1,0 +1,360 @@
+entities:
+  seaf.company.artefacts:
+    title: &entity_title Артефакты
+    description: &entity_description >
+      Документы, дашборды и иные артефакты компании, описывающие архитектуру
+      \n Используйте ключи (идентификаторы) артефактов вида: 
+      \n - <компания>.adr.<id_объекта>
+      \n - <компания>.ka.<id_объекта>
+      \n - <компания>.pattern.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      artefact:
+        route: "/"
+        title: Артефакт
+        symbol: "artefact"
+
+    schema:
+      $defs:
+
+        seaf.company.def.artefact_basic_attributes:
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+          type: object
+          properties:
+            status:
+              title: Статус артефакта
+              description: Текущей статус (состояние) артефакта
+              enum:
+                - Черновик
+                - Создан
+                - На согласовании
+                - Действующий
+                - Действующий и устаревающий
+                - Заменен
+                - Недействующий
+
+            date_created:
+              title:  Дата создания
+              description: >
+                Дата создания артефакта. 
+                Формат даты: YYYY.MM.DD или YYYYQN (например, 2025.06.30, 2025Q3)
+              $ref: "#/$defs/seaf.def.type.date"
+
+            version:
+              title: Версия документа
+              type: [number, string]
+
+            authors:
+              title: Авторы документа
+              description: Перечисление авторов данного артефакта
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  name:
+                    title: Имя автора
+                    type: string
+                  comment:
+                    title: Комментарий
+                    description: Комментарий к роли автора при создании данного артефакта
+                    type: string
+            references:
+              title: Ссылки на материалы
+              description: Список ссылок на материалы, повлиявшие на создание данного артефакта
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  title:
+                    title: Название
+                    description: Краткое название материала
+                    type: string
+                  artefact:
+                    title: Артефакт
+                    description: Ссылка на артефакт
+                    $ref: "#/$rels/seaf.company.artefacts.artefact"
+                  url:
+                    title: URL ссылка
+                    description: Внешняя ссылка на документ (если отсутсвует соотв. артефакт в арх. репозитории)
+                    type: string
+                  comment:
+                    title: Комментарий
+                    description: Комментарий к артефакту
+                    type: string
+
+            menu:
+              title: Пункт меню
+              description: >
+                Путь меню в SEAF.ArchTool, где будет располагаться основное представление артефакта.
+                Если путь начинается с /, то это считается абсолютным путем, иначе относительным.
+                Абсолютный путь будет применен как есть, относительный путь будет дополнен корневым п.м.
+                \nПример меню: ADR/ADR 2025-01 Выбор 1С
+              type: string
+
+            template:
+              title: Шаблон документа
+              description: >
+                Имя шаблона документа в формате MD. Если не задано то будет использовано имя = ключ(id)_документа.md
+              type: string
+
+            toc:
+              title: Оглавление
+              description: >
+                Параметр управляет автогенерацией оглавления. Если = true, то автоматически сформируется оглавление документа.
+                Если параметр не задан или = false - оглавление не формируется.
+              type: boolean
+
+            task_tracker_links:
+              title: Ссылки на задачи
+              description: Перечисление ссылок на задач трекера (Jira и т.п.), в рамках которых создавался данный артефакт
+              type: array
+              items:
+                type: string
+
+          required:
+            - type
+
+        seaf.company.def.artefact_stakeholders:
+          type: object
+          properties:
+            stakeholders:
+              title: Стейкхолдеры
+              description: Лица, согласующие, утверждающие данный артефакт
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  role:
+                    title: Роль
+                    description: >
+                      Роль стейкхолдера для данного артефакта.
+                      \nВыбирайте из справочника или вводите свой вариант названия роли
+                    anyOf:
+                      - type: string
+                        enum:
+                          - Согласующий
+                          - Утверждающий
+                          - Уведомляемый
+                      - type: string
+                        minLength: 3
+                  name:
+                    title: ФИО
+                    description: Фамилия Имя Отчество стейкхолдера
+                    type: string
+
+                  department:
+                    title: Подразделение
+                    description: Подразделение стейкхолдера
+                    type: string
+
+                  position:
+                    title: Позиция
+                    description: Позиция \ должностиь стейкхолдера
+                    type: string
+
+                  description:
+                    title: Описание
+                    description: Дополнительное описание роли стейкхолдера
+                    type: string
+
+                required:
+                  - role
+                  - name
+
+
+        seaf.company.def.artefact_change_scope:
+          type: object
+          properties:
+            change_activities:
+              title: Change-активности
+              description: > 
+                Перечисление ссылок на активности (проекты, инициативы), для которых создается данный артефакт.
+                Описанные в данном артефакте изменения, происходять в рамках указанных активностей
+
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  activity:
+                    title: Ссылка на активность
+                    $ref: "#/$rels/seaf.company.change.activities.activity"
+                  comment:
+                    title: Комментарий
+                    description: Комментарий по отношению к указанной активности
+                    type: string
+                required:
+                  - activity
+
+            change_start_date:
+              title:  Дата старта изменений
+              description: >
+                Дата, с которой стартуют описанные в артефакте изменения 
+                Формат даты: YYYY.MM.DD или YYYYQN (например, 2025.06.30, 2025Q3)
+              $ref: "#/$defs/seaf.def.type.date"
+
+            change_finish_date:
+              title:  Дата завершения изменений
+              description: >
+                Дата, к которой завершаются описанные в артефакте изменения 
+                Формат даты: YYYY.MM.DD или YYYYQN (например, 2025.06.30, 2025Q3)
+              $ref: "#/$defs/seaf.def.type.date"
+
+        seaf.company.def.artefact_object_change_attrs:
+          type: object
+          properties:
+            change_type:
+              title: Тип изменений
+              enum:
+                - Дорабатывается
+                - Используется
+                - Создается
+                - Удаляется
+            change_finish_date:
+              title: Дата реализации изменения
+              description: >
+                Дата, к которой реализуются указанные для данного объекта изменения.
+                Если не задано, то берется общая Дата завершения изменений 
+                Формат даты: YYYY.MM.DD или YYYYQN (например, 2025.06.30, 2025Q3)
+              $ref: "#/$defs/seaf.def.type.date"
+            change_description:
+              title: Описание изменений
+              description: Описание производимых с объектом изменений
+              type: string
+          required:
+            - change_type
+            - change_description
+
+        seaf.company.def.artefact_ba_changes:
+          # Секция атрибутов для описания изменений в части БА
+          type: object
+          properties:
+            changed_ba_objects:
+              title: Изменяемые объекты бизнес-архитектуры
+              description: Перечисление изменяемых объектов бизнес-архитектуры компании
+              type: array
+              items:
+                type: object
+                # additionalProperties: false
+                # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                allOf:
+                  - $ref: "#/$defs/seaf.company.def.artefact_object_change_attrs"
+                properties:
+                  object:
+                    title: Ссылка на объект
+                    oneOf:
+                      - $ref: "#/$rels/seaf.company.ba.clients.client"
+                      - $ref: "#/$rels/seaf.company.ba.channels.channel"
+                      - $ref: "#/$rels/seaf.company.ba.products.product"
+                      - $ref: "#/$rels/seaf.company.ba.processes.process"
+                required:
+                  - object
+
+        seaf.company.def.artefact_da_changes:
+          # Секция атрибутов для описания изменений в части ААрхитектуры данных
+          type: object
+          properties:
+            changed_da_objects:
+              title: Изменяемые объекты архитектуры данных
+              description: Перечисление изменяемых объектов архитектуры данных компании
+              type: array
+              items:
+                type: object
+                # additionalProperties: false
+                # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                allOf:
+                  - $ref: "#/$defs/seaf.company.def.artefact_object_change_attrs"
+                properties:
+                  object:
+                    title: Ссылка на объект
+                    oneOf:
+                      - $ref: "#/$rels/seaf.company.da.business_terms.business_term"
+                      - $ref: "#/$rels/seaf.company.da.logical_entities.logical_entity"
+                      - $ref: "#/$rels/seaf.company.da.logical_links.logical_link"
+                      - $ref: "#/$rels/seaf.company.da.physical_tables.physical_table"
+                required:
+                  - object
+
+        seaf.company.def.artefact_app_changes:
+          # Секция атрибутов для описания изменений в части прикладной архитектуры
+          type: object
+          properties:
+            changed_app_objects:
+              title: Изменяемые объекты прикладной архитектуры
+              description: Перечисление изменяемых объектов прикладной архитектуры компании
+              type: array
+              items:
+                type: object
+                # additionalProperties: false
+                # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                allOf:
+                  - $ref: "#/$defs/seaf.company.def.artefact_object_change_attrs"
+                properties:
+                  object:
+                    title: Ссылка на объект
+                    oneOf:
+                      - $ref: "#/$rels/seaf.company.app.systems.system"
+                      - $ref: "#/$rels/seaf.company.cybersec.systems.system"
+                      - $ref: "#/$rels/seaf.company.sys_components.sys_component"
+                      - $ref: "#/$rels/seaf.company.services.service"
+                required:
+                  - object
+
+        seaf.company.def.artefact_ta_changes:
+          # Секция атрибутов для описания изменений в части технической архитектуры (инфраструктуры)
+          type: object
+          properties:
+            changed_ta_objects:
+              title: Изменяемые объекты технической архитектуры
+              description: Перечисление изменяемых объектов технической архитектуры компании
+              type: array
+              items:
+                type: object
+                # additionalProperties: false
+                # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                allOf:
+                  - $ref: "#/$defs/seaf.company.def.artefact_object_change_attrs"
+                properties:
+                  object:
+                    title: Ссылка на объект
+                    # TODO переделать после адаптации мм ТА под версию SEAF2
+                    type: string
+#                    oneOf:
+#                      - $ref: "#/$rels/seaf.ta.services.dc_region.dc_region"
+#                      - $ref: "#/$rels/seaf.ta.services.dc_az.dc_az"
+#                      - $ref: "#/$rels/seaf.ta.services.dc.dc"
+#                      - $ref: "#/$rels/seaf.ta.services.office.office"
+#                      - $ref: "#/$rels/seaf.ta.services.cluster.cluster"
+#                      - $ref: "#/$rels/seaf.ta.services.compute_service.compute_service"
+#                      - $ref: "#/$rels/seaf.ta.services.storage.storage"
+#                      - $ref: "#/$rels/seaf.ta.services.cluster_virtualization.cluster_virtualization"
+#                      - $ref: "#/$rels/seaf.ta.services.k8s.k8s"
+#                      - $ref: "#/$rels/seaf.ta.services.network.network"
+#                      - $ref: "#/$rels/seaf.ta.services.network_links.network_links"
+#                      - $ref: "#/$rels/seaf.ta.services.backup.backup"
+#                      - $ref: "#/$rels/seaf.ta.services.monitoring.monitoring"
+#                      - $ref: "#/$rels/seaf.ta.services.software.software"
+#                      - $ref: "#/$rels/seaf.ta.services.network_segment.network_segment"
+#                      - $ref: "#/$rels/seaf.ta.components.server.server"
+#                      - $ref: "#/$rels/seaf.ta.components.hw_storage.hw_storage"
+#                      - $ref: "#/$rels/seaf.ta.components.network.network"
+#                      - $ref: "#/$rels/seaf.ta.components.user_device.user_device"
+                required:
+                  - object
+
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false

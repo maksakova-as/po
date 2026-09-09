@@ -1,0 +1,120 @@
+entities:
+  seaf.company.ta.components.user_devices:
+    presentations:
+      list:
+        title: Пользовательские устройства
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: device_type
+            text: Тип
+          - value: location
+            text: Локации
+            link: location_link
+          - value: networks
+            text: Сети
+        origin:
+          devices: seaf.company.ds.ta.user_devices
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          networks: seaf.company.ds.ta.networks
+        source: >
+          (
+            $devices := devices;
+            $dcs := dcs;
+            $offices := offices;
+            $networks := networks;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $resolve_network := function($id){ $lookup($networks, $id) };
+            $devices.*@$dev.(
+              $location_objects := $exists($dev.location)
+                ? $dev.location[].($resolve_location($))
+                : [];
+              $network_titles := $exists($dev.network_connection)
+                ? $dev.network_connection[].($resolve_network($).title)
+                : [];
+              {
+                "id": $dev.__id__,
+                "link": "/entities/" & $dev.__entity_id__ & "/card?id=" & $dev.__id__,
+                "title": $dev.title,
+                "device_type": $dev.device_type,
+                "location": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "networks": $network_titles ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка пользовательского устройства
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: user_device_details
+            align: "v"
+            order: 10
+          location_topology:
+            title: Размещение
+            presentation: user_device_location_topology
+            align: "v"
+            order: 20
+          network_connections:
+            title: Подключения к сетям
+            presentation: user_device_network_connections
+            align: "v"
+            order: 30
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

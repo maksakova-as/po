@@ -1,0 +1,41 @@
+entities:
+  kadzo.v2023.tasks:
+    title: Среднесрочные задачи и планы
+    description: Среднесрочные задачи и планы Компании в части изменения ИТ-ландшафта компании (в том числе среднесрочные задачи прошлого периода с актуальным статусом их исполнения)
+    schema:
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          properties:
+            task:
+              title: Описание среднесрочной задачи
+              type: string
+            strategy:
+              title: Стратегическая задача
+              $ref: "#/$rels/kadzo.v2023.strategy.strategy"
+            planned:
+              title: Плановый срок реализации
+              type: string
+              pattern: "^Q[1-4] 20[2-9][2-9]$"
+            status:
+              title: Статус
+              enum:
+                - Запланировано
+                - В процессе
+                - Завершено
+                - Отменено
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - task
+            - planned
+            - status
+    objects:
+      tasks:
+        route: "/"
+        title: Задачи
+        symbol: "tasks"

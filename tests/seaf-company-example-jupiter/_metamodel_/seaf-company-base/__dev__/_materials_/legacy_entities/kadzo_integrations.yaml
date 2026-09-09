@@ -1,0 +1,115 @@
+entities:
+  kadzo.v2023.integrations:
+    title: Интеграции
+    description: Взаимодействие (процесс установки связи) между системами для реализации бизнес-процесса или операционного взаимодействия.
+    schema:
+      $defs:
+        kadzo.v2023.integrations.technologies:
+          title: Технологии интеграций
+          type: object
+          properties:
+            technologies:
+              title: Технологии интеграции
+              type: array
+              minItems: 1
+              items:
+                type: string
+            technical-use:
+              title: Механизм использования
+              description: «По запросу» - инициатором обмена выступает потребитель данных, который запрашивает данные у источника (поставщика) данных, т.е. используется логика pull-запросов. «По событию» - заранее определены наборы событий, при наступлении которых запускается обмен данными от источника (поставщика) данных к потребителю данных, т.е. реализуется логика push-запросов
+              enum:
+                - По запросу
+                - По событию
+            async:
+              title: Асинхронный информационный поток
+              enum:
+                - Истинно
+                - Ложно
+            protected:
+              title: Средства защиты потока
+              type: array
+              minItems: 0
+              items:
+                type: string
+          required:
+            - technologies
+            - technical-use
+            - async
+            - protected
+        kadzo.v2023.integrations.performance:
+          title: Нагрузочные характеристики потока
+          type: object
+          properties:
+            load:
+              type: object
+              title: Нагрузочные характеристики потока
+              properties:
+                maximum:
+                  title: Нагрузочные характеристики потока (пиковое значение)
+                  type: string
+                average:
+                  title: Нагрузочные характеристики потока (среднее значение)
+                  type: string
+#          required:
+#            - load
+        kadzo.v2023.integrations.lifestage:
+          title: Состояние жизненного цикла
+          type: object
+          properties:
+            status:
+              title: Статус информационного потока
+              enum:
+                - Дорабатывается
+                - Используется
+                - Создается
+                - Удаляется
+            changes:
+              title: Описание изменений
+              type: string
+          required:
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.integrations.technologies"
+            - $ref: "#/$defs/kadzo.v2023.integrations.performance"
+            - $ref: "#/$defs/kadzo.v2023.integrations.lifestage"
+          properties:
+            description:
+              title: Описание
+              type: string
+              minLength: 2
+            source:
+              title: Источник данных (поставщик)
+              $ref: "#/$rels/kadzo.v2023.systems.systems"
+            consumer:
+              title: Потребитель данных
+              $ref: "#/$rels/kadzo.v2023.systems.systems"
+            endpoint:
+              title: Точка взаимодействия
+              $ref: "#/$rels/kadzo.v2023.endpoints.endpoint"
+            data-objects:
+              title: Объекты данных
+              type: array
+              items:
+                $ref: "#/$rels/kadzo.v2023.data_objects.data_objects"
+            agreement:
+              title: Основание для обмена данными (договор)
+              type: string
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - description
+            - source
+            - consumer
+            - data-objects
+    objects:
+      integrations:
+        route: "/"
+        title: Интеграционные поток
+        symbol: "intg"

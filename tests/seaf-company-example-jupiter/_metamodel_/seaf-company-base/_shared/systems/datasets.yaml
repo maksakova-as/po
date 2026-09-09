@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.systems:
+    description: |
+      Датасет формирует коллекцию всех объектов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $merge([$."seaf.company.app.systems", $."seaf.company.cybersec.systems"]);
+      )

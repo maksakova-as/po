@@ -1,0 +1,48 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.products: seaf.company.ds.kadzo.products
+
+  seaf.company.ds.kadzo.products:
+    title: Продукты КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.ba.products
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      kadzo_status_enum:
+        "Идея в проработке": Создается
+        "Создается": Создается
+        "Тестируется": Создается
+        "Используется и развивается": Используется
+        "Используется": Используется
+        "В архиве": В архиве
+        "Выведен из эксплуатации": Выводится
+
+# Принятые допущения:
+#    -
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $kadzo_status_enum := kadzo_status_enum;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          $metric := $val.count_metrics[0];
+          /* формируем объект КАДЗО */
+          { $key: {
+              "title": $val.title,
+              "description": $val.description,
+              "comments": $val.comments,
+              "status": (
+                  $attr_val := $val.lifecycle_stage;
+                  $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_status_enum, $attr_val, [$key, "атрибут lifecycle_stage", $attr_val])
+              )
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

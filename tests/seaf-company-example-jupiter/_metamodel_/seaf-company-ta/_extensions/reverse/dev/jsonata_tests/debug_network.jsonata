@@ -1,0 +1,8 @@
+(
+  $net_id := "reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1";
+  $net := $lookup($, $net_id);
+  {
+    "id": $net.__id__,
+    "segment_ref": $net.segment
+  }
+)

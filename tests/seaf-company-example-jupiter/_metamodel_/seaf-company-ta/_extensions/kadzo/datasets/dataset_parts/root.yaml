@@ -1,0 +1,10 @@
+imports:
+  # 20_network
+  - 20_network/network_components.yaml
+  # 30_platform
+  - 30_platform/compute_services.yaml
+  - 30_platform/softwares.yaml
+  - 30_platform/storages.yaml
+  # 40_ops_security
+  - 40_ops_security/backups.yaml
+  - 40_ops_security/monitoring.yaml

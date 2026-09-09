@@ -1,0 +1,7 @@
+(
+  {
+    "regex_test": $replace("a.b.c", "[^a-z]", "_"),
+    "literal_test": $replace("a.b.c", ".", "_"),
+    "no_match": $replace("abc", "[0-9]", "_")
+  }
+)

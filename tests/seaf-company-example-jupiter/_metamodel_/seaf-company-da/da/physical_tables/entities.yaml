@@ -1,0 +1,182 @@
+entities:
+  seaf.company.da.physical_tables:
+    title: &entity_title Физические таблицы
+    description: &entity_description >
+      Физические таблицы данных
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.pht.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      physical_table:
+        route: "/"
+        symbol: "pht"
+        title: Физическая таблица
+
+    schema:
+      $defs:
+        seaf.company.def.da.physical_attributes:
+          properties:
+            attributes:
+              title: Атрибуты физической таблицы
+              description: >
+                Атрибуты физической таблицы
+              type: object
+              additionalProperties: false
+              patternProperties:
+                "^[a-zA-Z0-9_]*$":
+                  type: object
+                  # additionalProperties: false
+                  # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                  # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                  allOf:
+                    - $ref: "#/$defs/seaf.def.basic_attributes"
+                    - $ref: "#/$defs/seaf.def.lifecycle_stage"
+
+                  properties:
+
+                    #  TODO: поле тип не справочник?
+                    #  DONE: да нужно конечно сделать справочник. МОжет типы уже есть в сеаф, как с жц?
+                    type:
+                      title: Тип
+                      type: string
+
+                    constraints:
+                      title: Ограничения
+                      type: array
+                      description: Перечень ограничений для данного атрибута
+                      minItems: 0
+                      items:
+                        type: string
+
+                    pdn_flag:
+                      title: ПДн
+                      type: boolean
+                      description: Флаг наличия персональных данных (ПДн)
+
+                    cde_flag:
+                      title: CDE
+                      type: boolean
+                      description: Флаг наличия критичных данных (CDE)
+
+                    pk_flag:
+                      title: PRIMARY KEY
+                      type: boolean
+                      description: Флаг PRIMARY KEY
+
+                    fk_flag:
+                      title: FOREIGN KEY
+                      type: boolean
+                      description: Флаг FOREIGN KEY
+
+                    linked_table:
+                      title: Связанная таблица
+                      description: Ссылка на связанную таблицу (в случае если атрибут ссылочный)
+                      $ref: "#/$rels/seaf.company.da.physical_tables.physical_table"
+
+                    linked_key:
+                      title: Ключ в связанной таблице
+                      description: Имя атрибута в связанной таблице (в случае если атрибут ссылочный)
+                      type: string
+    #                  TODO: достаточно ли просто строки?
+    #                  DONE: надо проверить на представлениях
+    #                  $ref: "#/$rels/seaf.company.da.physical_attributes.physical_attribute"
+
+                  required:
+                    - type
+
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+            - $ref: "#/$defs/seaf.company.def.da.physical_attributes"
+
+          properties:
+            type:
+              title: Тип представления
+              type: string
+              description: |
+                Тип представления таблицы
+              enum:
+                - TABLE
+                - VIEW
+
+            system:
+              title: Автоматизированная Система
+              description: Система, в которой находится таблица
+              anyOf:
+                - $ref: "#/$rels/seaf.company.app.systems.system" # если используется метамодель SEAF2
+                - $ref: "#/$rels/seaf.company.cybersec.systems.system" # если используется метамодель SEAF2
+                - $ref: "#/$rels/kadzo.v2023.systems.systems" # если используется метамодель КА ДЗО
+                - $ref: "#/$rels/kadzo.v2023.kb_systems.kb_systems" # если используется метамодель КА ДЗО
+                - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services" # если используется метамодель КА ДЗО
+              #              $ref: "#/$rels/components.component"
+
+            dbms:
+              title: СУБД
+              description: Система управления базой данных, соответствующей АС
+              type: string
+
+            database:
+              title: БД
+              description: Наименование базы данных, с которой находится таблица
+              type: string
+
+            schema_name:
+              title: Схема
+              type: string
+
+            loc_attr:
+              title: Локационные атрибуты
+              type: array
+              description: |
+                дополнительные атрибуты для конкретизации физического нахождения таблиц: контур, хост и т.п.
+              minItems: 0
+              items:
+                type: string
+
+            # TODO: ? Зачем в модели архитектуры такие операционные параметры, кот. меняются каждую минуту?
+            # DONE: ? параметр для метаданных нужный, но возможно стоит включить его как расширение метаданных?
+            rows_count:
+              title: Количество строк
+              type: integer
+
+            # TODO: ? Зачем это поле ,если всегда можно в динамике рассчитать count от массива атрибутов??
+            # DONE: вопрос - не всегда заводят аттрибуты, а параметр для метаданных нужный, но возможно стоит включить его как расширение метаданных
+            cols_count:
+              title: Количество столбцов
+              type: integer
+
+            pdn_flag:
+              title: ПДн
+              type: boolean
+              description: Флаг наличия персональных данных (ПДн)
+
+            cde_flag:
+              title: CDE
+              type: boolean
+              description: Флаг наличия критичных данных (CDE)
+
+            logical_entities:
+              title: Логические сущности
+              type: array
+              description: Ссылки на сущности логической модели, которые реализует данная таблица
+              items:
+                $ref: "#/$rels/seaf.company.da.logical_entities.logical_entity"
+                # TODO: потенциально здесь придется делать связь с сущностью КА ДЗО через anyOf
+
+          required:
+            - system

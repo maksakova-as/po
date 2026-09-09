@@ -1,0 +1,5 @@
+docs:
+  dochub.welcome:
+    type: markdown
+    location: /Юпитер/_custom_/README
+    source: ../README.md

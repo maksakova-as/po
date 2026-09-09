@@ -1,0 +1,101 @@
+seaf.company.artefacts:
+  jupiter.ka.doc_2025_03:
+    menu: КА/КА проекта 2025_03
+    template: ka_doc_2025_03.md
+
+    title: КА проекта 2025_03
+    type: Концептуальная архтитектура (КА)
+    date_created: 2025Q1
+    version: 1.1.0
+    status: Действующий
+
+    task_tracker_links:
+      - https://jira.sberbank.ru/browse/SEAFDEV-145
+
+    authors:
+      - name: Иванов Иван
+        comment: автор первой версии документа
+      - name: Васильев Иван
+        comment: автор в части Технической архитектуры
+
+    stakeholders:
+      - role: Согласующий
+        name: Васильев Василий
+        position: Куратор от КБ
+        department: Кибербезопасность
+      - role: Утверждающий
+        name: Михайлов Михаил
+
+    references:
+      - artefact: jupiter.adr.doc_01
+        comment: Основание выбора систем
+      - url: path.to/document.pdf
+        comment: Бизнес-требования
+
+    change_activities:
+      - activity: jupiter.activity.2025_l2p_01
+        comment: КА описывает вторую стадию проекта L2P
+
+    change_start_date: 2024.06.01
+    change_finish_date: 2026Q4
+
+    changed_ba_objects:
+      - object: jupiter.client.young_person
+        change_type: Дорабатывается
+        change_description: >
+          Изменяется подход к сегменту клиентов "молодые люди". 
+          Расширяется спектр услуг для них, создаются новые phygital поверхности
+      - object: jupiter.process.knowledge_management
+        change_type: Создается
+        change_description: >
+          В компании создается новый процесс управления знаниями для молодых людей
+      - object: jupiter.channel.shopping_centre
+        change_type: Дорабатывается
+        change_description: >
+          Проводится анализ как превратить элементы магазина в фиджитал поверхности
+      - object: jupiter.product.news
+        change_type: Дорабатывается
+        change_description: >
+          Лента новостей адаптируется под поколение XY
+
+    changed_da_objects:
+      - object: jupiter.bt.employee
+        change_type: Дорабатывается
+        change_description: Концепция термина Адрес в корне пересматривается
+      - object: jupiter.pht.color
+        change_type: Дорабатывается
+        change_description: Дорабатывается физтаблица в соответсвтии с ТЗ
+      - object: jupiter.bt.full_name
+        change_type: Дорабатывается
+        change_description: Дорабатывается атрибутный состав в соотв. с ТЗ
+
+    changed_app_objects:
+      - object: jupiter.app_system.tms_logistics
+        change_type: Дорабатывается
+        change_description: Дорабатывается функционал системы
+        change_finish_date: 2025Q4
+
+      - object: jupiter.srv.shipping4person
+        change_type: Создается
+        change_description: Функция в рамках ФП Логистика создается на базе стандартного функционала
+        change_finish_date: 2025Q4
+
+      - object: jupiter.srv.shipping
+        change_type: Создается
+        change_description: Создается новая точка подключения (контракт) для заказов из маркетплейса ФЛ
+        change_finish_date: 2025Q4
+
+      - object: jupiter.app_system.1c_erp
+        change_type: Дорабатывается
+        change_description: Подключение к API доставки для ФЛ
+        change_finish_date: 2025Q4
+
+      - object: jupiter.cs_system.avpo_kasper
+        change_type: Используется
+        change_description: Обучение пользователей по использованию антивируса
+        change_finish_date: 2025Q4
+
+    changed_ta_objects:
+      - object: jupiter.dc.new_dc_333
+        change_type: Используется
+        change_description: Формируется новый ЦОД для обеспечения георезервирования

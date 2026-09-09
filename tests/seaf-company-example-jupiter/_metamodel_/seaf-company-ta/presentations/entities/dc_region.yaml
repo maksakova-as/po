@@ -1,0 +1,110 @@
+entities:
+  seaf.company.ta.services.dc_regions:
+    presentations:
+      list:
+        title: Регионы ЦОДов
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: description
+            text: Описание
+          - value: id
+            text: ID
+        origin: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "description": $val.description
+            }[];
+          )
+
+      card:
+        title: Карточка региона
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: dc_region_details
+            align: "v"
+            order: 10
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      dc_region_details:
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+        origin: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $obj := $lookup($, $params.id);
+            $exists($obj)
+            ? [
+                {"field": "ID", "value": $obj.__id__},
+                {"field": "Название", "value": $obj.title},
+                {"field": "Описание", "value": $obj.description},
+                {"field": "Внешний ID", "value": $obj.external_id}
+              ]
+            : []
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

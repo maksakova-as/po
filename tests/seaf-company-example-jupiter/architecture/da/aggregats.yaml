@@ -1,0 +1,28 @@
+seaf.company.da.aggregats:
+  jupiter.aggr.domain1:
+    title: Домен 1
+    type: Домен
+    unit: Мерч
+    description: Главный домен для производства одежды
+    owner: Иванов И.
+    lifecycle_stage: Используется
+
+  jupiter.aggr.domain1_1:
+    title: Домен 1.1
+    type: Под-домен
+    unit: Производство
+    description: Поддомен Производство
+    owner: Иванов И.
+    is_part_of: jupiter.aggr.domain1
+    lifecycle_stage: Используется
+
+  jupiter.aggr.domain1_2:
+    title: Домен 1.2
+    type: Под-домен
+    unit: Персонал
+    description: Поддомен Персонал
+    owner: Петров П.
+    is_part_of: jupiter.aggr.domain1
+    lifecycle_stage: Используется
+    comments:
+      - сотрудники участвующие в производстве одежды

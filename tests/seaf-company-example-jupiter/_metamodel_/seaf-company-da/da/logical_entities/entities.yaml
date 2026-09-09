@@ -1,0 +1,137 @@
+entities:
+  seaf.company.da.logical_entities:
+    title: &entity_title Логические сущности
+    description: &entity_description >
+      Множество понятий (при необходимости расширенных дополнительными атрибутами) и связями между ними, 
+      определяющее используемые в компании данные, для которых указываются категории и разделение на предметные области.
+      В логической модели сущности из бизнес-глоссария преобразуются в логические сущности или атрибуты логических сущностей.
+      Логическая сущность должна быть включена хотя бы в одну Логическую связь.
+      Объект Логическая сущность может ссылаться только на один объект Агрегат.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.le.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+#      Логическая сущность определяет используемые в компании данные с распределением по Категориям и Аггрегатам:
+#      Является центральной сущностью архитектуры данных, обеспечивающей связь:
+#       - с Прикладной Архитектурой (ПА) на уровне Сервисов, посредством принадлежности Логической сущности к мастер-системе
+#       - с Прикладной Архитектурой (ПА) на уровне Интеграций между компонентами/автоматизированными системами (АС)
+#       - с Бизнес-глоссарием ИА, посредством ссылок на бизнес-термины
+#       - с ФМД ИА, через ссылки из объектов Физических таблиц
+
+    objects:
+      logical_entity:
+        route: "/"
+        title: Логическая сущность
+        symbol: "le"
+
+    schema:
+      $defs:
+        seaf.company.def.da.logical_attributes:
+          properties:
+            attributes:
+              title: Логические атрибуты
+              description: >
+                Служит для расширения свойств Логической сущности при моделировании ЛМД.
+                Имеет однозначную прямую связь с бизнес слоем, посредством ссылки на конкретный бизнес-термин
+              type: object
+              additionalProperties: false
+              patternProperties:
+                "^[a-zA-Z0-9_]*$":
+                  type: object
+
+                  # additionalProperties: false
+                  # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                  # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                  allOf:
+                    - $ref: "#/$defs/seaf.def.basic_attributes"
+                    - $ref: "#/$defs/seaf.def.lifecycle_stage"
+
+                  properties:
+                    pdn_flag:
+                      title: ПДн
+                      type: boolean
+                      description: Флаг наличия персональных данных (ПДн)
+
+                    cde_flag:
+                      title: CDE
+                      type: boolean
+                      description: Флаг наличия критичных данных (CDE)
+
+                    business_term:
+                      title: Бизнес-термин
+                      description: Соответствующий термин Бизнес-глоссария или сущности концептуальной модели данных
+                      anyOf:
+                        - $ref: "#/$rels/seaf.company.da.business_terms.business_term"
+                        # TODO: потенциально здесь придется делать связь с сущностью КА ДЗО через anyOf
+
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+            - $ref: "#/$defs/seaf.company.def.da.logical_attributes"
+
+          properties:
+
+            aggregat:
+              title: Агрегат
+              description: Распределение DA компании на области. Можно ссылаться только на один объект Агрегат
+              $ref: "#/$rels/seaf.company.da.aggregats.aggregat"
+
+            category:
+              title: Категория
+              description: Категории данных, к которым относится данный объект. Можно выбрать несколько пунктов
+              type: array
+              items:
+                type: string
+                enum:
+                  - Перс данные
+                  - Медицинские данные
+                  - Платежные данные (карты)
+                  - Коммерческая тайна
+                  - Прочее
+
+            pdn_flag:
+              title: ПДн
+              type: boolean
+              description: Флаг наличия персональных данных
+
+            cde_flag:
+              title: CDE
+              type: boolean
+              description: Флаг наличия критичных данных
+
+            business_terms:
+              title: Бизнес-термины
+              description: >
+                Данная аналитика используется для указания ссылок на термины бизнес-глоссария или сущности концептуальной модели данных,
+                которые реализуются этой логической сущностью
+              type: array
+              items:
+                $ref: "#/$rels/seaf.company.da.business_terms.business_term"
+
+            master_system:
+              title: Мастер система
+              description: >
+                Данная аналитика используется для указания идентификатора АС, которая является мастер-системой
+                по хранению "золотой" записи текущей логической сущности
+              anyOf:
+                - $ref: "#/$rels/seaf.company.app.systems.system" # если используется метамодель SEAF2
+                - $ref: "#/$rels/seaf.company.cybersec.systems.system" # если используется метамодель SEAF2
+                - $ref: "#/$rels/kadzo.v2023.systems.systems"  # если используется метамодель КА ДЗО
+                - $ref: "#/$rels/kadzo.v2023.kb_systems.kb_systems"  # если используется метамодель КА ДЗО
+                - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services"  # если используется метамодель КА ДЗО
+          required:
+            - aggregat

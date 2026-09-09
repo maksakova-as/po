@@ -1,0 +1,52 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.tasks: seaf.company.ds.kadzo.tasks
+
+  seaf.company.ds.kadzo.tasks:
+    title: Среднесрочные задачи и планы КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.change.activities
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      kadzo_status_enum:
+        "Новая": Запланировано
+        "Запланирована": Запланировано
+        "В процессе": В процессе
+        "Завершена": Завершено
+        "Отменена": Отменено
+
+# Принятые допущения:
+#    - под среднесрочной задачей понимаем активности с типом НЕ Стратегическая инициатива
+#    - если задача выполняет несколько целей - берем первую
+#    - под родительской стратегической задачей понимаем ближайшего родителя
+#
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $kadzo_status_enum := kadzo_status_enum;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          $result := $val.type != "Стратегическая инициатива"
+          ? (
+            /* формируем объект КАДЗО */
+            { $key: {
+                "task": $val.title,
+                "comments": $val.comments,
+                "strategy": $val.is_part_of,
+                "planned": $val.planned_finish_date,
+                "status": (
+                    $attr_val := $val.status;
+                    $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_status_enum, $attr_val, [$key, "атрибут status", $attr_val])
+                )
+            }}
+            );
+          $result
+      )})[] ~> $merge();
+      $obj_out
+      )

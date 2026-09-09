@@ -1,0 +1,63 @@
+functions:
+  seaf_fn_get_root_menu:
+    title: Поиск корневого меню для раздела
+    params:
+      - alias: configs
+        type: object
+        title: Объект-коллекция конфигов
+      - alias: domain_id
+        type: string
+        title: Идентификатор домена
+    result:
+      type: string
+    code: >
+      (      
+          $domain_id := domain_id;
+          $default_root_menu := $domain_id;
+          $rm := configs.$lookup($domain_id).root_menu;
+          $exists($rm) ? $rm : $default_root_menu;
+      )
+
+  seaf_fn_get_root_menu_order:
+    title: Поиск номера сортировки корневого меню для раздела
+    params:
+      - alias: configs
+        type: object
+        title: Объект-коллекция конфигов
+      - alias: domain_id
+        type: string
+        title: Идентификатор домена
+    result:
+      type: number
+    code: >
+      (      
+          $domain_id := domain_id;
+          $rm := configs.$lookup($domain_id).root_menu_order;
+          $exists($rm) ? $number($rm): 99999;
+      )
+
+  seaf_fn_generate_menu_item:
+    title: Генерация пункта меню
+    params:
+      - alias: menu_in
+        type: string
+        title: Строка меню для обработки
+      - alias: root_menu
+        type: string
+        title: Корневое меню
+    result:
+      type: string
+    code: >
+      (      
+          $menu_in := menu_in;
+          $root_menu := root_menu;
+          $root_menu := $replace($root_menu, /^\//, "", 1); /* избавляемся от ведущего слэша, он не нужен */
+          $absolute_menu_found := $match($menu_in, /^(\/)(.*)$/)[0].groups;
+          $absolute_menu_found != []
+          ? /* был задан абсолютный путь меню для объекта (нач. с /) - игнорируем корневое меню */ 
+              $absolute_menu_found[1] /* берем путь меню без первого слэша */
+          : /* был задан отн. путь меню - добавляем корн. меню */
+              $menu_in != "" 
+              ? $root_menu != "" ? $root_menu & "/" & $menu_in : $menu_in
+              : $root_menu != "" ? $root_menu : "не_задано_меню"
+      )

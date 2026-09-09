@@ -1,0 +1,57 @@
+entities:
+  seaf.company.change.activities:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          goals:
+            title: Реализует цели
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: goals
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      goals:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: path_to_object
+          - value: linked_title
+            text: Название
+            link: path_to_object
+
+        origin:
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $objects_links := objects_links;
+          $id := $params.id;
+          $data2present := $lookup($objects_links, $id)[link_attr="realizes" and link_dir="direct"];
+          $data2present#$i.{
+                              "number": $i+1,
+                              "linked_id": linked_id,
+                              "path_to_object": "/entities/" &linked_entity_id& "/card?id=" & linked_id,
+                              "linked_title": linked_title
+                           }[];
+          )

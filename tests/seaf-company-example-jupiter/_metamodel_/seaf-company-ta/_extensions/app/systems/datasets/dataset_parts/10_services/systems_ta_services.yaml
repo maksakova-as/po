@@ -1,0 +1,29 @@
+# Назначение: Сбор технических сервисов TA, связанных с прикладными компонентами систем.
+# Используется: _extensions/app/systems/presentations/*.yaml и карточки прикладных систем.
+datasets:
+  seaf.company.ds.app.systems_ta_services:
+    description: |
+      Набор данных собирает технические сервисы TA и их связь с атрибутом app_components.
+      Используется для отображения зависимостей TA-сервисов на карточках прикладных систем.
+
+    origin:
+      objects: seaf.ds.objects_by_entities
+    source: >
+      (
+        $entities := objects;
+        $ta_keys := $keys($entities)[$substring($, 0, 16) = "seaf.company.ta."];
+
+        $ta_keys.(
+          $entity_id := $;
+          $items := $lookup($entities, $entity_id);
+          $exists($items)
+            ? $items.*.{
+                "__id__": __id__,
+                "__entity_id__": __entity_id__,
+                "title": title,
+                "description": description,
+                "app_components": app_components
+              }
+            : []
+        )[]
+      )

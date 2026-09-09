@@ -1,0 +1,36 @@
+seaf.company.artefacts:
+  jupiter.pattern.034:
+    menu: Арх.паттерны/Паттерн 034 Абстрактная фабрика
+    template: pattern_034.md
+    toc: false
+
+    title: Паттерн 034 Абстрактная фабрика
+    type: Архитектурный паттерн
+    date_created: 2025Q4
+    version: 01
+
+    status: Черновик
+
+    task_tracker_links:
+      - https://jira.sberbank.ru/browse/SEAFDEV-144
+
+    authors:
+      - name: Иванов Иван
+        comment: автор
+
+    stakeholders:
+      - role: Согласующий
+        name: Васильев Василий
+        position: Архитектор
+        description: Согласовано
+      - role: Утверждающий
+        position: гл. Архитектор
+        name: Михайлов Михаил
+
+    references:
+      - url: https://ru.wikipedia.org/wiki/%D0%90%D0%B1%D1%81%D1%82%D1%80%D0%B0%D0%BA%D1%82%D0%BD%D0%B0%D1%8F_%D1%84%D0%B0%D0%B1%D1%80%D0%B8%D0%BA%D0%B0_(%D1%88%D0%B0%D0%B1%D0%BB%D0%BE%D0%BD_%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+        title: Wikipedia.ru
+        comment: Описание паттерна "банды четырех"
+      - artefact: jupiter.adr.doc_01
+        title: выаывавы
+        comment: Основание принятия паттерна

@@ -1,0 +1,25 @@
+seaf.company.systems:
+  jupiter.app_system.aihub:
+    title: АС ИИ Хаб Юпитер
+    class: Мультиагентная система
+    categories:
+      - jupiter.fo.gen_ai
+      - jupiter.sys_group.internal_dc
+    description: Комплекс функциональности для поддержки ИИ задач
+    lifecycle_stage: Эскиз
+    criticality_level: Business Operational
+    ownership: Владеем исходным кодом
+    location: Внутренняя
+
+  jupiter.app_system.aihub_model_ds1:
+    is_part_of: jupiter.app_system.aihub
+    title: ФП Модель DeepSeek
+    description: Локальная реализация модели DeepSeek для задач тестирования
+    class: LLM-приложение
+    categories:
+      - jupiter.fo.gen_ai
+      - jupiter.sys_group.internal_dc
+    lifecycle_stage: В разработке / приобретение
+    criticality_level: Office Productivity
+    ownership: Владеем исходным кодом
+    location: Внутренняя

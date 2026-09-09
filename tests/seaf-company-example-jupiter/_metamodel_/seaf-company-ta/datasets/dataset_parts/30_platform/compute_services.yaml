@@ -1,0 +1,109 @@
+# Назначение: Единый реестр вычислительных сервисов (включая мигрированные кластеры).
+# Используется: widgets, internal_docs, auto_tests, presentations, rules, reverse и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.compute_services:
+    description: |
+      Коллекция вычислительных сервисов
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_platform_cache: seaf.company.ds.ta._cache.reverse_platform
+      kadzo_core_cache: seaf.company.ds.ta._cache.kadzo_core
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $normalize_as_compute := function($items, $source_name, $use_seaf1_prefix){
+          (
+            $prefix_refs := function($value){
+              (
+                $list := $type($value) = "array" ? $value : ($exists($value) ? [$value] : []);
+                $use_seaf1_prefix ? $list.("seaf1." & $) : $list
+              )
+            };
+            $items ? $items.$spread().(
+              $id := $keys()[0];
+              $obj := $.*[0];
+              $new_id := $use_seaf1_prefix ? ("seaf1." & $id) : $id;
+              {
+                $new_id: $merge([
+                  $obj,
+                  {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.compute_services",
+                    "__entity_title__": "Вычислительный сервис",
+                    "__object_type__": "compute_service",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.compute_services/card?id=" & $new_id,
+                    "link": "/entities/seaf.company.ta.services.compute_services/card?id=" & $new_id,
+                    "source": $obj.source ? $obj.source : $source_name,
+                    "legacy_id": $obj.legacy_id ? $obj.legacy_id : ($use_seaf1_prefix ? $id : null),
+                    "availabilityzone": $prefix_refs($obj.availabilityzone),
+                    "location": $prefix_refs($obj.location),
+                    "network_connection": $prefix_refs($obj.network_connection),
+                    "stand": $prefix_refs($obj.stand)
+                  }
+                ])
+              }
+            ) ~> $merge() : {}
+          )
+        };
+
+        $seaf2_data := "seaf2" in $sources_enabled
+          ? (
+              $seaf2_compute := objects."seaf.company.ta.services.compute_services";
+              $seaf2_clusters_legacy := objects."seaf.company.ta.services.clusters"
+                ? objects."seaf.company.ta.services.clusters"
+                : data_lake."seaf.company.ta.services.clusters";
+              $merge([
+                $normalize_as_compute($seaf2_compute, "seaf2", false),
+                $normalize_as_compute($seaf2_clusters_legacy, "seaf2", false)
+              ])
+            )
+          : {};
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_compute := data_lake."seaf.ta.services.compute_service";
+              $seaf1_clusters := data_lake."seaf.ta.services.cluster";
+              $merge([
+                $normalize_as_compute($seaf1_compute, "seaf1", true),
+                $normalize_as_compute($seaf1_clusters, "seaf1", true)
+              ])
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $reverse_elbs := reverse_platform_cache.elbs ? reverse_platform_cache.elbs : {};
+              $reverse_dmss := reverse_platform_cache.dmss ? reverse_platform_cache.dmss : {};
+              $reverse_rdss := reverse_platform_cache.rdss ? reverse_platform_cache.rdss : {};
+              $merge([
+                $normalize_as_compute($reverse_elbs, "reverse", false),
+                $normalize_as_compute($reverse_dmss, "reverse", false),
+                $normalize_as_compute($reverse_rdss, "reverse", false)
+              ])
+            )
+          : {};
+
+        $kadzo_data := "kadzo" in $sources_enabled
+          ? (
+              $kadzo_compute := kadzo_core_cache.compute_services ? kadzo_core_cache.compute_services : {};
+              $normalize_as_compute($kadzo_compute, "kadzo", false)
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "kadzo" and "kadzo" in $sources_enabled ? $kadzo_data : (
+                $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+              )
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

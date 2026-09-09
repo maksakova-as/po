@@ -1,0 +1,115 @@
+entities:
+  kadzo.components:
+    title: Технические компоненты
+    description: Технический компонент - объект управления в IT-архитектуре, имеющий один или несколько исполняемых экземпляров на вычислительных ресурсах и/или ресурсах хранения данных.
+    schema:
+      $defs:
+        kadzo.technologies:
+          title: Технологии
+          type: object
+          properties:
+            technologies:
+              title: Используемые технологии
+              type: array
+              minItems: 1
+              items:
+                type: string
+
+        kadzo.components_interactions:
+          title: Исходящие взаимодействия
+          type: object
+          patternProperties:
+            "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+              type: object
+              properties:
+                title:
+                  title: Наименование
+                  type: string
+                  minLength: 2
+                description:
+                  title: Описание
+                  type: string
+                  minLength: 2
+                to:
+                  title: "Компонент, c которым осуществляется взаимодействие"
+                  type: string
+                  $ref: "#/$rels/kadzo.components.component"
+                point:
+                  title: Точка подключения
+                  type: string
+                  $ref: "#/$rels/kadzo.connection_points.point"
+              required:
+                - title
+              anyOf:
+                - required:
+                    - to
+                - required:
+                    - point
+
+        kadzo.components_technical_usage:
+          title: Использование тех сервиса
+          type: object
+          patternProperties:
+            "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+              type: object
+              properties:
+                title:
+                  title: Наименование
+                  type: string
+                  minLength: 2
+                to:
+                  title: "Компонент, c которым осуществляется взаимодействие"
+                  type: string
+                  $ref: "#/$rels/kadzo.v2023.tech_services.tech_services"
+              required:
+                - to
+
+        props_interactions:
+          type: object
+          properties:
+            interactions:
+              title: Исходящие взаимодействия
+              type: object
+              $ref: "#/$defs/kadzo.components_interactions"
+
+        props_technical_usage:
+          type: object
+          properties:
+            technical_usage:
+              title: Технологические взаимодействия
+              type: object
+              $ref: "#/$defs/kadzo.components_technical_usage"
+
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.tech_component.type"
+            - $ref: "#/$defs/kadzo.technologies"
+            - $ref: "#/$defs/props_interactions"
+            - $ref: "#/$defs/props_technical_usage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+              minLength: 2
+            description:
+              title: Описание
+              type: string
+              minLength: 2
+            is_part_of:
+              title: Логический родитель (объект управления), в состав которого входит технический компонент
+              type: string
+              oneOf:
+                - $ref: "#/$rels/kadzo.v2023.systems.systems"
+                - $ref: "#/$rels/kadzo.v2023.kb_systems.kb_systems"
+                - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services"
+          required:
+            - title
+
+    objects:
+      component:
+        route: "/"
+        title: Прикладные компоненты
+        symbol: "cmp"

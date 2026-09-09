@@ -1,0 +1,89 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $subnet_ref := function($subnet_id){
+    (
+      $norm := $normalize($subnet_id);
+      $norm != "" ? "reverse.network." & $norm : null
+    )
+  };
+  $dc_ref := function($dc){
+    (
+      $norm := $normalize($dc);
+      $norm != "" ? "reverse.dc." & $norm : null
+    )
+  };
+  $az_ref := function($az){
+    (
+      $val := $type($az) = "string" ? $trim($az) : "";
+      $val != "" ? "reverse.dc_az." & $val : null
+    )
+  };
+  $networks := $eval(datasets."reverse2seaf2.ds.ta.reverse.networks".source);
+  $elbs := $."seaf.ta.reverse.cloud_ru.advanced.elbs".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $elbs.(
+    $record := value;
+    $source_key := key;
+    $raw_id := $lookup($record, "id");
+    $id_part := $raw_id != null and $raw_id != "" ? $raw_id : $source_key;
+    $component_id := "reverse.netcomp.elb." & $normalize($id_part);
+    $tenant := $lookup($record, "tenant");
+    $dc_norm := $normalize($lookup($record, "DC"));
+    $network_conn := $subnet_ref($lookup($record, "subnet_id"));
+    $network_entry := $network_conn != null and $exists($lookup($networks, $network_conn))
+      ? $lookup($networks, $network_conn)
+      : null;
+    $network_location := $network_entry != null ? $network_entry.location : [];
+    $network_az := $network_entry != null ? $network_entry.availabilityzone : [];
+    $network_segment := $network_entry != null and $count($network_entry.segment) > 0
+      ? $network_entry.segment[0]
+      : null;
+    $fallback_location := $dc_norm != "" ? ["reverse.dc." & $dc_norm] : [];
+    $fallback_segment := $dc_norm != "" ? "reverse.segment." & $dc_norm & ".INT-NET" : null;
+    $az_candidates := [
+      $lookup($record, "availability_zone"),
+      $lookup($record, "az")
+    ];
+    $fallback_az := $az_candidates.(
+      $az_ref($)
+    )[ $ != null ] ~> $distinct;
+    $description_parts := [
+      $lookup($record, "description"),
+      $lookup($record, "address") != null and $lookup($record, "address") != "" ? "Internal IP: " & $lookup($record, "address") : "",
+      $lookup($record, "operating_status") != null and $lookup($record, "operating_status") != "" ? "Operating Status: " & $lookup($record, "operating_status") : "",
+      $lookup($record, "provisioning_status") != null and $lookup($record, "provisioning_status") != "" ? "Provisioning Status: " & $lookup($record, "provisioning_status") : "",
+      $tenant != null and $tenant != "" ? "Tenant: " & $tenant : ""
+    ][ $ != "" ];
+    $description := $description_parts != [] ? $join($description_parts, "\n") : "";
+    {
+      ($component_id): {
+        "__id__": $component_id,
+        "__entity_id__": "seaf.company.ta.components.networks",
+        "__entity_title__": "Network Device (reverse import)",
+        "__company_id__": $tenant,
+        "title": $lookup($record, "name"),
+        "description": $description,
+        "external_id": $raw_id,
+        "model": "Cloud Load Balancer",
+        "realization_type": "Managed",
+        "type": "ELB",
+        "network_connection": $network_conn != null ? [$network_conn] : [],
+        "segment": $network_segment != null ? $network_segment : $fallback_segment,
+        "location": $count($network_location) > 0 ? $network_location : $fallback_location,
+        "availabilityzone": $count($network_az) > 0 ? $network_az : $fallback_az,
+        "address": $lookup($record, "address"),
+        "source_key": $source_key,
+        "resource_id": $raw_id,
+        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.elbs"
+      }
+    }
+  )[] ~> $merge()
+)

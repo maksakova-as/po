@@ -1,0 +1,12 @@
+(
+  $segments := { "a": {"__id__": "a"} };
+  $missing := $lookup($segments, "b");
+  $empty := {};
+  {
+    "lookup_missing": $missing,
+    "lookup_missing_type": $type($missing),
+    "exists_missing": $exists($missing),
+    "empty_id": $empty.__id__,
+    "exists_empty_id": $exists($empty.__id__)
+  }
+)

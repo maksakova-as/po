@@ -1,0 +1,151 @@
+# Назначение: Единый реестр сетевых устройств и виртуальных сетевых компонентов.
+# Используется: reverse, widgets, auto_tests, rules, ta, presentations и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.network_components:
+    description: |
+      ??????? ??????????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_network_cache: seaf.company.ds.ta._cache.reverse_network
+      kadzo_core_cache: seaf.company.ds.ta._cache.kadzo_core
+      vmware_network_alias_idx: seaf.company.ds.ta._idx.network_vmware_alias
+      cfg: seaf.company.ds.ta._config
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+        $networks := networks;
+
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dedupe_key := function($obj){
+          $normalize($obj.legacy_id) != "" ? $normalize($obj.legacy_id) : (
+            $normalize($obj.source_key) != "" ? $normalize($obj.source_key) : (
+              $normalize($obj.resource_id) != "" ? $normalize($obj.resource_id) : (
+                $normalize($obj.external_id) != "" ? $normalize($obj.external_id) : $normalize($obj.__id__)
+              )
+            )
+          )
+        };
+
+        $resolve_network_id := function($id){
+          $id = null or $id = ""
+            ? null
+            : (
+                $exists($lookup($networks, $id))
+                  ? $id
+                  : (
+                      $lookup(vmware_network_alias_idx, $id)
+                    )
+              )
+        };
+
+        $seaf2_data := objects."seaf.company.ta.components.networks";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+              $seaf1_raw := data_lake."seaf.ta.components.network";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: $merge([
+                    {
+                      "__id__": $new_id,
+                      "__entity_id__": "seaf.company.ta.components.networks",
+                      "__link_to_card__": "/entities/seaf.company.ta.components.networks/card?id=" & $new_id,
+                      "legacy_id": $id,
+                      "source": "seaf1"
+                    },
+                    $obj,
+                    {
+                      "location": $to_list($obj.location).("seaf1." & $),
+                      "network_connection": $to_list($obj.network_connection).("seaf1." & $),
+                      "segment": $exists($obj.segment) ? "seaf1." & $string($obj.segment) : null
+                    }
+                  ])
+                }
+              ) ~> $merge() : {}
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              reverse_network_cache.netcomps_all ? reverse_network_cache.netcomps_all : {}
+            )
+          : {};
+
+        $kadzo_data := "kadzo" in $sources_enabled
+          ? (
+              kadzo_core_cache.network_components ? kadzo_core_cache.network_components : {}
+            )
+          : {};
+
+        $seaf1_filtered := $seaf1_data
+          ? (
+              /* Keep dedupe only against seaf2 to avoid expensive multi-source N scans. */
+              $seaf2_keys := $seaf2_data ? $seaf2_data.*.($dedupe_key($)) : [];
+              $seaf1_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $k in $seaf2_keys ? {} : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+        $reverse_filtered := $reverse_data;
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_filtered : (
+              $src = "kadzo" and "kadzo" in $sources_enabled ? $kadzo_data : (
+                $src = "reverse" and "reverse" in $sources_enabled ? $reverse_filtered : {}
+              )
+            )
+          )
+        );
+
+        $merged := $merge($merge_list);
+        $merged.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          $net_refs := $to_list($obj.network_connection).(
+            $resolved := $resolve_network_id($);
+            $resolved != null and $exists($lookup($networks, $resolved)) ? $resolved : null
+          )[$ != null] ~> $distinct();
+          $segment_from_network := $net_refs.(
+            $net := $lookup($networks, $);
+            $exists($net.segment)
+              ? ($type($net.segment) = "array" ? $net.segment[0] : $net.segment)
+              : null
+          )[0];
+          $primary_location := $to_list($obj.location)[0];
+          $segment_value := $exists($obj.segment) and $obj.segment != ""
+            ? ($type($obj.segment) = "array" ? $obj.segment[0] : $obj.segment)
+            : (
+                $segment_from_network != null and $segment_from_network != ""
+                  ? $segment_from_network
+                  : (
+                      $contains($string($id), "reverse.netcomp.vmwareonprem.") and $primary_location != null
+                        ? "reverse.segment.vmware." & $replace($string($primary_location), /^seaf1\./, "") & ".VMWARE-LAN"
+                        : null
+                    )
+              );
+          {
+            $id: $merge([
+              $obj,
+              {
+                "network_connection": $net_refs,
+                "segment": $segment_value
+              }
+            ])
+          }
+        ) ~> $merge()
+      )

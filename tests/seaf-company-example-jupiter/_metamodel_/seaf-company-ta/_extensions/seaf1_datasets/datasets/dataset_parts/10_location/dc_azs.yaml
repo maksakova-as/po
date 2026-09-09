@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.dc_azs` (dc azs) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.dc_azs
+datasets:
+  seaf.company.ds.ta.dc_azs:
+    description: |
+      Коллекция зон доступности компании
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.services.dc_azs") ? by_entities."seaf.company.ta.services.dc_azs" : {};
+        $list := data_lake."seaf.ta.services.dc_az";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.services.dc_azs",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.services.dc_azs"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

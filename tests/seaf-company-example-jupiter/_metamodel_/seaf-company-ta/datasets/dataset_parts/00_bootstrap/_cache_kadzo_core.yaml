@@ -1,0 +1,33 @@
+# Назначение: Промежуточный кеш KADZO-данных, используемых в объединенных TA-датасетах.
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._cache.kadzo_core:
+    description: |
+      Кэш kadzo датасетов для переиспользования в TA датасетах.
+    origin:
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        "kadzo" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $ctx := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              {
+                "compute_services": $eval($datasets."kadzo.ds.ta.compute_services".source, $ctx),
+                "storages": $eval($datasets."kadzo.ds.ta.storages".source, $ctx),
+                "backups": $eval($datasets."kadzo.ds.ta.backups".source, $ctx),
+                "monitoring": $eval($datasets."kadzo.ds.ta.monitoring".source, $ctx),
+                "network_components": $eval($datasets."kadzo.ds.ta.network_components".source, $ctx),
+                "softwares": $eval($datasets."kadzo.ds.ta.softwares".source, $ctx)
+              }
+            )
+          : {}
+      )

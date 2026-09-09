@@ -1,0 +1,98 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.network_components` (network components) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.network_components:
+    description: |
+      Maps VMware Distributed vSwitches into SEAF2 network components.
+    origin:
+      data_lake: ($)
+      reverse_networks: reverse2seaf2.ds.ta.reverse.vmware.networks
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $normalize_vdc := function($id){
+          $id ? $replace($id, /^vdc\./, "vdcs.") : $id
+        };
+        $vdcs := data_lake."seaf.ta.reverse.vmwareonprem.vdcs";
+        $dvportgroups := data_lake."seaf.ta.reverse.vmwareonprem.dvportgroups";
+        $networks := data_lake."seaf.ta.services.network";
+        $vdc_to_dc := $vdcs ? $vdcs.$spread().(
+          $vdc_id := $normalize_vdc($keys()[0]);
+          $dc_id := $.*[0].dc;
+          $dc_norm := $dc_id ? $normalize($dc_id) : null;
+          $dc_ref := $dc_norm != null ? "seaf1." & $dc_norm : null;
+          {
+            ($vdc_id): $dc_ref
+          }
+        ) ~> $merge() : {};
+        $components := data_lake."seaf.ta.components.network";
+        $normalize_dvs := function($raw){
+          $raw
+            ? (
+                $raw
+                  ~> $replace(/\.([^.]*?)dvswitch\./i, ".$1.network.")
+                  ~> $replace(/(^|\.)dvswitch\./i, ".network.")
+                  ~> $replace(/dvswitch\./i, "network.")
+              )
+            : null
+        };
+        $dvpg_to_dvs := $dvportgroups ? $dvportgroups.$spread().(
+          $dv := $.*[0];
+          $orig := $dv.original_id;
+          $dvs := $normalize_dvs($dv.dvswitch);
+          $orig != null and $dvs != null ? { ($orig): $dvs } : {}
+        ) ~> $merge() : {};
+        $components ? $components.$spread().(
+          $key := $keys()[0];
+          $obj := $.*[0];
+          $reverse := $obj.reverse;
+          $reverse != null and $reverse.reverse_type = "VMwareOnprem"
+            ? (
+                $rid := "reverse.netcomp.vmwareonprem." & $normalize($key);
+                $vdc_id := $normalize_vdc($reverse.vdc);
+                $dc_ref := $vdc_id != null ? $lookup($vdc_to_dc, $vdc_id) : null;
+                $seg_ref := $dc_ref != null
+                  ? "reverse.segment.vmware." & $replace($dc_ref, /^seaf1\./, "") & ".VMWARE-LAN"
+                  : null;
+                $net_ids := $networks ? $networks.$spread().(
+                  $nkey := $keys()[0];
+                  $n := $.*[0];
+                  $nrev := $n.reverse;
+                  $nrev != null and $nrev.reverse_type = "VMwareOnprem"
+                    ? (
+                        $dvs := $lookup($dvpg_to_dvs, $n.original_id);
+                        $dvs = $key
+                          ? "reverse.network.vmwareonprem." & $normalize($nkey)
+                          : null
+                      )
+                    : null
+                )[] : [];
+                $net_ids := $distinct($net_ids[$ != null]);
+                {
+                  ($rid): {
+                    "__id__": $rid,
+                    "__entity_id__": "seaf.company.ta.components.networks",
+                    "__entity_title__": "Network Component (vmware reverse import)",
+                    "__link_to_card__": "/entities/seaf.company.ta.components.networks/card?id=" & $rid,
+                    "link": "/entities/seaf.company.ta.components.networks/card?id=" & $rid,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "type": "Коммутатор (свитч)",
+                    "realization_type": $obj.realization_type ? $obj.realization_type : "Виртуальный",
+                    "location": $dc_ref != null ? [$dc_ref] : [],
+                    "network_connection": $net_ids,
+                    "segment": $seg_ref,
+                    "resource_id": $obj.id,
+                    "source_key": $key,
+                    "reverse_source": "seaf.ta.components.network",
+                    "is_reverse": true
+                  }
+                }
+              )
+            : {}
+        ) ~> $merge()
+        : {}
+      )
+

@@ -1,0 +1,17 @@
+imports:
+  - goals.yaml
+  - strategy.yaml
+  - channels.yaml
+  - clients.yaml
+  - products.yaml
+  - processes.yaml
+  - business_objects.yaml
+  - data_objects.yaml
+  - functions.yaml
+  - tasks.yaml
+  - groups.yaml
+  - softwares.yaml
+  - systems.yaml
+  - kb_systems.yaml
+  - endpoints.yaml
+  - integrations.yaml

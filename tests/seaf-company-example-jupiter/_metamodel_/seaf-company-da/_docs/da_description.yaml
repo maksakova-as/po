@@ -1,0 +1,6 @@
+docs:
+  seaf.company.doc.da.description:
+    type: markdown
+    location: /SEAF/Документация/Архитектура данных
+    order: 90000
+    source: da_description.md

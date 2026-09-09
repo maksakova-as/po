@@ -1,0 +1,61 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.network_segments` (network segments) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.network_segments:
+    description: |
+      For every reverse datacenter creates a predefined list of network segments (DMZ, INT-NET, WAN, etc.) so that imported networks can reference them later.
+    source: |
+      (
+        $segment_names := [
+          "EXTERNAL-NET",
+          "INTERNET",
+          "TRANSPORT-WAN",
+          "INET-EDGE",
+          "EXT-WAN-EDGE",
+          "INT-WAN-EDGE",
+          "DMZ",
+          "INT-NET",
+          "INT-SECURITY-NET"
+        ];
+        $dcs := $eval(datasets."reverse2seaf2.ds.ta.reverse.dcs".source);
+        $dc_items := $dcs.$spread().{
+          "id": $keys()[0],
+          "dc": $.*[0]
+        };
+        $prefix := "reverse.dc.";
+        $dc_items.(
+          $dc_id := id;
+          $dc := dc;
+          $company := $lookup($dc, "__company_id__");
+          $title := $lookup($dc, "title");
+          $has_prefix := $substring($dc_id, 0, $length($prefix)) = $prefix;
+          $dc_code := $has_prefix ? $substring($dc_id, $length($prefix)) : $dc_id;
+          $location_ref := $has_prefix ? $dc_id : "reverse.dc." & $dc_code;
+          $segment_names.(
+            $segment := $;
+            $seg_id := "reverse.segment." & $dc_code & "." & $segment;
+            {
+              ($seg_id): {
+                "__id__": $seg_id,
+                "__entity_id__": "seaf.company.ta.services.network_segments",
+                "__entity_title__": "Network Segment (reverse import)",
+                "__company_id__": $company,
+                "__link_to_card__": "/entities/seaf.company.ta.services.network_segments/card?id=" & $seg_id,
+                "title": $segment & (
+                  $title != null and $title != "" ? " (" & $title & ")" : ""
+                ),
+                "location": [$location_ref],
+                "zone": $segment,
+                "sber": {
+                  "location": $location_ref,
+                  "zone": $segment
+                },
+                "type": "Default",
+                "source_key": $dc_code & ":" & $segment,
+                "reverse_source": "seaf.ta.reverse.servers_list"
+              }
+            }
+          )
+        )[] ~> $merge()
+      )
+

@@ -1,0 +1,59 @@
+# Назначение: Логика построения логических связанностей между TA-сущностями.
+# Используется: auto_tests, presentations, widgets, ta, reverse, internal_docs и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.logical_links:
+    description: |
+      Логические связи между объектами
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_network_cache: seaf.company.ds.ta._cache.reverse_network
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.logical_links";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.logical_link";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.logical_links",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.logical_links/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "source_obj": $obj.source_obj ? "seaf1." & $obj.source_obj : null,
+                    "target_obj": $obj.target_obj ? $obj.target_obj.("seaf1." & $) : [],
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              reverse_network_cache.logical_links ? reverse_network_cache.logical_links : {}
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

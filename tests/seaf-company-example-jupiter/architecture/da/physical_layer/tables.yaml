@@ -1,0 +1,207 @@
+seaf.company.da.physical_tables:
+
+  jupiter.pht.model:
+    title: Модель изделия
+    description: уникальное кодовое название модели одежды
+    type: TABLE
+    system: jupiter.app_system.mes_clothing
+    lifecycle_stage: Используется
+    dbms: POSTGRESQL
+    database: MES_CLOTHING
+    schema_name: Public
+    cols_count: 2
+    rows_count: 15
+    loc_attr:
+      - Контур ПРОМ
+      - ХОСТ DDFF-02-0990-1267554
+    logical_entities:
+      - jupiter.le.model
+    attributes:
+      article:
+        title: Артикул
+        description: код артикула одежды
+        type: string
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: true
+        pk_flag: true
+        fk_flag: false
+      material:
+        title: Материал
+        description: уникальное кодовое название материала для изготовления одежды
+        type: string
+        lifecycle_stage: Используется
+        pdn_flag: true
+        cde_flag: false
+      color:
+        title: color
+        type: smallint
+        fk_flag: true
+        linked_table: jupiter.pht.color
+        linked_key: id
+        lifecycle_stage: Используется
+      size:
+        title: size
+        type: smallint
+        fk_flag: true
+        linked_table: jupiter.pht.size
+        linked_key: id
+        lifecycle_stage: Используется
+      employee:
+        title: employee
+        type: smallint
+        fk_flag: true
+        linked_table: jupiter.pht.employee
+        linked_key: id
+        lifecycle_stage: Используется
+
+  jupiter.pht.color:
+    title: Основной цвет
+    description: основной цвет изделия
+    lifecycle_stage: Используется
+    logical_entities:
+      - jupiter.le.color
+    system: jupiter.app_system.mes_clothing
+    pdn_flag: false
+    cde_flag: false
+    dbms: POSTGRESQL
+    database: MES_CLOTHING
+    schema_name: Public
+    cols_count: 5
+    rows_count: 5
+    loc_attr:
+      - Контур ПРОМ
+      - ХОСТ DDFF-02-0990-1267554
+    attributes:
+      id:
+        title: id
+        type: smallint
+        pk_flag: true
+        lifecycle_stage: Используется
+      name:
+        title: Название цвета
+        description: Название цвета
+        type: string
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: false
+      valueR:
+        title: Значение R
+        description: красный
+        type: integer
+        pdn_flag: false
+        cde_flag: false
+      valueG:
+        title: Значение G
+        description: зелёный
+        type: integer
+        pdn_flag: false
+        cde_flag: false
+      valueB:
+        title: Значение B
+        description: синий
+        type: integer
+        pdn_flag: false
+        cde_flag: false
+  jupiter.pht.size:
+    title: Размер
+    description: размер одежды
+    system: jupiter.app_system.mes_clothing
+    lifecycle_stage: Используется
+    dbms: POSTGRESQL
+    database: MES_CLOTHING
+    schema_name: Public
+    cols_count: 4
+    rows_count: 11
+    loc_attr:
+      - Контур ПРОМ
+      - ХОСТ DDFF-02-0990-1267554
+    logical_entities:
+      - jupiter.le.size
+    attributes:
+      id:
+        title: id
+        type: smallint
+        pk_flag: true
+        lifecycle_stage: Используется
+      name_rus:
+        title: Наименование Российское
+        description: 32-56
+        type: smallint
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: false
+      name_int:
+        title: Наименование Буквенное
+        description: S-XL
+        type: string
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: false
+
+  jupiter.pht.employee:
+    title: Сотрудник
+    description: сотрудник компании
+    system: jupiter.app_system.mes_clothing
+    lifecycle_stage: Используется
+    dbms: POSTGRESQL
+    database: MES_STAFF
+    schema_name: Public
+    logical_entities:
+      - jupiter.le.employee
+      - jupiter.le.designer
+      - jupiter.le.technician
+    attributes:
+      id:
+        title: id
+        type: smallint
+        pk_flag: true
+        lifecycle_stage: Используется
+      surname:
+        title: Фамилия
+        type: string
+        pdn_flag: true
+        cde_flag: true
+      name:
+        title: Имя
+        type: string
+        pdn_flag: true
+        cde_flag: true
+      second_name:
+        title: Отчество
+        type: string
+        pdn_flag: true
+        cde_flag: true
+      position:
+        title: должность
+        type: string
+        pdn_flag: false
+        cde_flag: false
+        lifecycle_stage: Используется
+      category:
+        title: категория/разряд
+        type: smallint
+        fk_flag: true
+        linked_table: jupiter.pht.category
+        linked_key: id
+        lifecycle_stage: Используется
+  jupiter.pht.category:
+    title: Разряд
+    description: справочник разрядов и специализацией
+    system: jupiter.app_system.mes_clothing
+    lifecycle_stage: Используется
+    dbms: POSTGRESQL
+    database: MES_STAFF
+    schema_name: Public
+    logical_entities:
+      - jupiter.le.technician
+      - jupiter.le.designer
+    attributes:
+      id:
+        title: id
+        type: smallint
+        pk_flag: true
+        lifecycle_stage: Используется
+      category:
+        title: категория/разряд
+        type: string

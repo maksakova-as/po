@@ -1,0 +1,55 @@
+seaf.company.da.logical_links:
+
+  jupiter.ll.model_size:
+    title: модель-размер
+    description: модель, размер
+    entity_a: jupiter.le.model
+    entity_b: jupiter.le.size
+    type: ассоциация
+    multiplicity_a: 0:N
+    multiplicity_b: 1:N
+    lifecycle_stage: Используется
+    visual_style: <->
+
+  jupiter.ll.model_color:
+    title: модель-цвет
+    description: модель, цвет
+    entity_a: jupiter.le.model
+    entity_b: jupiter.le.color
+    type: ассоциация
+    multiplicity_a: 0:N
+    multiplicity_b: 1:1
+    lifecycle_stage: Используется
+    visual_style: <->
+
+  jupiter.ll.model_designer:
+    title: модель-дизайнер
+    description: модель, дизайнер
+    entity_a: jupiter.le.model
+    entity_b: jupiter.le.designer
+    type: зависимость
+    multiplicity_a: 0:N
+    multiplicity_b: 1:1
+    lifecycle_stage: Используется
+    visual_style: <->
+
+  jupiter.ll.employee_designer:
+    title: сотрудник-дизайнер
+    description: сотрудник, дизайнер
+    entity_a: jupiter.le.employee
+    entity_b: jupiter.le.designer
+    type: наследование
+    multiplicity_a: 1:1
+    multiplicity_b: 0:1
+    lifecycle_stage: Используется
+    visual_style: <->
+  jupiter.ll.employee_technician:
+    title: сотрудник-технолог
+    description: сотрудник, технолог
+    entity_a: jupiter.le.employee
+    entity_b: jupiter.le.technician
+    type: наследование
+    multiplicity_a: 1:1
+    multiplicity_b: 0:1
+    lifecycle_stage: Используется
+    visual_style: <->

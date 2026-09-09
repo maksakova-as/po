@@ -1,0 +1,9 @@
+docs:
+  seaf.toolkit.doc.datasets_tree:
+    location: "/SEAF/Инструменты/MM Viewer/Дерево датасетов"
+    order: 91000
+    template: templates/ds_tree_template.puml
+    type: plantuml
+    title: "Иерархия датасетов"
+    origin: seaf.toolkit.ds.datasets_links
+    source: ($)

@@ -1,0 +1,27 @@
+seaf.company.artefacts:
+
+  jupiter.artefact.it_strategy2023:
+    title: "IT-стратегия 2023"
+    type: Стратегия
+    description: Документ ИТ-стратегии компании
+    lifecycle_stage: Используется
+    used_by:
+      - jupiter.activity.2025_l2p
+
+  jupiter.artefact.2025_sa_2028:
+    title: "Стратегическая архитектура 2025-2028"
+    type: Стратегическая архитектура
+    description: Документ стратегической архитектуры компании
+    lifecycle_stage: Используется и развивается
+    used_by:
+      - jupiter.activity.2025_l2p
+
+  jupiter.artefact.2025_kafo:
+    title: "Концептуальная архитектура программы"
+    type: Концептуальная архтитектура (КА)
+    lifecycle_stage: Создается
+    uses:
+      - jupiter.artefact.2025_sa_2028
+    used_by:
+      - jupiter.activity.2025_l2p_01
+      - jupiter.activity.2025_l2p_02

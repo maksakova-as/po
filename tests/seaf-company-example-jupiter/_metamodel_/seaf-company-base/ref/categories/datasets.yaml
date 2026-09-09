@@ -1,0 +1,30 @@
+datasets:
+  seaf.company.ds.categories:
+    description: |
+      Датасет формирует коллекцию всех объектов
+
+    origin:
+      objects_by_entities: seaf.ds.objects_by_entities
+      all_objects: seaf.ds.objects
+
+    source: >
+      (
+      $categories := objects_by_entities."seaf.company.categories";
+      $all_objects := all_objects;
+      
+      /* функция поиска корневой категории */
+      $get_root := function ($cat_val) {(
+          $parent := $cat_val.is_part_of;
+          $exists($parent) and $parent != null and $parent != "" 
+              ? $get_root($all_objects.$lookup($parent)) 
+              : $cat_val.__id__;
+      )};
+      
+      /* формируем коллекцию и добавляем новое поле*/
+      $result := $each($categories, function ($val, $key) {(
+          {
+            $key: $merge([$val, {"root_category": $get_root($val) } ])
+          }
+      )})[]~>$merge();
+      $result;
+      )

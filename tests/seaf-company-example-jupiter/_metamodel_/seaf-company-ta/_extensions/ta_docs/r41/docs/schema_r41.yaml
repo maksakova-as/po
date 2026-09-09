@@ -1,0 +1,27 @@
+docs:
+  seaf.ta.docs.schema_r41:
+    description: Схема Р41 (seaf2drawio)
+    type: seaf2drawio
+    drawio_url_params:
+      chrome: 1
+    origin:
+      diff: seaf.company.ds.ta.schema_r41_seaf2_diff
+      dataset: seaf.company.ds.ta.schema_r41_seaf2
+    source: >
+      (
+        {
+          "dataset": dataset,
+          "save_path": "./save_things.yaml",
+          "with_save": true
+        }
+      )
+
+datasets:
+  seaf.company.ds.ta.schema_r41_save_location:
+    "default": "./save_things.yaml"
+
+  seaf.company.ds.ta.schema_r41_seaf2_diff:
+    source: ./diff.yaml
+#    source: ../examples/seaf_example.yaml
+#    source: ../examples/schema_r41_data.yaml
+#    source: seaf.company.ds.ta.schema_r41

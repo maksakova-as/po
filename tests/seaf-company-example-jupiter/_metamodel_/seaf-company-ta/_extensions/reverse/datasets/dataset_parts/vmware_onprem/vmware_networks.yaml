@@ -1,0 +1,80 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.networks` (networks) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.networks:
+    description: |
+      Converts VMware On-Prem networks into SEAF2 networks with reverse IDs.
+    origin:
+      data_lake: ($)
+      reverse_dcs: reverse2seaf2.ds.ta.reverse.vmware.dcs
+      reverse_segments: reverse2seaf2.ds.ta.reverse.vmware.network_segments
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $normalize_vdc := function($id){
+          $id ? $replace($id, /^vdc\./, "vdcs.") : $id
+        };
+        $to_list := function($value){
+          $type($value) = "array" ? $value : ($exists($value) ? [$value] : [])
+        };
+        $vdcs := data_lake."seaf.ta.reverse.vmwareonprem.vdcs";
+        $networks := data_lake."seaf.ta.services.network";
+        $dcs := $exists(reverse_dcs)
+          ? reverse_dcs
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.dcs".source);
+        $segments := $exists(reverse_segments)
+          ? reverse_segments
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.network_segments".source);
+        $vdc_to_dc := $vdcs ? $vdcs.$spread().(
+          $vdc_id := $keys()[0];
+          $dc_id := $.*[0].dc;
+          $dc_key := $normalize($dc_id);
+          $dc_ref := $dc_key != "" ? "seaf1." & $dc_key : null;
+          {
+            ($vdc_id): $dc_ref
+          }
+        ) ~> $merge() : {};
+        $networks ? $networks.$spread().(
+          $key := $keys()[0];
+          $obj := $.*[0];
+          $reverse := $obj.reverse;
+          $reverse != null and $reverse.reverse_type = "VMwareOnprem"
+            ? (
+                $id_part := $normalize($key);
+                $rid := "reverse.network.vmwareonprem." & $id_part;
+                $vdc_id := $normalize_vdc($reverse.vdc);
+                $dc_ref := $vdc_id != null ? $lookup($vdc_to_dc, $vdc_id) : null;
+                $seg_ref := $dc_ref != null
+                  ? "reverse.segment.vmware." & $replace($dc_ref, /^seaf1\./, "") & ".VMWARE-LAN"
+                  : null;
+                {
+                  ($rid): {
+                    "__id__": $rid,
+                    "__entity_id__": "seaf.company.ta.services.networks",
+                    "__entity_title__": "Network (vmware reverse import)",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.networks/card?id=" & $rid,
+                    "link": "/entities/seaf.company.ta.services.networks/card?id=" & $rid,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "type": $obj.type ? $obj.type : "LAN",
+                    "ipnetwork": $obj.ipnetwork,
+                    "vlan": $obj.vlan,
+                    "lan_type": $obj.lan_type ? $obj.lan_type : "reverse-import",
+                    "provider": $obj.provider,
+                    "wan_ip": $obj.wan_ip,
+                    "location": $dc_ref != null ? [$dc_ref] : [],
+                    "segment": $seg_ref != null ? [$seg_ref] : [],
+                    "external_id": $obj.original_id ? $obj.original_id : $obj.id,
+                    "source_key": $key,
+                    "reverse_source": "seaf.ta.services.network",
+                    "is_reverse": true
+                  }
+                }
+              )
+            : {}
+        ) ~> $merge()
+        : {}
+      )
+

@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.dc_regions` (dc regions) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.dc_regions
+datasets:
+  seaf.company.ds.ta.dc_regions:
+    description: |
+      Коллекция регионов ЦОДов компании
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.services.dc_regions") ? by_entities."seaf.company.ta.services.dc_regions" : {};
+        $list := data_lake."seaf.ta.services.dc_region";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.services.dc_regions",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.services.dc_regions"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

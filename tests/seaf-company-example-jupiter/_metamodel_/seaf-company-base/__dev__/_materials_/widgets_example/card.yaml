@@ -1,0 +1,23 @@
+entities:
+  kadzo.components:
+    presentations:
+      card:
+        title: Карточка компонента
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор компонента
+              type: string
+          required:
+            - id
+        #        origin: kadzo.v2023
+        type: mkr-grid
+
+        #origin: kadzo.v2023.__presentations__.widgets
+        source: >
+          (
+              $ctx := $;
+              $id := $params.id;
+              $widgets_on_card($ctx.entities."kadzo.components".presentations.card, "id", $id);
+          )

@@ -1,0 +1,52 @@
+# Назначение: Логика построения сетевых связанностей между сетями и компонентами.
+# Используется: auto_tests, ta, widgets, internal_docs, presentations, docs.
+datasets:
+  seaf.company.ds.ta.network_links:
+    description: |
+      Сетевые связанности
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.network_links";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.network_link";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.network_links",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.network_links/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "source_obj": $obj.source_obj ? "seaf1." & $obj.source_obj : null,
+                    "target_obj": $obj.target_obj ? "seaf1." & $obj.target_obj : null,
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "reverse" and "reverse" in $sources_enabled ? {} : {}
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

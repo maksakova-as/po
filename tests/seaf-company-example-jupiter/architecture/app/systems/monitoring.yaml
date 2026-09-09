@@ -1,0 +1,27 @@
+seaf.company.systems:
+  jupiter.app_system.monitoring_platform:
+    title: АС Платформа мониторинга
+    description: Корпоративная система мониторинга и журналирования для технических сервисов и инфраструктуры
+    class: Средства мониторинга
+    ownership: Владеем экземпляром
+    target_status: Целевая
+    location: Внутренняя
+    categories:
+      - jupiter.fo.it
+      - jupiter.sys_group.internal_dc
+    criticality_level: Business Critical
+    lifecycle_stage: Промышленная эксплуатация
+
+seaf.company.app.systems:
+  jupiter.app_system.monitoring_platform:
+    title: АС Платформа мониторинга
+    description: Корпоративная система мониторинга и журналирования для технических сервисов и инфраструктуры
+    class: Средства мониторинга
+    ownership: Владеем экземпляром
+    target_status: Целевая
+    location: Внутренняя
+    categories:
+      - jupiter.fo.it
+      - jupiter.sys_group.internal_dc
+    criticality_level: Business Critical
+    lifecycle_stage: Промышленная эксплуатация

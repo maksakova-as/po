@@ -1,0 +1,643 @@
+docs:
+  ai_001.other.examples_from_marat:
+    type: ai-chat
+    location: AI / OTHER / Примеры от Марата
+    scenarios:
+      dzo_architecture_analyzer_ad:
+        title: Анализатор архитектуры KA
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Выдай ответ jsonata запроса, выдумай сам ID компании.
+          Тебе доступна функция jsonata_tool
+        tools:
+          - name: jsonata
+            description: Выдает ответ JSONata запроса
+            query: >
+              (
+                  "What do you want?"
+              )
+
+
+      dzo_architecture_analyzer_d:
+        title: Анализатор архитектуры ZO
+        type: gigachat
+        model: GigaChat-2-Pro
+        system_prompt: |
+          Ты — DZO Architecture Analyzer. По одному запросу пользователя формируешь полный Markdown-отчёт
+          об изменениях в концептуальной архитектуре дочернего общества.
+
+          Помни, что у тебя есть следующие функции:
+          get_domain_info: метаданные домена и версии архитектуры
+          get_increment_summary: инкремент изменений (new/changed/deprecated)
+          get_strategies_context: стратегии, цели и критичность систем
+          get_structure_check: полнота секций манифеста
+          get_dependencies: критичные зависимости и шлюзы интеграций
+
+          Помни:
+          - вызывай функции последовательно в указанном порядке
+          - перед формированием отчёта перепроверь числа из return_parameters инструментов
+          - не выдумывай объекты и идентификаторы
+
+          ## Обязательный алгоритм (без уточняющих вопросов)
+          1. Вызови get_domain_info
+          2. Вызови get_increment_summary
+          3. Вызови get_strategies_context
+          4. Вызови get_structure_check
+          5. Вызови get_dependencies
+          6. Сформируй единый MD-отчёт на русском языке по шаблону ниже
+
+          ## Правила
+          - Используй ТОЛЬКО данные из инструментов. Не выдумывай id, объекты и числа.
+          - Числа в summary, таблицах и списках должны совпадать с get_increment_summary.summary и by_category.
+          - Полные списки объектов из by_category — без сокращений «и другие».
+          - Тренд (развитие / оптимизация / упрощение / стабильность) — из get_increment_summary.trend.
+          - suggested_conclusions и suggested_action_items — основа для разделов «Выводы» и «Action Items».
+          - Стратегическое соответствие: до 5 тезисов, семантически связывая strategy/goals с изменениями.
+          - Если strategies или goals пусты — укажи, что стратегический анализ невозможен.
+
+          ## Шаблон отчёта (заголовок H1)
+          # 🏗️ DZO Architecture Analysis Report
+
+          **Domain:** {domain} | **Date:** {текущая дата}
+
+          ## 📊 Executive Summary
+          - Сводка из summary (new/changed/deprecated) и trend
+          - Таблица: | 📈 | Новые | 🔄 Изменено | 🗑️ Удаляется |
+          ### 🤖 AI и Модели
+          - Агенты и модели из by_category AI_Agent; Модели из models_info и by_category AI_Model
+          
+          
+          ## 🎯 Стратегическое соответствие
+          (тезисы по strategies/goals и изменениям)
+
+          ## ⚖️ Критичность систем
+          (systems_criticality из get_strategies_context; рекомендации если criticality пуста)
+
+          ## 📋 Проверка структуры архитектуры
+          (obligatory / recommended / optional из get_structure_check)
+
+          ## 🌐 Интеграции (новые)
+          (integrations_enriched type=new)
+
+          ## 🚫 Интеграции (выводятся)
+          (integrations_enriched type=deprecated)
+
+          ## ✨ Новые объекты
+          (by_category.new, кроме INT — они в разделе интеграций)
+
+          ## 🔄 Изменённые объекты
+          (by_category.changed)
+
+          ## 🗑️ Удаляемые объекты
+          (by_category.deprecated, кроме INT)
+
+          ## 🔗 Критичные зависимости
+          (findings из get_dependencies)
+
+          ## 🔍 Выводы
+          (suggested_conclusions)
+
+          ## ✅ Action Items
+          (нумерованный список из suggested_action_items)
+
+          Начинай отчёт сразу после получения данных инструментов.
+        tools:
+          - name: get_domain_info
+            query: >
+              (
+                $domain := $.sber.domain;
+                $data := {
+                  "domain": $domain,
+                  "metamodel_version": $."$package".kadzo.version & " patch " & $."$package".kadzo.patch,
+                  "data_version": $.sber.domains ~> $each(function($v, $k){$k = $domain ? $v.version}),
+                  "kadzo_present": $exists($."kadzo.v2023.systems")
+                };
+                $log($data, 'get_domain_info');
+                $data
+              )
+            schema:
+              name: get_domain_info
+              description: |
+                Метаданные домена ДЗО (sber.domain), версия архитектуры. Вызывай первым.
+              parameters:
+                type: object
+                properties: {}
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                    description: Идентификатор домена ДЗО
+                  metamodel_version:
+                    type: string
+                    description: Версия пакета КА ДЗО ($."$package".kadzo.version)
+                  data_version:
+                    type: string
+                    description: Версия данных КА ДЗО ($."$package".kadzo.version)
+                  kadzo_present:
+                    type: boolean
+                    description: Признак наличия данных КА ДЗО в манифесте
+                required:
+                  - domain
+                  - kadzo_present
+          - name: get_increment_summary
+            query: >
+              (
+                $systems := $."kadzo.v2023.systems";
+                $functions := $."kadzo.v2023.functions";
+                $integrations := $."kadzo.v2023.integrations";
+                $agents_registry := $."seaf.company.ai.agents";
+                $models := $."seaf.company.ai.models";
+                $domainOk := function($id) {(
+                  $d := $params.domain;
+                  $d ? $eval("/^" & $d & "\\..*/")($id) : true
+                )};
+                $toChangeType := function($fileName, $status) {(
+                  $s := $lowercase($string($status));
+                  $fileName = "systems" ? (
+                    ($s ~> /.*разрабатывается.*|.*планируется.*/) ? "new"
+                    : ($s ~> /.*модифицируется.*/) ? "changed"
+                    : ($s ~> /.*используется.*/) ? "active"
+                    : "unknown"
+                  ) : ($fileName = "functions" or $fileName = "integrations") ? (
+                    ($status = "Создается" or $status = "Планируется") ? "new"
+                    : $status = "Удаляется" ? "deprecated"
+                    : $status = "Используется" ? "active"
+                    : "unknown"
+                  ) : ($fileName = "agents" or $fileName = "models") ? (
+                    ($s ~> /.*идея.*|.*создается.*/) ? "new"
+                    : ($s ~> /.*тестируется.*|.*внедрение.*/) ? "changed"
+                    : ($s ~> /.*используется.*/) ? "active"
+                    : "unknown"
+                  ) : "unknown"
+                )};
+                $mapItems := function($coll, $fileName, $category, $statusField) {(
+                  $coll ? $coll.$spread().(
+                    $id := $keys();
+                    $obj := $.*;
+                    $domainOk($id) ? (
+                      $status := $statusField = "change-type" ? $obj."change-type" : $lookup($obj, $statusField);
+                      $changeType := ($fileName = "models" and ($not($status) or $string($status) = ""))
+                        ? "new"
+                        : $toChangeType($fileName, $status);
+                      $changeType in ["new", "changed", "deprecated"] ? {
+                        "category": $category,
+                        "id": $id,
+                        "title": $obj.title ? $obj.title : ($obj.description ? $obj.description : $id),
+                        "status": ($fileName = "models" and ($not($status) or $string($status) = "")) ? "Используется" : $status,
+                        "type": $changeType,
+                        "file": $fileName & ".yaml"
+                      }
+                    )
+                  ) ~> $filter(function($v) { $v }) : []
+                )};
+                $details := [];
+                $details := $details ~> $append($mapItems($systems, "systems", "AS", "change-type"));
+                $details := $details ~> $append($mapItems($functions, "functions", "FPS", "status"));
+                $details := $details ~> $append($mapItems($integrations, "integrations", "INT", "status"));
+                $details := $details ~> $append($mapItems($agents_registry, "agents", "AI_Agent", "lifecycle_stage"));
+                $details := $details ~> $append($mapItems($models, "models", "AI_Model", "lifecycle_stage"));
+                $summary := {
+                  "new": $count($details[type = "new"]),
+                  "changed": $count($details[type = "changed"]),
+                  "deprecated": $count($details[type = "deprecated"])
+                };
+                $by_category := {
+                  "new": {
+                    "AS": $details[type = "new" and category = "AS"],
+                    "FPS": $details[type = "new" and category = "FPS"],
+                    "INT": $details[type = "new" and category = "INT"],
+                    "AI_Agent": $details[type = "new" and category = "AI_Agent"],
+                    "AI_Model": $details[type = "new" and category = "AI_Model"]
+                  },
+                  "changed": {
+                    "AS": $details[type = "changed" and category = "AS"],
+                    "FPS": $details[type = "changed" and category = "FPS"],
+                    "INT": $details[type = "changed" and category = "INT"],
+                    "AI_Agent": $details[type = "changed" and category = "AI_Agent"],
+                    "AI_Model": $details[type = "changed" and category = "AI_Model"]
+                  },
+                  "deprecated": {
+                    "AS": $details[type = "deprecated" and category = "AS"],
+                    "FPS": $details[type = "deprecated" and category = "FPS"],
+                    "INT": $details[type = "deprecated" and category = "INT"],
+                    "AI_Agent": $details[type = "deprecated" and category = "AI_Agent"],
+                    "AI_Model": $details[type = "deprecated" and category = "AI_Model"]
+                  }
+                };
+                $systemTitles := $systems.$spread().{$keys(): ($.*.title ? $.*.title : $keys())};
+                $enrichInt := function($item) {(
+                  $int := $integrations.$lookup($item.id);
+                  $int ? $merge([$item, {
+                    "source_id": $int.source,
+                    "consumer_id": $int.consumer,
+                    "source_title": $systemTitles.$lookup($string($int.source)),
+                    "consumer_title": $systemTitles.$lookup($string($int.consumer))
+                  }]) : $item
+                )};
+                $integrations_enriched := {
+                  "new": $by_category.new.INT ~> $map(function($v) { $enrichInt($v) }),
+                  "deprecated": $by_category.deprecated.INT ~> $map(function($v) { $enrichInt($v) })
+                };
+                $models_info := $models.$spread().({
+                  "id": $keys(),
+                  "title": $.*.title,
+                  "vendor": $.*.vendor ? $.*.vendor : "Unknown",
+                  "realized_in": $.*.realized_in ? $.*.realized_in : "Unknown",
+                  "is_gigachat": $contains($lowercase($string($.*.title)), "gigachat")
+                });
+                $nNew := $summary.new;
+                $nChanged := $summary.changed;
+                $nDep := $summary.deprecated;
+                $trend := $nNew > $nChanged and $nNew > $nDep
+                  ? "active_development"
+                  : $nChanged > $nNew
+                    ? "optimization"
+                    : $nDep > 0
+                      ? "simplification"
+                      : "stability";
+                $trend_label := $trend = "active_development"
+                  ? "🚀 Активное развитие — фокус на новых решениях"
+                  : $trend = "optimization"
+                    ? "🔧 Оптимизация — фокус на модификации"
+                    : $trend = "simplification"
+                      ? "🗑️ Упрощение — вывод устаревших решений"
+                      : "✅ Стабильность — изменений нет";
+                $newAs := $count($by_category.new.AS);
+                $changedAs := $count($by_category.changed.AS);
+                $depAs := $count($by_category.deprecated.AS);
+                $newInt := $count($by_category.new.INT);
+                $changedInt := $count($by_category.changed.INT);
+                $depInt := $count($by_category.deprecated.INT);
+                $nonGigachat := $models_info[is_gigachat = false];
+                $suggested_conclusions := [];
+                $suggested_conclusions := $suggested_conclusions ~> $append($changedAs > 0 ? ["Изменяется " & $string($changedAs) & " АС"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($newAs > 0 ? ["Внедряется " & $string($newAs) & " новых АС"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($depAs > 0 ? ["Выводится " & $string($depAs) & " АС"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($newInt > 0 ? ["Новых интеграций: " & $string($newInt)] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($changedInt > 0 ? ["Модифицируется интеграций: " & $string($changedInt)] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($depInt > 0 ? ["Удаляется интеграций: " & $string($depInt)] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($trend = "active_development" ? ["Тренд: активное развитие (фокус на новых решениях)"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($trend = "optimization" ? ["Тренд: оптимизация (фокус на модификации)"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($trend = "simplification" ? ["Тренд: упрощение (вывод устаревших решений)"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($count($nonGigachat) > 0 ? ["Критично: " & $string($count($nonGigachat)) & " не-GigaChat моделей"] : []);
+                $suggested_conclusions := $suggested_conclusions ~> $append($count($details) = 0 ? ["Стабильность - изменений нет"] : []);
+                $suggested_action_items := [];
+                $suggested_action_items := $suggested_action_items ~> $append($newAs > 0 ? ["Acceptance testing: " & $string($newAs) & " новых систем"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append($changedAs > 0 ? ["Regression тестирование: " & $string($changedAs) & " модифицируемых систем"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append($depAs > 0 ? ["Проверка зависимостей: " & $string($depAs) & " выводимых систем"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append($newInt > 0 ? ["Интеграционное тестирование: " & $string($newInt) & " новых интеграций"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append(($depAs > 0 or $depInt > 0) ? ["Миграция данных: с удаляемых компонентов"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append(($newAs > 0 or $newInt > 0 or $changedAs > 0) ? ["Обновление документации: архитектуры, SLA, инструкций"] : []);
+                $suggested_action_items := $suggested_action_items ~> $append(($newAs > 0 or $newInt > 0) ? ["Обучение команд: материалы и сессии для новых систем/интеграций"] : []);
+                $data := {
+                  "summary": $summary,
+                  "by_category": $by_category,
+                  "details": $details,
+                  "models_info": $models_info,
+                  "integrations_enriched": $integrations_enriched,
+                  "trend": $trend,
+                  "trend_label": $trend_label,
+                  "suggested_conclusions": $suggested_conclusions,
+                  "suggested_action_items": $suggested_action_items
+                };
+                $log($data, "get_increment_summary");
+                $data
+              )
+            schema:
+              name: get_increment_summary
+              description: |
+                Инкремент архитектуры (new/changed/deprecated) по AS, FPS, INT, AI_Agent, AI_Model.
+                Вызывай вторым. Числа в отчёте должны совпадать с summary.
+              parameters:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                    description: Префикс домена для фильтрации объектов (опционально)
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    description: Счётчики new, changed, deprecated
+                    properties:
+                  by_category:
+                    type: object
+                    description: Объекты по типу изменения и категории
+                    properties:
+                  details:
+                    type: array
+                    description: Плоский список всех изменений
+                  models_info:
+                    type: array
+                    description: Все AI-модели с признаком is_gigachat
+                  integrations_enriched:
+                    type: object
+                    description: Интеграции new/deprecated с source/consumer
+                    properties:
+                  trend:
+                    type: string
+                    description: "active_development | optimization | simplification | stability"
+                  trend_label:
+                    type: string
+                    description: Текстовая метка тренда для Executive Summary
+                  suggested_conclusions:
+                    type: array
+                    description: Готовые тезисы для раздела «Выводы»
+                  suggested_action_items:
+                    type: array
+                    description: Готовые пункты для раздела Action Items
+                required:
+                  - summary
+                  - trend
+                  - trend_label
+          - name: get_strategies_context
+            query: >
+              (
+                $strategy := $."kadzo.v2023.strategy";
+                $goals := $."kadzo.v2023.goals";
+                $systems := $."kadzo.v2023.systems";
+                $functions := $."kadzo.v2023.functions";
+                $agents_registry := $."seaf.company.ai.agents";
+                $models := $."seaf.company.ai.models";
+                $integrations := $."kadzo.v2023.integrations";
+                $strategies := $strategy.$spread().({
+                  "_id": $keys(),
+                  "strategy": $.*.strategy,
+                  "goal": $.*.goal,
+                  "horizont": $.*.horizont
+                });
+                $goalsList := $goals.$spread().({
+                  "_id": $keys(),
+                  "goal": $.*.goal,
+                  "horizont": $.*.horizont,
+                  "description": $.*.description
+                });
+                $changedAsIds := $systems.$spread().(
+                  $id := $keys();
+                  $obj := $.*;
+                  $lowercase($string($obj."change-type")) ~> /.*разрабатывается.*|.*планируется.*|.*модифицируется.*/
+                    ? $id
+                ) ~> $filter(function($v) { $v });
+                $systems_criticality := $changedAsIds.(
+                  $sys := $systems ~> $lookup($);
+                  $funcs := $functions.$spread().($.*.systems and $ in $.*.systems);
+                  {
+                    "id": $,
+                    "title": $sys.title ? $sys.title : $,
+                    "criticality": $sys.criticality ? $sys.criticality : "Unknown",
+                    "class": $sys.class ? $sys.class : "Unknown",
+                    "function_count": $count($funcs)
+                  }
+                );
+                $data := {
+                  "strategies": $strategies,
+                  "goals": $goalsList,
+                  "systems_criticality": $systems_criticality,
+                  "has_strategies": $count($strategies) > 0,
+                  "has_goals": $count($goalsList) > 0
+                };
+                $log($data, "get_strategies_context");
+                $data
+              )
+            schema:
+              name: get_strategies_context
+              description: |
+                Бизнес-стратегии, цели и критичность затронутых систем. Вызывай третьим.
+              parameters:
+                type: object
+                properties: {}
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  strategies:
+                    type: array
+                    description: Список бизнес-стратегий
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        strategy:
+                          type: string
+                        goal:
+                          type: string
+                        horizont:
+                          type: string
+                      additionalProperties: true
+                  goals:
+                    type: array
+                    description: Список бизнес-целей
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        goal:
+                          type: string
+                        horizont:
+                          type: string
+                        description:
+                          type: string
+                      additionalProperties: true
+                  systems_criticality:
+                    type: array
+                    description: Затронутые системы с criticality и function_count
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        criticality:
+                          type: string
+                        class:
+                          type: string
+                        function_count:
+                          type: string
+                      additionalProperties: true
+                  has_strategies:
+                    type: boolean
+                  has_goals:
+                    type: boolean
+                required:
+                  - strategies
+                  - goals
+                  - systems_criticality
+                  - has_strategies
+                  - has_goals
+          - name: get_structure_check
+            query: >
+              (
+                $m := $;
+                $sd := $m.sber.domains;
+                $domainKeys := $keys($sd);
+                $domain := $params.domain
+                  ? $params.domain
+                  : ($domainKeys ~> $filter(function($k) { $exists($lookup($sd, $k).domain) }))[0];
+                $domain := $domain ? $domain : ($count($domainKeys) > 0 ? $domainKeys[0]);
+                $domainEntry := $domain ? $lookup($sd, $domain);
+                $domainPath := $domain ? "sber.domains." & $domain;
+                $hasKa := $exists($domainEntry) and (
+                  $exists($domainEntry.domain) or $exists($domainEntry.title) or $exists($domainEntry.description)
+                );
+                $hasVersion := $exists($domainEntry.version) and $string($domainEntry.version) != "";
+                $has := function($key) { $exists($lookup($m, $key)) and $count($keys($lookup($m, $key))) > 0 };
+                $section := function($file, $label, $level, $check) {(
+                  $present := $check = "domain_entry"
+                    ? $hasKa
+                    : $check = "domain_version"
+                    ? $hasVersion
+                    : $has($check);
+                  $manifest_key := $check = "domain_entry"
+                    ? $domainPath
+                    : $check = "domain_version"
+                    ? ($domainPath & ".version")
+                    : $check;
+                  {"file": $file, "label": $label, "level": $level, "present": $present, "manifest_key": $manifest_key, "domain": $domain}
+                )};
+                $sections := [
+                  $section("ka", "Описание домена", "obligatory", "domain_entry"),
+                  $section("version", "Версия архитектуры", "obligatory", "domain_version"),
+                  $section("strategy", "Бизнес-стратегии", "obligatory", "kadzo.v2023.strategy"),
+                  $section("goals", "Бизнес-цели", "obligatory", "kadzo.v2023.goals"),
+                  $section("systems", "Автоматизированные системы", "obligatory", "kadzo.v2023.systems"),
+                  $section("functions", "Функциональные подсистемы", "obligatory", "kadzo.v2023.functions"),
+                  $section("integrations", "Интеграции между системами", "recommended", "kadzo.v2023.integrations"),
+                  $section("agents", "AI агенты", "recommended", "kadzo.v2023.agents"),
+                  $section("models", "AI модели", "recommended", "kadzo.v2023.models"),
+                  $section("groups", "Группы", "recommended", "kadzo.v2023.groups"),
+                  $section("processes", "Процессы", "recommended", "kadzo.v2023.processes"),
+                  $section("channels", "Каналы взаимодействия", "recommended", "kadzo.v2023.channels"),
+                  $section("clients", "Клиенты", "optional", "kadzo.v2023.clients"),
+                  $section("products", "Продукты", "optional", "kadzo.v2023.products"),
+                  $section("business_objects", "Бизнес объекты", "optional", "kadzo.v2023.business_objects"),
+                  $section("data_objects", "Данные объекты", "optional", "kadzo.v2023.data_objects"),
+                  $section("tasks", "Задачи", "optional", "kadzo.v2023.tasks"),
+                  $section("kb_systems", "Системы баз знаний", "optional", "kadzo.v2023.kb_systems"),
+                  $section("softwares", "Программное обеспечение", "optional", "kadzo.v2023.softwares"),
+                  $section("endpoints", "Конечные точки", "optional", "kadzo.v2023.endpoints"),
+                  $section("exceptions", "Исключения", "optional", "kadzo.v2023.exceptions"),
+                  $section("tech_services", "Технические сервисы", "optional", "kadzo.v2023.tech_services"),
+                  $section("tech_params", "Технические параметры", "optional", "kadzo.v2023.tech_params")
+                ];
+                $data := {
+                  "obligatory": $sections[level = "obligatory"],
+                  "recommended": $sections[level = "recommended"],
+                  "optional": $sections[level = "optional"],
+                  "all_obligatory_present": $count($sections[level = "obligatory" and present = false]) = 0,
+                  "missing_files": $sections[present = false].file
+                };
+                $log($data, "get_structure_check");
+                $data
+              )
+            schema:
+              name: get_structure_check
+              description: |
+                Проверка полноты секций манифеста (обязательные/рекомендуемые/опциональные). Вызывай четвёртым.
+              parameters:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                    description: Домен организации
+                required:
+                  - domain
+              return_parameters:
+                type: object
+                properties:
+                  obligatory:
+                    type: array
+                    description: Обязательные секции с флагом present
+                  recommended:
+                    type: array
+                    description: Рекомендуемые секции
+                  optional:
+                    type: array
+                    description: Опциональные секции
+                  all_obligatory_present:
+                    type: boolean
+                  missing_files:
+                    type: array
+                    description: Имена отсутствующих секций (как file в Python)
+                required:
+                  - obligatory
+                  - recommended
+                  - optional
+                  - all_obligatory_present
+                  - missing_files
+          - name: get_dependencies
+            query: >
+              (
+                $systems := $."kadzo.v2023.systems";
+                $functions := $."kadzo.v2023.functions";
+                $integrations := $."kadzo.v2023.integrations";
+                $systemTitles := $systems.$spread().{$keys(): ($.*.title ? $.*.title : $keys())};
+                $funcCounts := $systems.$keys().(
+                  $sysId := $;
+                  $cnt := $count($functions.$spread()[$sysId in $.*.systems]);
+                  $cnt > 3 ? {
+                    "type": "connectivity",
+                    "system_id": $sysId,
+                    "title": $systemTitles.$lookup($sysId),
+                    "count": $cnt,
+                    "text": "⚠️ **Связанность:** `" & $systemTitles.$lookup($sysId) & "` (" & $sysId & ") — " & $string($cnt) & " функций"
+                  }
+                ) ~> $filter(function($v) { $v });
+                $sourceCounts := $integrations.$spread().(
+                  $src := $.*.source;
+                  $src ? {"source": $string($src), "integration_id": $keys()}
+                ).{
+                  "source": {
+                    "count": $count($),
+                    "integration_ids": $.integration_id
+                  }
+                }.$spread().(
+                  $srcId := $keys();
+                  $data := $.*;
+                  $data.count > 5 ? {
+                    "type": "gateway",
+                    "system_id": $srcId,
+                    "title": $systemTitles.$lookup($srcId),
+                    "count": $data.count,
+                    "text": "🔗 **Шлюз:** `" & ($systemTitles.$lookup($srcId) ? $systemTitles.$lookup($srcId) : $srcId) & "` (" & $srcId & ") — " & $string($data.count) & " интеграций"
+                  }
+                ) ~> $filter(function($v) { $v });
+                $data := {
+                  "findings": $append($funcCounts[[0..2]], $sourceCounts[[0..2]]),
+                  "connectivity_count": $count($funcCounts),
+                  "gateway_count": $count($sourceCounts)
+                };
+                $log($data, "get_dependencies");
+                $data
+              )
+            schema:
+              name: get_dependencies
+              description: |
+                Критичные зависимости — системы с >3 функциями и шлюзы с >5 интеграций (топ-3). Вызывай пятым.
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  findings:
+                    type: array
+                    description: Тексты выводов о связанности и шлюзах
+                  connectivity_count:
+                    type: integer
+                    description: Число систем с >3 функциями
+                  gateway_count:
+                    type: integer
+                    description: Число систем-шлюзов с >5 исходящих интеграций
+                required:
+                  - findings
+                  - connectivity_count
+                  - gateway_count

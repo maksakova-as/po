@@ -1,0 +1,113 @@
+entities:
+  seaf.company.ta.services.compute_services:
+    presentations:
+      list:
+        title: Вычислительные сервисы
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: service_type
+            text: Тип сервиса
+          - value: cluster_flag
+            text: Кластер
+          - value: availability_zones
+            text: Зоны доступности
+          - value: locations
+            text: Локации
+            link: location_link
+          - value: networks
+            text: Сетевые подключения
+          - value: id
+            text: ID
+        origin:
+          services: seaf.company.ds.ta.compute_services
+          networks: seaf.company.ds.ta.networks
+          azs: seaf.company.ds.ta.dc_azs
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $services := services;
+            $networks := networks;
+            $azs := azs;
+            $dcs := dcs;
+            $offices := offices;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $resolve_network := function($id){ $lookup($networks, $id) };
+            $services.*@$svc.(
+              $location_objects := $exists($svc.location)
+                ? $svc.location[].($resolve_location($))
+                : [];
+              $network_titles := $exists($svc.network_connection)
+                ? $svc.network_connection[].($resolve_network($).title)
+                : [];
+              $ha := $svc.high_availability;
+              $ha_type := $exists($ha.type)
+                ? $ha.type
+                : ($exists($ha) and $type($ha) = "string" ? $ha : "Нет");
+              $az_titles := $exists($svc.availabilityzone)
+                ? $svc.availabilityzone[].($lookup($azs, $).title)
+                : [];
+              {
+                "id": $svc.__id__,
+                "link": "/entities/" & $svc.__entity_id__ & "/card?id=" & $svc.__id__,
+                "title": $svc.title,
+                "service_type": $svc.service_type,
+                "cluster_flag": $ha_type = "Да" ? "Кластер" : "Нет",
+                "availability_zones": $az_titles ~> $join(", "),
+                "locations": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "networks": $network_titles ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка вычислительного сервиса
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

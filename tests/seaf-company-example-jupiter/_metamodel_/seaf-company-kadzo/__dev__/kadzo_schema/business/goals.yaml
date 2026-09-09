@@ -1,0 +1,32 @@
+entities:
+  kadzo.v2023.goals:
+    title: Стратегические цели
+    description: Стратегические цели Компании, определенные на долгосрочный горизонт, утвержденные в соответствии с регламентными процедурами
+    schema:
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          properties:
+            goal:
+              title: Стратегическая цель
+              type: string
+            description:
+              title: Описание
+              type: string
+            horizont:
+              title: Горизонт
+              type: string
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - goal
+            - horizont
+    objects:
+      goals:
+        route: "/"
+        title: Стратегические цели
+        symbol: "gls"

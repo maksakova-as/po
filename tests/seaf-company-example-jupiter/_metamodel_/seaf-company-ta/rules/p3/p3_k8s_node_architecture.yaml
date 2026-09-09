@@ -1,0 +1,70 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_node_architecture:
+      uid: SEAF-TA-P3-K8S-NODE-ARCH
+      title: "[TACSA_4-P3-2-04] Проверка архитектуры CPU узлов Kubernetes (x86-64/ARM)"
+      description: |
+        Проверяет, что у каждого `seaf.company.ta.components.k8s_node` заполнено поле `architecture`
+        и оно принимает одно из допустимых значений: `x86-64` или `ARM`.
+        Дополнительно: допускается синоним `amd64` для `x86-64`.
+        Требование: TACSA_4-P3-2-04 — Поддерживаемые аппаратные архитектуры для вычислительных узлов: x86-64 или ARM.
+        
+        Требование (цитата):
+        Серверное оборудование должно базироваться на процессорах архитектуры:
+        x86-64
+        ARM
+      correction: |
+        Заполните поле `architecture` узла Kubernetes значением `x86-64` или `ARM`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_node_architecture";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $req := "Серверное оборудование должно базироваться на процессорах архитектуры:\nx86-64\nARM";
+                  $code := "TACSA_4-P3-2-04";
+                  $ds := $.datasets."seaf.company.ds.ta.k8s_nodes";
+                  $nodes := $eval($ds.source, { "objects": $, "data_lake": $ });
+
+                  $each($nodes, function($n, $n_key){
+                    (
+                      $arch := $n.architecture;
+                      $norm := $lowercase($arch);
+                      ($not($exists($arch)) or $arch = "") ? {
+                        "uid": "seaf.validation.ta.p3.k8s_node_architecture.empty." & $n_key,
+                        "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_node_architecture.empty." & $n_key,
+                        "title": "K8s Node '" & $n.title & "' не указана архитектура CPU",
+                        "correction": "ID: " & $n_key & ". " & ("Укажите архитектуру CPU: x86-64 (или amd64) либо ARM"),
+                        "description": "Узел (" & $n_key & ") не содержит поле architecture\n\nТребование (цитата):\n" & $req
+                      } : (
+                        ($not($norm = "x86-64" or $norm = "arm" or $norm = "amd64")) ? {
+                          "uid": "seaf.validation.ta.p3.k8s_node_architecture.invalid." & $n_key,
+                          "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_node_architecture.invalid." & $n_key,
+                          "title": "K8s Node '" & $n.title & "' имеет недопустимую архитектуру",
+                          "correction": "ID: " & $n_key & ". " & ("Измените architecture на x86-64 (или amd64) либо ARM"),
+                          "description": "architecture='" & $arch & "' недопустимо\n\nТребование (цитата):\n" & $req
+                        } : ()
+                      )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

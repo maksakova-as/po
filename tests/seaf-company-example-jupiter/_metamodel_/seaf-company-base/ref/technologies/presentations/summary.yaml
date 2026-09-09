@@ -1,0 +1,55 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.technologies:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          summary:
+            title: Сводка
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: summary
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 200
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      summary:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.technologies
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          /*$vendor_str := $obj2present.vendor.title & ( $exists($obj2present.vendor.website) ? " ("& $obj2present.vendor.website &")" : "");*/
+          [
+              { "field_name": "Идентификатор объекта", "field_content": { "value": $obj2present.__id__} },
+              { "field_name": "Идентификатор объекта во внешней системе", "field_content": { "value": $obj2present.external_id } },
+              { "field_name": "Идентификатор сущности", "field_content": { "value": $obj2present.__entity_id__ } },
+              { "field_name": "Название", "field_content": { "value":$obj2present.title } },
+              { "field_name": "Тип", "field_content": { "value":$obj2present.type ~> $join(", ") } },
+              { "field_name": "Описание", "field_content": { "value": $obj2present.description } },
+              { "field_name": "Вендор", "field_content": { "value": $obj2present.vendor.title, "link": $obj2present.vendor.website } },
+              { "field_name": "Лицензия", "field_content": { "value": $obj2present.license } },
+              { "field_name": "Версия", "field_content": { "value": $obj2present.version } },
+              { "field_name": "Помечена тегами", "field_content": { "value": $obj2present.tags ~> $join(", ") } },
+              { "field_name": "Статус технологии", "field_content": { "value": $obj2present.status } }
+          ];
+          )

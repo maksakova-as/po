@@ -1,0 +1,76 @@
+entities:
+  seaf.company.da.physical_tables:
+    presentations:
+      attr_card:
+        title: Карточка объекта
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+            attr_id:
+              title: ID атрибута
+              type: string
+          required:
+            - id
+            - attr_id
+# TODO: сделать виджеты - Сводка, Комментарии для атрибута
+        type: mkr-grid
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+          $object_id := $params.id;
+          $attr_id := $params.attr_id;
+          $objects := objects;
+          $presentation := $self;
+          $obj := $objects.$lookup($object_id);
+          $entity_id := $obj.__entity_id__;
+          /* Получаем виджеты, которые нужно отобразить */
+          $widgets := $presentation.widgets;
+          $wtop := $widgets.*[align="^"]^(order);
+          $wleft := $widgets.*[align="<"]^(order);
+          $wright := $widgets.*[align=">"]^(order);
+          $bottom := $widgets.*[align="v" or $not(align=">" or align="<" or align="^")]^(order);
+          /* Функция генерации  профиля виджета для секции разметки */
+          $makeWidget := function($widgets) {(
+              [$widgets.{
+                  "title": title,
+                  "icon": icon,
+                  "style": style ? style : {},
+                  "src": "@entity/" & $entity_id & "/" & presentation & "?" & "id=" & $object_id & "&attr_id=" & $attr_id
+              }];
+          )};
+          $rows := $append(
+              /* Добавляем топовые виджеты */
+              $makeWidget($wtop),
+              /* Добавляем виджеты в середину*/
+              [
+                  {
+                      "type": "columns",
+                      "items": [
+                          {
+                              "type": "rows",
+                              "width": "60%",
+                              /* Строим список виджетов левой секции */
+                              "items": $makeWidget($wleft)
+                          },
+                          {
+                              "type": "rows",
+                              "width": "40%",
+                              /* Строим список виджетов правой секции */
+                              "items": $makeWidget($wright)
+                          }
+                      ]
+                  }
+              ]
+          );      
+          /* Добавляем остальные виджеты внизу по центру */
+          $rows := $append($rows, $makeWidget($bottom));      
+          /* Строим разметку страницы */
+          {
+            "type": "rows",
+            "items": $rows
+          }
+          )

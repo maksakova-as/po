@@ -1,0 +1,163 @@
+docs:
+  seaf.company.ta.docs.network_links.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Сеть/Сетевые связанности/Изменение связанных сетей
+    description: Редактирование сетевых связанностей из architecture/ta/network_links.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      network_links: seaf.company.ds.ta.network_links
+      networks: seaf.company.ds.ta.networks
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 240px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: network_connection
+        text: Подключенные сети
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: technology
+        text: Технология
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: routing
+        text: Маршрутизация
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: encapsulation
+        text: Инкапсуляция
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: encryption
+        text: Шифрование
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: typeL1
+        text: Тип L1
+        width: 150px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: typeL2
+        text: Тип L2
+        width: 150px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+      - value: sla
+        text: SLA
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_links.yaml
+
+    source: >
+      (
+        $links := $exists(network_links) ? network_links : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($links), function($link_id){(
+          $link := $lookup($links, $link_id);
+          {
+            $link_id: {
+              "id": $link_id,
+              "title": $link.title,
+              "description": $link.description,
+              "network_connection": $to_array($link.network_connection),
+              "technology": $link.technology,
+              "routing": $link.routing,
+              "encapsulation": $link.encapsulation,
+              "encryption": $link.encryption,
+              "typeL1": $link.typeL1,
+              "typeL2": $link.typeL2,
+              "sla": $link.sla
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($link_id){(
+          $row := $lookup($table, $link_id);
+          {
+            $link_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "network_connection": $to_array($row.network_connection),
+              "technology": $row.technology,
+              "routing": $row.routing,
+              "encapsulation": $row.encapsulation,
+              "encryption": $row.encryption,
+              "typeL1": $row.typeL1,
+              "typeL2": $row.typeL2,
+              "sla": $row.sla
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.network_links": $rows
+        }
+      )

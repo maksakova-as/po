@@ -1,0 +1,7 @@
+imports:
+  - kadzo/root.yaml
+  - reverse/root.yaml
+  - ta_docs/root.yaml
+  #  - seaf1_datasets/root.yaml
+  # Legacy SEAF1 compatibility layer is kept as extension but disabled by default.
+  - app/root.yaml

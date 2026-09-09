@@ -1,0 +1,4 @@
+imports:
+  - r41/root.yaml
+  #  - editable_tables/root.yaml
+  # Editable tables are kept in extension, but disabled by default.

@@ -1,0 +1,29 @@
+# Назначение: Подготовка датасета `kadzo.ds.ta.softwares` (softwares) в контуре kadzo.
+# Используется: ta/dataset_parts/* и объединенные TA-таблицы через reverse2seaf2.ds.ta.kadzo.*.
+datasets:
+  kadzo.ds.ta.softwares:
+    source: >
+      (
+        $softwares := data_lake."kadzo.softwares";
+        $softwares.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          $new_id := "kadzo.software." & $id;
+          {
+            $new_id: {
+              "__id__": $new_id,
+              "__entity_id__": "seaf.company.ta.services.softwares",
+              "__entity_title__": "Программное обеспечение",
+              "title": $obj.title,
+              "app_components": $obj.provides ? $obj.provides : [],
+              "vendor": $obj.vendor,
+              "type": "Открытая",
+              "support": "Нет",
+              "expiration": "Бессрочно",
+              "lic_qty": 0,
+              "source": "kadzo",
+              "legacy_id": $id
+            }
+          }
+        ) ~> $merge()
+      )

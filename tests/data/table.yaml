@@ -1,0 +1,32 @@
+docs:
+  table:
+    type: editable-table
+    location: TABLE
+    selection: true
+    origin:
+      ds_3: ds_3
+
+    format: >
+      (
+          {"table_data": table}
+      )
+
+    headers:
+      - value: col_1
+        editable: true
+        save:
+          path: data.yaml
+      - value: col_2
+        editable: true
+        save:
+          path: data.yaml
+      - value: col_3
+        editable: true
+        save:
+          path: data.yaml
+
+    source: >
+      (
+        $body := ds_3;
+        {"body": $body}
+      )

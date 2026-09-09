@@ -1,0 +1,298 @@
+docs:
+  seaf.company.ta.docs.k8s.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Платформа/Kubernetes/Изменение Kubernetes
+    description: Редактирование конфигурации Kubernetes из architecture/ta/k8s.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      k8s: seaf.company.ds.ta.k8s
+      azs: seaf.company.ds.ta.dc_azs
+      dcs: seaf.company.ds.ta.dcs
+      networks: seaf.company.ds.ta.networks
+      monitoring: seaf.company.ds.ta.monitoring
+      kb: seaf.company.ds.ta.kb
+      softwares: seaf.company.ds.ta.software
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: is_own
+        text: Собственный
+        width: 110px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: availabilityzone
+        text: Зоны доступности
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: location
+        text: Локации
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $locations := $exists(dcs) ? dcs : {};
+            $map($keys($locations), function($loc_id){(
+              $loc := $lookup($locations, $loc_id);
+              {
+                "value": $loc_id,
+                "text": $loc.title ? $loc.title : $loc_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: network_connection
+        text: Сетевые подключения
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: management_networks
+        text: Сети управления
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: monitoring
+        text: Мониторинг
+        width: 240px
+        type: multiple-select
+        options: >
+          (
+            $items := $exists(monitoring) ? monitoring : {};
+            $map($keys($items), function($id){(
+              $entry := $lookup($items, $id);
+              {
+                "value": $id,
+                "text": $entry.title ? $entry.title : $id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: registries
+        text: Регистры
+        width: 240px
+        type: multiple-select
+        options: >
+          (
+            $items := $exists(kb) ? kb : {};
+            $map($keys($items), function($id){(
+              $entry := $lookup($items, $id);
+              {
+                "value": $id,
+                "text": $entry.title ? $entry.title : $id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: service_mesh
+        text: Service mesh
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: cni
+        text: CNI
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: softwares
+        text: ПО
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $items := $exists(softwares) ? softwares : {};
+            $map($keys($items), function($id){(
+              $entry := $lookup($items, $id);
+              {
+                "value": $id,
+                "text": $entry.title ? $entry.title : $id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: cluster_autoscaler
+        text: Автоскейлер
+        width: 140px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+
+      - value: stand
+        text: ??????
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/k8s.yaml
+
+    source: >
+      (
+        $clusters := $exists(k8s) ? k8s : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($clusters), function($cluster_id){(
+          $cluster := $lookup($clusters, $cluster_id);
+          {
+            $cluster_id: {
+              "id": $cluster_id,
+              "title": $cluster.title,
+              "description": $cluster.description,
+              "is_own": $cluster.is_own,
+              "availabilityzone": $to_array($cluster.availabilityzone),
+              "location": $to_array($cluster.location),
+              "network_connection": $to_array($cluster.network_connection),
+              "management_networks": $to_array($cluster.management_networks),
+              "monitoring": $to_array($cluster.monitoring),
+              "registries": $to_array($cluster.registries),
+              "service_mesh": $cluster.service_mesh,
+              "cni": $cluster.cni,
+              "softwares": $exists($cluster.softwares)
+                ? $to_array($cluster.softwares)
+                : ($exists($cluster.software) ? [$cluster.software] : []),
+              "cluster_autoscaler": $cluster.cluster_autoscaler,
+              "stand": $to_array($cluster.stand),
+              "external_id": $cluster.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($cluster_id){(
+          $row := $lookup($table, $cluster_id);
+          {
+            $cluster_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "is_own": $row.is_own,
+              "availabilityzone": $to_array($row.availabilityzone),
+              "location": $to_array($row.location),
+              "network_connection": $to_array($row.network_connection),
+              "management_networks": $to_array($row.management_networks),
+              "monitoring": $to_array($row.monitoring),
+              "registries": $to_array($row.registries),
+              "service_mesh": $row.service_mesh,
+              "cni": $row.cni,
+              "softwares": $to_array($row.softwares),
+              "cluster_autoscaler": $row.cluster_autoscaler,
+              "stand": $to_array($row.stand),
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.k8s": $rows
+        }
+      )

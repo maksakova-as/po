@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.app.systems:
+    description: |
+      Датасет формирует коллекцию всех объектов данного вида
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.app.systems";
+      )

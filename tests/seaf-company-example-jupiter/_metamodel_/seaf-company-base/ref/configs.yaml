@@ -1,0 +1,5 @@
+seaf.configs:
+  seaf.company.ref:
+    root_menu: "Справочники"
+    root_menu_order: 80000
+

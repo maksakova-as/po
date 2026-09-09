@@ -1,0 +1,73 @@
+entities:
+  seaf.company.da.logical_entities:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          attributes:
+            title: Атрибуты
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: attributes
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      attributes:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: attr
+            text: Атрибут
+          - value: title
+            text: Название
+          - value: description
+            text: Описание
+          - value: business_term
+            text: Бизнес-термин
+            link: business_term_link
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+          - value: pdn_flag
+            text: ПДн
+          - value: cde_flag
+            text: КритДн
+
+        origin:
+          objects: seaf.company.ds.da.logical_entities
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $data2present := $objects.$lookup($id).attributes;
+          $each($data2present, function($val, $key) {(
+              $bt := $exists($val.business_term) ? $seaf_fn_get_object_info($val.business_term, $all_objects);
+              {
+                "attr": $key,
+                "title": $val.title,
+                "description": $val.description,
+                "business_term": $bt.title,
+                "business_term_link": $bt.link_to_card,
+                "lifecycle_stage": $val.lifecycle_stage,
+                "pdn_flag": $val.pdn_flag ? "ДА" : "НЕТ",
+                "cde_flag": $val.cde_flag ? "ДА" : "НЕТ"
+              }
+          )})[];
+          )

@@ -1,0 +1,61 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          stakeholders:
+            title: Стейкхолдеры
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: stakeholders
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      stakeholders:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: name
+            text: ФИО
+          - value: role
+            text: Роль
+          - value: description
+            text: Описание
+
+        origin:
+          objects: seaf.company.ds.ai.agents
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $data2present := $objects.$lookup($id).stakeholders;
+          $map($data2present, function($val, $i) {(
+              {
+                "number": $i+1,
+                "name": $val.name,
+                "role": $val.role,
+                "description": $val.description
+              }
+          )})[];
+          )

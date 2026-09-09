@@ -1,0 +1,77 @@
+# В этом разделе дополняем параметры общих датасетов, объявленных в модуле seaf-common,
+# чтобы объекты нашего модуля появились в этих датасетам и с ними можно было работать стандартным образом
+datasets:
+  seaf.ds.entities:
+    origin:
+      # перечисляем SEAF сущности нашего модуля
+      seaf_entities:
+        - seaf.company.ta.components.hw_storages
+        - seaf.company.ta.components.k8s_hpa
+        - seaf.company.ta.components.k8s_namespaces
+        - seaf.company.ta.components.k8s_nodes
+        - seaf.company.ta.components.networks
+        - seaf.company.ta.components.servers
+        - seaf.company.ta.components.user_devices
+        - seaf.company.ta.services.backups
+        - seaf.company.ta.services.cluster_virtualizations
+        - seaf.company.ta.services.compute_services
+        - seaf.company.ta.services.dc_azs
+        - seaf.company.ta.services.dc_offices
+        - seaf.company.ta.services.dc_regions
+        - seaf.company.ta.services.dcs
+        - seaf.company.ta.services.environments
+        - seaf.company.ta.services.hw_storages
+        - seaf.company.ta.services.k8s
+        - seaf.company.ta.services.k8s_deployments
+        - seaf.company.ta.services.kbs
+        - seaf.company.ta.services.logical_links
+        - seaf.company.ta.services.monitorings
+        - seaf.company.ta.services.network_links
+        - seaf.company.ta.services.network_segments
+        - seaf.company.ta.services.networks
+        - seaf.company.ta.services.softwares
+        - seaf.company.ta.services.stands
+        - seaf.company.ta.services.storages
+
+      # перечисляем сущности внешних (не SEAF) модулей, с которыми мы работаем в нашем модуле
+      non_seaf_entities:
+        - kadzo.v2023.systems.systems
+        - kadzo.v2023.kb_systems.kb_systems
+        - kadzo.v2023.tech_services.tech_services
+
+  seaf.ds.objects_links:
+    origin:
+      attr2check:
+        # задаем массив имен атрибутов сущностей нашего модуля, в которых может встречаться ссылка на объект
+        # (такая ссылка задается в схеме выражением типа $ref: "#/$rels/seaf.company.app.systems.system")
+        # если не задать имя атрибута, то по такому атрибуту - если в нем была ссылка на объект - данная информация не попадет
+        # в датасет seaf.ds.objects_links
+        - location
+        - network_connection
+        - sw_storage_connected
+        - cluster
+        - target
+        - app_components
+        - stand
+        - segment
+        - availabilityzone
+        - subnets
+        - virtualization
+        - storage
+        - is_part_of
+        - is_monitoring_connected
+        - is_backup_connected
+        - sw_storage_connected
+        - network_connection_devices
+        - backed_up_services
+        - region
+        - management_networks
+        - registries
+        - namespace
+        - protected_services
+        - source
+        - target
+        - cluster_ref
+        - monitored_services
+        - env
+        - hw_storage_connected

@@ -1,0 +1,34 @@
+entities:
+  seaf.company.artefacts:
+    schema:
+      # Концептуальная архитектура проекта \ области \ домена \ инициативы
+      patternProperties:
+        "^([a-zA-Z0-9_-]+\\.)+(ka)(\\.[a-zA-Z0-9_-]+)+$":
+          title: "КА"  # это название используется как имя подсущности в ER диаграмме
+          description: >
+            Документ, описывающих концептуальную (вернхеуровневую) архитекутуру
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.company.def.artefact_basic_attributes"
+            - $ref: "#/$defs/seaf.company.def.artefact_stakeholders"
+            - $ref: "#/$defs/seaf.company.def.artefact_change_scope"
+            - $ref: "#/$defs/seaf.company.def.artefact_ba_changes"
+            - $ref: "#/$defs/seaf.company.def.artefact_da_changes"
+            - $ref: "#/$defs/seaf.company.def.artefact_app_changes"
+            - $ref: "#/$defs/seaf.company.def.artefact_ta_changes"
+
+          properties:
+            type:
+              title: Тип
+              description: Тип артефакта
+              enum:
+                - Архитектурный скетч
+                - Концептуальная архтитектура (КА)
+                - Архитектурный анализ продукта (APR)
+
+          required:
+            - type

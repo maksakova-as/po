@@ -1,0 +1,204 @@
+# Назначение: Построение графа зависимостей прикладной системы от технических ресурсов.
+# Используется: _extensions/app/systems/presentations/*.yaml и карточки прикладных систем.
+datasets:
+  seaf.company.ds.app.systems_dependency_graph:
+    description: |
+      Граф, описывающий зависимости прикладной системы от технических ресурсов (кластеры, сети, хранилища).
+
+    origin:
+      apps: seaf.ds.objects_by_entities
+      ta_all: seaf.company.ds.ta.all_objects_light
+      dcs: seaf.company.ds.ta.dcs
+      offices: seaf.company.ds.ta.dc_offices
+      dc_azs: seaf.company.ds.ta.dc_azs
+      dc_regions: seaf.company.ds.ta.dc_regions
+      networks: seaf.company.ds.ta.networks
+      segments: seaf.company.ds.ta.network_segments
+    source: >
+      (
+        $apps_map := $lookup(apps, "seaf.company.app.systems");
+        $ta_index := ta_all;
+        $all_dcs := dcs;
+        $all_offices := offices;
+        $all_dc_azs := dc_azs;
+        $all_dc_regions := dc_regions;
+        $all_networks := networks;
+        $all_segments := segments;
+        $system_ids := $keys($apps_map);
+        $normalize := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $sanitize := function($value){ $replace($value, /[^A-Za-z0-9_]/, "_") };
+        $node_type := function($entity){
+          (
+            $value := $lookup({
+              "seaf.company.app.systems": "APP",
+              "seaf.company.ta.services.k8s": "K8S",
+              "seaf.company.ta.services.monitorings": "MONITORING",
+              "seaf.company.ta.services.backups": "BACKUP",
+              "seaf.company.ta.services.storages": "STORAGE",
+              "seaf.company.ta.services.cluster_virtualizations": "CLUSTER",
+              "seaf.company.ta.services.dc_azs": "AZ",
+              "seaf.company.ta.services.dcs": "DC",
+              "seaf.company.ta.services.dc_regions": "REGION",
+              "seaf.company.ta.services.dc_offices": "OFFICE",
+              "seaf.company.ta.services.networks": "NETWORK",
+              "seaf.company.ta.services.network_segments": "SEGMENT",
+              "seaf.company.ta.components.hw_storages": "HW_STORAGE",
+              "seaf.company.ta.components.servers": "SERVER",
+              "seaf.company.ta.components.k8s_nodes": "K8S_NODE",
+              "seaf.company.ta.services.k8s_deployments": "K8S_DEPLOYMENT"
+            }, $entity);
+            $exists($value)
+              ? $value
+              : (
+                  $substring($entity, 0, 15) = "seaf.company.ta.services" ? "SERVICE" :
+                  $substring($entity, 0, 16) = "seaf.company.ta.components" ? "COMPONENT" :
+                  "RESOURCE"
+                )
+          )
+        };
+        $type_color := function($type){
+          $lookup({
+            "APP": "#d1c4e9",
+            "K8S": "#d1c4e9",
+            "MONITORING": "#d1c4e9",
+            "BACKUP": "#d1c4e9",
+            "STORAGE": "#d1c4e9",
+            "CLUSTER": "#d1c4e9",
+            "AZ": "#bbdefb",
+            "DC": "#bbdefb",
+            "REGION": "#bbdefb",
+            "OFFICE": "#bbdefb",
+            "NETWORK": "#c8e6c9",
+            "SEGMENT": "#ffecb3",
+            "SERVER": "#d1c4e9",
+            "HW_STORAGE": "#d1c4e9"
+          }, $type) ? $lookup({
+            "APP": "#d1c4e9",
+            "K8S": "#d1c4e9",
+            "MONITORING": "#d1c4e9",
+            "BACKUP": "#d1c4e9",
+            "STORAGE": "#d1c4e9",
+            "CLUSTER": "#d1c4e9",
+            "AZ": "#bbdefb",
+            "DC": "#bbdefb",
+            "REGION": "#bbdefb",
+            "OFFICE": "#bbdefb",
+            "NETWORK": "#c8e6c9",
+            "SEGMENT": "#ffecb3",
+            "SERVER": "#d1c4e9",
+            "HW_STORAGE": "#d1c4e9"
+          }, $type) : "#90A4AE"
+        };
+        $node_record := function($id){
+          (
+            $app_obj := $lookup($apps_map, $id);
+            $ta_obj := $lookup($ta_index, $id);
+            $aux_obj := (
+              $lookup($all_dcs, $id) ? $lookup($all_dcs, $id) :
+              $lookup($all_offices, $id) ? $lookup($all_offices, $id) :
+              $lookup($all_dc_azs, $id) ? $lookup($all_dc_azs, $id) :
+              $lookup($all_dc_regions, $id) ? $lookup($all_dc_regions, $id) :
+              $lookup($all_networks, $id) ? $lookup($all_networks, $id) :
+              $lookup($all_segments, $id)
+            );
+            $obj := $exists($app_obj) ? $app_obj : ($exists($ta_obj) ? $ta_obj : $aux_obj);
+            $exists($obj)
+              ? {
+                  "id": $id,
+                  "title": $obj.title,
+                  "entity": $obj.__entity_id__,
+                  "type": $node_type($obj.__entity_id__),
+                  "link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $id,
+                  "ref": $sanitize($id),
+                  "color": $type_color($node_type($obj.__entity_id__))
+                }
+              : {
+                  "id": $id,
+                  "title": $id,
+                  "entity": "",
+                  "type": "UNKNOWN",
+                  "link": "",
+                  "ref": $sanitize($id),
+                  "color": "#90A4AE"
+                }
+          )
+        };
+        $edge_key := function($edge){
+          $edge.from & "->" & $edge.to & ":" & $edge.relation
+        };
+        $relation_fields := [
+          {"field": "availabilityzone", "relation": "availability"},
+          {"field": "location", "relation": "location"},
+          {"field": "cluster", "relation": "compute_service"},
+          {"field": "clusters", "relation": "compute_service"},
+          {"field": "cluster_ref", "relation": "compute_service"},
+          {"field": "network_connection", "relation": "network"},
+          {"field": "management_networks", "relation": "management_network"},
+          {"field": "monitoring", "relation": "monitoring"},
+          {"field": "backup", "relation": "backup"},
+          {"field": "storage", "relation": "storage"},
+          {"field": "hw_storage", "relation": "hw_storage"}
+        ];
+
+        $system_ids.(
+          $system_id := $;
+          $system := $lookup($apps_map, $system_id);
+          $system_node := $node_record($system_id);
+          
+          $services := $ta_index.*[$system_id in $normalize(app_components)];
+
+          $service_nodes := $services.( $node_record(__id__) );
+          $service_edges := $services.{
+            "from": $system_id,
+            "to": __id__,
+            "relation": "tech_service"
+          };
+          $extra_edges := $services.(
+            $svc_id := __id__;
+            $svc_obj := $;
+            $relation_fields.(
+              $rel := relation;
+              $values := $normalize($lookup($svc_obj, field));
+              $values.{
+                "from": $svc_id,
+                "to": $,
+                "relation": $rel
+              }
+            )
+          )[];
+          $edge_map := ([
+              $service_edges,
+              $extra_edges
+            ][]).(
+              $exists($.from) and $exists($.to)
+                ? { $edge_key($): $ }
+                : {}
+            ) ~> $merge();
+          $related_nodes := $edge_map.*.( $node_record($.to) );
+          $node_map := ([
+              [$system_node],
+              $service_nodes,
+              $related_nodes
+            ][]).(
+              $exists($.id) ? { $.id: $ } : {}
+            ) ~> $merge();
+          {
+            $system_id: {
+              "id": $system_id,
+              "title": $system.title,
+              "nodes": $normalize($node_map.*),
+              "edges": $normalize($edge_map.*).{
+                "from": $.from,
+                "to": $.to,
+                "relation": $.relation,
+                "from_ref": $sanitize($.from),
+                "to_ref": $sanitize($.to)
+              }
+            }
+          }
+        ) ~> $merge()
+      )

@@ -1,0 +1,25 @@
+editable_table.s3.table.data:
+  row_1:
+    text: 1сфс
+    upload:
+      - href: http://google.com
+        text: google
+    upload_disabled: null
+  row_2:
+    text: 2
+    upload: null
+    upload_disabled:
+      - href: http://google.com
+        text: my link
+      - href: http://ya.ru
+        text: http://ya.ru
+      - href: http://google.com
+        text: AAAAAA
+      - href: http://ya.ru
+        text: http://ya.ru
+  row_3:
+    text: 3
+    upload: null
+    upload_disabled:
+      - href: http://google.com
+        text: http://google.com

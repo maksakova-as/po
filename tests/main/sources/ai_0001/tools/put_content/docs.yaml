@@ -1,0 +1,177 @@
+docs:
+  ai_001.tools.put_content:
+    type: ai-chat
+    location: AI / TOOLS / PUT CONTENT
+
+    scenarios:
+      default:
+        title: default
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ-ассистент.
+        tools:
+          - type: put_content
+#        ###### Примеры запроса пользователя ######
+#        Приведи объект в формат JSON:
+#          ``
+#          {
+#            my_data: "hello",
+#            nums: [1, 20, 30],
+#            values: {
+#              a: "hello",
+#              b: "world"
+#            }
+#          }
+#          ``
+#          и сохрани его в файл по пути '/data/test.yaml'
+
+      mock_all:
+        title: mock_all
+        type: gigachat
+        model: GigaChat-2-Pro
+        system_prompt: |
+          Ты ИИ-ассистент.
+
+          По запросу пользователя "сохрани" ты должен:
+            1.  Получить путь сохранения, используя инструмент 'get_path'.
+            2.  Получить данные для сохранения, используя инструмент 'get_data'.
+            3.  Сохранить полученные данные НЕ МЕНЯЯ ИХ СТРУКТУРУ, ВЛОЖЕННОСТЬ ИЛИ ФОРМАТ, используя инструмент 'put_content'.  
+                ВАЖНО: Используй результат выполнения функции 'get_data' непосредственно в качестве значения аргумента 'data' функции 'put_content', 
+                сохраняя исходную структуру и вложенность данных без изменений.
+          
+          Абстрактный пример вызова функции put_content:
+          ```
+          put_content(
+            path=get_path()['path'],
+            data=get_data()
+          )
+          ```
+          
+          КРИТИЧЕСКИ ВАЖНО:
+            - ТЫ НЕ ДОЛЖЕН ГЕНЕРИРОВАТЬ АРГУМЕНТ ДЛЯ put_content САМОСТОЯТЕЛЬНО.
+            - НЕ ПЫТАЙСЯ ИЗМЕНИТЬ СТРУКТУРУ ДАННЫХ ПОЛУЧЕННЫХ С ПОМОЩЬЮ put_content.
+
+        tools:
+          - type: put_content
+
+          - type: jsonata
+            schema:
+              name: get_path
+              description: Получает путь сохранения файла
+              parameters:
+                type: object
+                properties: {}
+              return_parameters:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: Путь сохранения файла
+            query: >
+              ({"path": "data_1.yaml"})
+
+          - type: jsonata
+            schema:
+              name: get_data
+              description: Получает данные для сохранения
+              parameters:
+                type: object
+                properties: {}
+
+            return_parameters:
+              type: string
+              properties: {}
+              description: Данные
+
+            query: >
+              (
+                  $data := {
+                      "ai_001.tools.put_content.data_1": {
+                          "name": "Иванов Иван Иванович",
+                          "age": 22,
+                          "password": "12345"
+                      },
+                      "list": [1, 203, 391, 1233, 4],
+                      "profile": "test"
+                  };
+              
+                  $string($data, true)
+              )
+              
+
+      mock_path:
+        title: mock_path
+        type: gigachat
+        model: GigaChat-2-Max
+
+        system_prompt: |
+          Ты ИИ-ассистент.
+
+          Основные переменные:
+            1.  Текст - ЛЮБОЙ запрос пользователя.
+            2.  Данные - результат выполнения инструмента 'format'.
+                В качестве аргумента следует использовать введенный пользователем текст.
+            3.  Путь сохранения - результат выполнения инструмента 'get_path'.
+
+          Твой алгоритм:
+            1.  Получить текст от пользователя.
+            2.  Используя инструмент 'get_path' получить путь сохранения.
+            3.  Используя инструмент 'format' получить данные.
+            4.  Используя инструмент 'put_content' сохранить данные по пути сохранения.
+          
+          Абстрактный пример вызова функции put_content:
+          ```
+          put_content(
+            path=get_path()['path'],
+            data=format()
+          )
+          ```
+          
+          КРИТИЧЕСКИ ВАЖНО:
+            - ТЫ НЕ ДОЛЖЕН ГЕНЕРИРОВАТЬ АРГУМЕНТ ДЛЯ put_content САМОСТОЯТЕЛЬНО.
+            - НЕ ПЫТАЙСЯ ИЗМЕНИТЬ СТРУКТУРУ ДАННЫХ ПОЛУЧЕННЫХ С ПОМОЩЬЮ format.
+
+        tools:
+          - type: put_content
+
+          - type: jsonata
+            schema:
+              name: get_path
+              description: Получает путь сохранения файла
+              parameters:
+                type: object
+                properties: {}
+              return_parameters:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: Путь сохранения файла
+            query: >
+              ({"path": "data_2.yaml"})
+
+          - type: jsonata
+            schema:
+              name: format
+              description: Форматирует текст введенный пользователем
+              parameters:
+                type: object
+                properties:
+                  text:
+                    type: string
+                    description: Текст введенный пользователем.
+            return_parameters:
+              type: string
+              properties: {}
+              description: Данные
+            query: >
+              (
+                  $result := {
+                      "ai_001.tools.put_content.data_2": {
+                          "text": $params.text
+                      }
+                  };
+              
+                  $string($result, true);
+              )

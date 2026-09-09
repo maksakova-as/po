@@ -1,0 +1,29 @@
+entities:
+  seaf.company.ai.agents:
+    presentations:
+      card:
+        widgets:
+          ai_struct_schema:
+            title: Структура агента
+            presentation: schema_tabs
+            order: 10
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      schema_tabs:
+        type: mkr-tabs
+        source: >
+          (
+            $res := [
+              {
+                  "title": "Структура агента",
+                  "src": "@entity/seaf.company.ai.agents/struct_schema?id=" & $params.id
+              }];
+            $res := $exists($lookup($."$package", "kadzo")) ? $append($res,
+              [{
+                  "title": "Прикладной слой",
+                  "src": "@entity/seaf.company.ai.agents/app_context_agent_schema?id=" & $params.id
+              }]) : $res;
+          )

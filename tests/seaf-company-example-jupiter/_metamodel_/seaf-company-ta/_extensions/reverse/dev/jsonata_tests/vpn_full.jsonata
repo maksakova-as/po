@@ -1,0 +1,71 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $subnet_ref := function($subnet_id){
+    (
+      $norm := $normalize($subnet_id);
+      $norm != "" ? "reverse.network." & $norm : null
+    )
+  };
+  $dc_ref := function($dc){
+    (
+      $norm := $normalize($dc);
+      $norm != "" ? "reverse.dc." & $norm : null
+    )
+  };
+  $segment_ref := function($dc){
+    (
+      $norm := $normalize($dc);
+      $norm != "" ? "reverse.segment." & $norm & ".INT-NET" : null
+    )
+  };
+  $vpns := $."seaf.ta.reverse.cloud_ru.advanced.vpn_gateways".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $vpns.(
+    $record := value;
+    $source_key := key;
+    $raw_id := $lookup($record, "id");
+    $id_part := $raw_id != null and $raw_id != "" ? $raw_id : $source_key;
+    $component_id := "reverse.netcomp.vpn." & $normalize($id_part);
+    $tenant := $lookup($record, "tenant");
+    $dc := $lookup($record, "DC");
+    $dc_ref_value := $dc_ref($dc);
+    $segment_value := $segment_ref($dc);
+    $network_connection := $subnet_ref($lookup($record, "subnet_id"));
+    $description_parts := [
+      $lookup($record, "ip_address") != null and $lookup($record, "ip_address") != "" ? "IP Address: " & $lookup($record, "ip_address") : "",
+      $lookup($record, "type") != null and $lookup($record, "type") != "" ? "Protocol: " & $lookup($record, "type") : "",
+      $lookup($record, "tenant") != null and $lookup($record, "tenant") != "" ? "Tenant: " & $lookup($record, "tenant") : "",
+      $dc_ref_value != null ? "DC: " & $dc_ref_value : ($dc != null and $dc != "" ? "DC: " & $dc : "")
+    ][ $ != "" ];
+    $description := $description_parts != [] ? $join($description_parts, "\n") : "";
+    {
+      ($component_id): {
+        "__id__": $component_id,
+        "__entity_id__": "seaf.company.ta.components.networks",
+        "__entity_title__": "VPN Gateway (reverse import)",
+        "__company_id__": $tenant,
+        "title": $lookup($record, "name"),
+        "description": $description,
+        "external_id": $lookup($record, "id"),
+        "model": "Cloud VPN Gateway",
+        "realization_type": "Managed",
+        "type": "VPN",
+        "network_connection": $network_connection != null ? [$network_connection] : [],
+        "segment": $segment_value,
+        "location": $dc_ref_value != null ? [$dc_ref_value] : [],
+        "address": $lookup($record, "ip_address"),
+        "source_key": $source_key,
+        "resource_id": $lookup($record, "id"),
+        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vpn_gateways"
+      }
+    }
+  )[] ~> $merge()
+)

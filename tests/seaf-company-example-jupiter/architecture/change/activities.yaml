@@ -1,0 +1,49 @@
+seaf.company.change.activities:
+
+  jupiter.activity.2025_l2p:
+    title: "Миграция legacy на PV"
+    description: Программа миграции легаси приложений на новую технологическую платформу Platform V
+    type: Стратегическая инициатива
+    status: Запланирована
+    realizes:
+      - jupiter.goal.03_01
+      - jupiter.goal.03_02
+    planned_start_date: 2025Q2
+    planned_finish_date: 2027Q2
+    comments:
+      - комментарий 1 к стратегической инициативе
+      - комментарий 2 к стратегической инициативе
+
+  jupiter.activity.2025_l2p_01:
+    title: "Миграция 1C.ERP на PV"
+    description: Проект миграции 1C.ERP на новую технологическую платформу Platform V
+    is_part_of: jupiter.activity.2025_l2p
+    type: Проект
+    status: В процессе
+    realizes:
+      - jupiter.goal.03_01
+    planned_start_date: 2025Q3
+    planned_finish_date: 2026Q3
+    comments:
+      - Сложный выбор на замену обусловлен уходом из РФ западных поставщиков ИТ систем
+
+  jupiter.activity.2025_l2p_02:
+    title: "Миграция АС Звезда на PV"
+    description: Проект миграции АС Звезда на новую технологическую платформу Platform V
+    is_part_of: jupiter.activity.2025_l2p
+    type: Проект
+    status: Новая
+    realizes:
+      - jupiter.goal.03_01
+    planned_start_date: 2026Q1
+    planned_finish_date: 2026Q4
+
+  jupiter.activity.2025_aiagent1:
+    type: ИИ-инициатива
+    title: Внедрение Агента №1
+    description: Проработка и развертывание первого агента
+    status: Запланирована
+    planned_start_date: 2026Q1
+    planned_finish_date: 2026Q4
+    realizes:
+      - jupiter.goal.02

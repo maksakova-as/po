@@ -1,0 +1,50 @@
+entities:
+  seaf.company.da.business_terms:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          legal_docs:
+            title: Нормативные документы
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: legal_docs
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 20
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      legal_docs:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: doc
+            text: Документ
+
+        origin:
+          objects: seaf.company.ds.da.business_terms
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          $obj2present.legal_docs#$i.{
+                                  "number": $i+1,
+                                  "doc": $
+                                     }[];
+          )

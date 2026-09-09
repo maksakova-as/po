@@ -1,0 +1,64 @@
+{
+  "seaf.company.ba.processes": {
+    "__id__": "seaf.company.ba.processes",
+    "title": "Процессы",
+    "description": "Процесс - это регулярно повторяющаяся последовательность действий, ограниченная во времени, направленная на достижение конкретных результатов (продуктов, услуг, решений, событий, иных артефактов)",
+    "attributes": [
+      {
+        "__id__": "title",
+        "title": "Краткое название",
+        "description": "Используется в качестве названия объекта в схемах и отчетах",
+        "type": "string",
+        "required": true
+      },
+      {
+        "__id__": "description",
+        "title": "Описание",
+        "description": "Подробное описание объекта",
+        "type": "string",
+        "required": false
+      },
+      {
+        "__id__": "external_id",
+        "title": "Внешний ID",
+        "description": "Идентификатор объекта во внешней системе",
+        "type": "string",
+        "required": false
+      },
+      {
+        "__id__": "comments",
+        "title": "Комментарии",
+        "type": "array",
+        "items_type": "string",
+        "required": false
+      },
+      {
+        "__id__": "lifecycle_stage",
+        "title": "Этап ЖЦ",
+        "type": "string",
+        "required": false
+      }
+    ],
+    "links": [
+      {
+        "__id__": "is_part_of",
+        "title": "Является частью",
+        "description": "Используется для задания древовидной структуры объектов",
+        "ref": "seaf.company.ba.processes",
+        "link_type": "1:1"
+      },
+      {
+        "__id__": "produces",
+        "title": "Производит",
+        "ref": "seaf.company.ba.products",
+        "link_type": "1:N"
+      },
+      {
+        "__id__": "uses_it_services",
+        "title": "Использует",
+        "ref": "seaf.company.app.services",
+        "link_type": "1:N"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+(
+  $server_id := "reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc";
+  $servers := $."seaf.company.ds.ta.servers";
+  $networks := $."seaf.company.ds.ta.networks";
+  $segments := $."seaf.company.ds.ta.network_segments";
+  
+  $server := $lookup($servers, $server_id);
+  $net_ids := $server.subnets;
+  
+  {
+    "server": $server.title,
+    "subnets": $net_ids,
+    "resolved_networks": $net_ids.(
+      $net := $lookup($networks, $);
+      {
+        "id": $net.__id__,
+        "title": $net.title,
+        "segment_ref": $net.segment,
+        "resolved_segment": $lookup($segments, $net.segment)
+      }
+    )
+  }
+)

@@ -1,0 +1,76 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      k8s_deployments:
+        title: Kubernetes deployments
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор системы
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+            align: left
+          - value: cluster
+            text: Кластер
+            link: cluster_link
+            align: left
+          - value: namespace
+            text: Namespace
+            link: namespace_link
+            align: left
+          - value: containers
+            text: Контейнеры
+            align: left
+          - value: hpa
+            text: HPA
+            link: hpa_link
+            align: left
+
+        origin:
+          deployments: seaf.company.ds.ta.k8s_deployments
+          k8s: seaf.company.ds.ta.k8s
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          hpas: seaf.company.ds.ta.k8s_hpas
+        source: >
+          (
+            $deployments := deployments;
+            $k8s := k8s;
+            $namespaces := namespaces;
+            $hpas := hpas;
+            $system_id := $params.id;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+
+            $rows := $deployments.*.(
+              $count($to_list(app_components)[$ = $system_id]) > 0
+                ? (
+                    $dep_id := __id__;
+                    $cluster := $lookup($k8s, cluster);
+                    $namespace := $lookup($namespaces, namespace);
+                    $dep_hpas := $hpas.*[$.target = $dep_id];
+                    $hpa_count := $count($dep_hpas);
+                    $first_hpa := $hpa_count > 0 ? $dep_hpas[0] : {};
+                    {
+                      "title": title,
+                      "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+                      "cluster": $cluster.title,
+                      "cluster_link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null,
+                      "namespace": $namespace.title,
+                      "namespace_link": $exists($namespace) ? "/entities/" & $namespace.__entity_id__ & "/card?id=" & $namespace.__id__ : null,
+                      "containers": $exists(containers) ? ($count(containers) & " шт.") : "-",
+                      "hpa": $hpa_count > 0 ? ("Да" & ($hpa_count > 1 ? " (" & $hpa_count & ")" : "")) : "Нет",
+                      "hpa_link": $exists($first_hpa.__id__) ? "/entities/" & $first_hpa.__entity_id__ & "/card?id=" & $first_hpa.__id__ : null
+                    }
+                  )
+                : null
+            );
+
+            $filter($rows, function($r){$type($r) = "object"})
+          )

@@ -1,0 +1,40 @@
+seaf.company.da.physical_tables:
+  jupiter.pht.test1:
+    title: test1
+    system: jupiter.app_system.1c_erp
+    attributes:
+      t1_t2:
+        title: T1-T2
+        linked_table: jupiter.pht.test2
+        linked_key: key1
+        type: ddd
+      t1_t3:
+        title: T1-T3
+        linked_table: jupiter.pht.test3
+        linked_key: key2
+        type: ttt
+
+  jupiter.pht.test2:
+    title: test2
+    system: jupiter.app_system.tms
+    attributes:
+      t2_t3:
+        title: T2-T3
+        linked_table: jupiter.pht.test3
+        linked_key: super
+        type: fff
+      t2_t1:
+        title: T2-T1
+        linked_table: jupiter.pht.test1
+        type: yyy
+
+  jupiter.pht.test3:
+    title: test3
+    system: jupiter.app_system.1c_erp
+
+
+
+
+
+
+

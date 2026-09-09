@@ -1,0 +1,52 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          capabilities:
+            title: Способности \ роли ИИ агента
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: capabilities
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 30
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      capabilities:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: capability
+            text: Способность
+
+        origin:
+          objects: seaf.company.ds.ai.agents
+        source: >
+          (
+          $obj2present := $lookup(objects, $params.id);
+          $data2present := $obj2present.capabilities;
+          $data2present = "Не используется"
+          ? { "capability": "Не используется" }
+          : $data2present#$i.{
+                                "number": $i+1,
+                                "capability": $
+                             }[];
+          )

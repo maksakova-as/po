@@ -1,0 +1,70 @@
+seaf.company.ba.clients:
+  jupiter.client.natural_person:
+    title: ФЛ
+    type: Физические лица
+    description: Роль - все клиенты физические лица
+
+  jupiter.client.young_person:
+    title: Молодые люди
+    type: Физические лица
+    external_id: 777888
+    is_part_of: jupiter.client.natural_person
+    description: Сегмент клиентов - молодые люди до 18 лет
+    lifecycle_stage: Тестируется
+    count_metrics:
+      - metric: MAU
+        units: кол-во уникальных клиентов в мес.
+        value: 1000
+      - metric: DAU
+        units: кол-во уникальных клиентов в день
+        value: 40
+    comments:
+      - Данный тип клиентов выделен в отдельный сегмент для достижения бизнес-целей по расширению охвата аудитории
+      - Рассматривается вопрос - еще расщепить данный сегмент на более мелкие
+    uses_it_services:
+      - jupiter.srv.esign
+      - jupiter.srv.news_feed
+
+  jupiter.client.mature_person:
+    title: Зрелые люди
+    type: Физические лица
+    is_part_of: jupiter.client.natural_person
+    description: Сегмент клиентов - зрелые люди от 18 до 65 лет
+    lifecycle_stage: Используется и развивается
+    uses_it_services:
+      - jupiter.srv.news_feed
+    count_metrics:
+      - metric: MAU
+        units: кол-во уникальных клиентов в мес.
+        value: 100
+      - metric: Жалобы
+        units: шт. в мес.
+        value: 9.8
+
+  jupiter.client.elderly_person:
+    title: Пожилые люди
+    type: Физические лица
+    is_part_of: jupiter.client.natural_person
+    description: Сегмент клиентов - пожилые люди от 65 лет и старше
+    lifecycle_stage: Используется и развивается
+
+  jupiter.client.employee:
+    title: Сотрудники
+    type: Сотрудники компании
+    external_id: 55658846
+    is_part_of: jupiter.client.natural_person
+    description: Роль - штатные сотрудники компании
+    lifecycle_stage: Используется
+
+  jupiter.client.news_editor:
+    title: Редакторы новостей
+    type: Сотрудники компании
+    external_id: 111222333444
+    is_part_of: jupiter.client.employee
+    lifecycle_stage: Идея в проработке
+    uses_it_services:
+      - jupiter.srv.lk_news_editor
+      - jupiter.srv.news_feed
+
+
+

@@ -1,0 +1,69 @@
+entities:
+  seaf.company.da.business_terms:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          logical_entities:
+            title: Связанные логические сущности
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: logical_entities
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 20
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      logical_entities:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: path_to_object
+          - value: linked_title
+            text: Название
+            link: path_to_object
+          - value: linked_type
+            text: Тип связи
+
+        origin:
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $objects_links := objects_links;
+          $id := $params.id;
+          $data2present := $lookup($objects_links, $id)[linked_entity_id="seaf.company.da.logical_entities" and link_dir="reverse"] ;
+          $data2show := $data2present#$i.{
+                          "number": $i+1,
+                          "linked_id": linked_id,
+                          "path_to_object": "/entities/" &linked_entity_id& "/card?id=" & linked_id,
+                          "linked_title": linked_title,
+                          "linked_type": (
+                              link_attr = "business_terms"
+                              ? "Сущность <-> бизнес-термин"
+                              : (
+                                  $le_attr := $match(link_attr, /^(attributes)\.(.*)\.(business_term)$/)[0].groups;
+                                  $le_attr != []
+                                      ? "Атрибут сущности (" & $le_attr[1] & ") <-> бизнес-термин"
+                                      : "прочее"
+                              )     
+                          )
+                        }[];
+          )

@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.ba.clients:
+    description: |
+      Датасет формирует коллекцию всех клиентов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.ba.clients";
+      )

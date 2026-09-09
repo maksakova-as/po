@@ -1,0 +1,30 @@
+entities:
+  aspects:
+#    Патчим формирование меню, чтобы пустые п.м. не появлялись
+    menu: >
+      (
+        $aspects := aspects;
+        $config := entities.aspects.config;
+        $makeLocation := function($id) {(
+            $arrleft := function($arr ,$count) {
+                $map($arr, function($v, $i) {
+                  $i <= $count ? $v
+                })
+            };
+            $domains := $split($id, ".");
+            $config.root_menu & "/" & $join($map($domains, function($domain, $index) {(
+                $lookup($aspects, $join($arrleft($domains, $index), ".")).title
+            )}), "/");
+        )};
+        [$append([ $exists($aspects) ? {
+            "link": "/entities/aspects/tree", /* Ссылка на форму представления аспектов в виде дерева */
+            "location": $config.root_menu     /* Расположение в меню */
+          }],
+          [$aspects.$spread().(          
+            *.location ? {
+              "link": "/entities/aspects/blank?dh-aspect-id=" & $keys()[0],     /* Формируем ссылку на карточку */
+              "location": $makeLocation($keys()[0])                             /* Формируем расположение в меню */
+            }
+          )][location]
+        )];
+      )

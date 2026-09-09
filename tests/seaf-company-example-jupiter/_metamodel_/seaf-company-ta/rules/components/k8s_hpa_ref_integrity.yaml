@@ -1,0 +1,80 @@
+rules:
+  validators:
+    seaf.validation.ta.components.k8s_hpa_ref_integrity:
+      uid: SEAF-TA-K8S-REF-HPA
+      title: Проверка корректности связи HPA с K8s и Deployment
+      description: |
+        Проверяет, что у каждого seaf.company.ta.components.k8s_hpa поля cluster_ref и target_ref
+        указывают на существующие объекты в seaf.company.ta.services.k8s и seaf.company.ta.services.k8s_deployments соответственно.
+      correction: |
+        Убедитесь, что cluster_ref и target_ref ссылаются на существующие объекты
+        в соответствующих сущностях (k8s и k8s_deployments), и при необходимости исправьте значения или создайте недостающие элементы.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.components.k8s_hpa_ref_integrity";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.k8s_hpas";
+                  $hpas := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $k8s_ds := $.datasets."seaf.company.ds.ta.k8s";
+                  $clusters := $eval($k8s_ds.source, { "objects": $, "data_lake": $ });
+                  $dep_ds := $.datasets."seaf.company.ds.ta.k8s_deployments";
+                  $deployments := $eval($dep_ds.source, { "objects": $, "data_lake": $ });
+                  $defined_k8s := $keys($clusters);
+                  $defined_dep := $keys($deployments);
+
+                  $each($hpas, function($h, $h_key){
+                    (
+                      $cr := $h.cluster_ref;
+                      $tr := $h.target_ref;
+                      ($not($exists($cr)) or $cr = "") ? {
+                        "uid": "seaf.validation.ta.k8s_hpa_ref_integrity.k8s.empty." & $h_key,
+                        "title": "HPA '" & $h.title & "' не заполнен cluster_ref",
+                        "correction": "ID: " & $h_key & ". " & ("Укажите существующий кластер (ключ из seaf.company.ta.services.k8s)"),
+                        "description": "HPA (" & $h_key & ") не содержит поля cluster_ref"
+                      } : (
+                        $not($cr in $defined_k8s) ? {
+                          "uid": "seaf.validation.ta.k8s_hpa_ref_integrity.k8s.notfound." & $h_key,
+                          "title": "HPA '" & $h.title & "' ссылается на отсутствующий кластер",
+                          "correction": "ID: " & $h_key & ". " & ("Исправьте cluster_ref на существующий ключ из seaf.company.ta.services.k8s"),
+                          "description": "cluster_ref='" & $cr & "' не найден в seaf.company.ta.services.k8s"
+                        } : (
+                          ($not($exists($tr)) or $tr = "") ? {
+                            "uid": "seaf.validation.ta.k8s_hpa_ref_integrity.target.empty." & $h_key,
+                            "title": "HPA '" & $h.title & "' не заполнен target_ref",
+                          "correction": "ID: " & $h_key & ". " & ("Укажите существующий Deployment (ключ из seaf.company.ta.services.k8s_deployments)"),
+                          "description": "HPA (" & $h_key & ") не содержит поля target_ref"
+                          } : (
+                            $not($tr in $defined_dep) ? {
+                              "uid": "seaf.validation.ta.k8s_hpa_ref_integrity.target.notfound." & $h_key,
+                              "title": "HPA '" & $h.title & "' ссылается на отсутствующий Deployment",
+                          "correction": "ID: " & $h_key & ". " & ("Исправьте target_ref на существующий ключ из seaf.company.ta.services.k8s_deployments"),
+                          "description": "target_ref='" & $tr & "' не найден в seaf.company.ta.services.k8s_deployments"
+                            }
+                          )
+                        )
+                      )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

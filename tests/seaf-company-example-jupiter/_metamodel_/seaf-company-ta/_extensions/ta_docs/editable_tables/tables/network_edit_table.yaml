@@ -1,0 +1,293 @@
+docs:
+  seaf.company.ta.docs.networks.lan.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Сеть/Сети/Изменение сетей/LAN
+    description: Редактор LAN сетей из architecture/ta/network.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+
+    origin:
+      networks: seaf.company.ds.ta.networks
+      segment_options: seaf.company.ds.ta.network_options.segments
+      location_options: seaf.company.ds.ta.network_options.locations
+
+    headers:
+      - value: id
+        text: ID
+        width: 250px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: description
+        text: Описание
+        width: 260px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: lan_type
+        text: Тип LAN
+        width: 150px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: ipnetwork
+        text: Подсеть (CIDR)
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: vlan
+        text: VLAN
+        width: 100px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: segment
+        text: Сегменты
+        width: 220px
+        type: multiple-select
+        options: >
+          (segment_options)
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: location
+        text: Локации
+        width: 220px
+        type: multiple-select
+        options: >
+          (location_options)
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+    source: >
+      (
+        $networks := $exists(networks) ? networks : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($networks), function($net_id){(
+          $net := $lookup($networks, $net_id);
+          $net.type = "LAN"
+            ? {
+                $net_id: {
+                  "id": $net_id,
+                  "title": $net.title,
+                  "description": $net.description,
+                  "external_id": $net.external_id,
+                  "lan_type": $net.lan_type,
+                  "ipnetwork": $net.ipnetwork,
+                  "vlan": $net.vlan,
+                  "segment": $to_array($net.segment),
+                  "location": $to_array($net.location)
+                }
+              }
+            : {}
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_networks := $lookup(file, "seaf.company.ta.services.networks");
+        $existing := $exists($file_networks) ? $file_networks : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $lan_updates := $map($keys($table), function($net_id){(
+          $row := $lookup($table, $net_id);
+          {
+            $net_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "external_id": $row.external_id,
+              "lan_type": $row.lan_type,
+              "ipnetwork": $row.ipnetwork,
+              "vlan": $row.vlan,
+              "segment": $to_array($row.segment),
+              "location": $to_array($row.location),
+              "type": "LAN"
+            }
+          }
+        )}) ~> $merge();
+        $other_networks := $map($keys($existing), function($net_id){(
+          $net := $lookup($existing, $net_id);
+          $net.type != "LAN" ? { $net_id: $net } : {}
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.networks": $merge([
+            $other_networks,
+            $lan_updates
+          ])
+        }
+      )
+
+  seaf.company.ta.docs.networks.wan.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Сеть/Сети/Изменение сетей/WAN
+    description: Редактор WAN сетей из architecture/ta/network.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+
+    origin:
+      networks: seaf.company.ds.ta.networks
+      segment_options: seaf.company.ds.ta.network_options.segments
+      location_options: seaf.company.ds.ta.network_options.locations
+
+    headers:
+      - value: id
+        text: ID
+        width: 250px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: wan_ip
+        text: WAN IP (CIDR)
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: provider
+        text: Провайдер
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: autonomous_system
+        text: AS
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: ip_version
+        text: IP версия
+        width: 120px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: segment
+        text: Сегменты
+        width: 220px
+        type: multiple-select
+        options: >
+          (segment_options)
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+      - value: location
+        text: Локации
+        width: 220px
+        type: multiple-select
+        options: >
+          (location_options)
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network.yaml
+
+    source: >
+      (
+        $networks := $exists(networks) ? networks : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($networks), function($net_id){(
+          $net := $lookup($networks, $net_id);
+          $net.type = "WAN"
+            ? {
+                $net_id: {
+                  "id": $net_id,
+                  "title": $net.title,
+                  "wan_ip": $net.wan_ip,
+                  "provider": $net.provider,
+                  "autonomous_system": $net.autonomous_system,
+                  "ip_version": $net.ip_version,
+                  "segment": $to_array($net.segment),
+                  "location": $to_array($net.location)
+                }
+              }
+            : {}
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_networks := $lookup(file, "seaf.company.ta.services.networks");
+        $existing := $exists($file_networks) ? $file_networks : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $wan_updates := $map($keys($table), function($net_id){(
+          $row := $lookup($table, $net_id);
+          {
+            $net_id: {
+              "title": $row.title,
+              "wan_ip": $row.wan_ip,
+              "provider": $row.provider,
+              "autonomous_system": $row.autonomous_system,
+              "ip_version": $row.ip_version,
+              "segment": $to_array($row.segment),
+              "location": $to_array($row.location),
+              "type": "WAN"
+            }
+          }
+        )}) ~> $merge();
+        $other_networks := $map($keys($existing), function($net_id){(
+          $net := $lookup($existing, $net_id);
+          $net.type != "WAN" ? { $net_id: $net } : {}
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.networks": $merge([
+            $other_networks,
+            $wan_updates
+          ])
+        }
+      )

@@ -1,0 +1,3927 @@
+{
+  "meta": {
+    "generatedAt": "2026-01-19T10:56:32.588Z",
+    "total": 128,
+    "passed": 128,
+    "warnings": 0,
+    "failed": 0,
+    "filters": null,
+    "outPrefix": null
+  },
+  "results": [
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.dc_regions",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/list",
+      "dataset": "seaf.company.ds.ta.dc_regions",
+      "status": "OK",
+      "message": "Rows: 4",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4074
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_regions / jupiter.dc_region.russia",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=jupiter.dc_region.russia",
+      "dataset": "seaf.company.ds.ta.dc_regions",
+      "id": "jupiter.dc_region.russia",
+      "source": "seaf2",
+      "expectedTitle": "Регион Россия",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "GET https://visor.sberbank.ru/get :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2333
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_regions / seaf1.flix.dc_region.russia",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=seaf1.flix.dc_region.russia",
+      "dataset": "seaf.company.ds.ta.dc_regions",
+      "id": "seaf1.flix.dc_region.russia",
+      "source": "seaf1",
+      "expectedTitle": "Регион Россия",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2144
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_regions / reverse.dc_region.ru-moscow-1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=reverse.dc_region.ru-moscow-1",
+      "dataset": "seaf.company.ds.ta.dc_regions",
+      "id": "reverse.dc_region.ru-moscow-1",
+      "source": "reverse",
+      "expectedTitle": "ru-moscow-1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2105
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.dc_azs",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/list",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "status": "OK",
+      "message": "Rows: 6",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2119
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_azs / jupiter.dc_az.moscow",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=jupiter.dc_az.moscow",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "id": "jupiter.dc_az.moscow",
+      "source": "seaf2",
+      "expectedTitle": "AZ Москва",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3459
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_azs / jupiter.dc_az.moscow_dr",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=jupiter.dc_az.moscow_dr",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "id": "jupiter.dc_az.moscow_dr",
+      "source": "seaf2",
+      "expectedTitle": "AZ резервный (DR)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3998
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_azs / seaf1.flix.dc_az.moscow",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=seaf1.flix.dc_az.moscow",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "id": "seaf1.flix.dc_az.moscow",
+      "source": "seaf1",
+      "expectedTitle": "Зона доступности Москва",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3488
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_azs / reverse.dc_az.ru-moscow-1a",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=reverse.dc_az.ru-moscow-1a",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "id": "reverse.dc_az.ru-moscow-1a",
+      "source": "reverse",
+      "expectedTitle": "ru-moscow-1a",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3984
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_azs / reverse.dc_az.ru-moscow-1b",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=reverse.dc_az.ru-moscow-1b",
+      "dataset": "seaf.company.ds.ta.dc_azs",
+      "id": "reverse.dc_az.ru-moscow-1b",
+      "source": "reverse",
+      "expectedTitle": "ru-moscow-1b",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3475
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.dcs",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/list",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "status": "OK",
+      "message": "Rows: 6",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2170
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / jupiter.dc.moscow_dc01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=jupiter.dc.moscow_dc01",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "jupiter.dc.moscow_dc01",
+      "source": "seaf2",
+      "expectedTitle": "Sber Cloud DC",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3975
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / jupiter.dc.moscow_dc02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=jupiter.dc.moscow_dc02",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "jupiter.dc.moscow_dc02",
+      "source": "seaf2",
+      "expectedTitle": "VK DC",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4006
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / seaf1.flix.dc.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=seaf1.flix.dc.01",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "seaf1.flix.dc.01",
+      "source": "seaf1",
+      "expectedTitle": "Sber Cloud DC",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3471
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / seaf1.flix.dc.02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=seaf1.flix.dc.02",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "seaf1.flix.dc.02",
+      "source": "seaf1",
+      "expectedTitle": "VK DC",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3529
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / reverse.dc.ru-moscow-1a",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=reverse.dc.ru-moscow-1a",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "reverse.dc.ru-moscow-1a",
+      "source": "reverse",
+      "expectedTitle": "Sber Cloud DC (ru-moscow-1a)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3464
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dcs / reverse.dc.ru-moscow-1b",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=reverse.dc.ru-moscow-1b",
+      "dataset": "seaf.company.ds.ta.dcs",
+      "id": "reverse.dc.ru-moscow-1b",
+      "source": "reverse",
+      "expectedTitle": "Sber Cloud DC (ru-moscow-1b)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3974
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.dc_offices",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/list",
+      "dataset": "seaf.company.ds.ta.dc_offices",
+      "status": "OK",
+      "message": "Rows: 3",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2164
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_offices / jupiter.dc_office.hq",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/card?id=jupiter.dc_office.hq",
+      "dataset": "seaf.company.ds.ta.dc_offices",
+      "id": "jupiter.dc_office.hq",
+      "source": "seaf2",
+      "expectedTitle": "Головной офис",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3465
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.dc_offices / seaf1.flix.office.hq",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/card?id=seaf1.flix.office.hq",
+      "dataset": "seaf.company.ds.ta.dc_offices",
+      "id": "seaf1.flix.office.hq",
+      "source": "seaf1",
+      "expectedTitle": "Головной офис",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3455
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.network_segments",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/list",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2165
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / jupiter.network_segment.dc.dmz",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=jupiter.network_segment.dc.dmz",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "jupiter.network_segment.dc.dmz",
+      "source": "seaf2",
+      "expectedTitle": "DMZ",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3975
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / jupiter.network_segment.dc.ext_wan_edge",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=jupiter.network_segment.dc.ext_wan_edge",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "jupiter.network_segment.dc.ext_wan_edge",
+      "source": "seaf2",
+      "expectedTitle": "EXT WAN-EDGE",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3990
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / seaf1.flix.network_segment.dc.dmz",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=seaf1.flix.network_segment.dc.dmz",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "seaf1.flix.network_segment.dc.dmz",
+      "source": "seaf1",
+      "expectedTitle": "DMZ",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3999
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / seaf1.flix.network_segment.dc.ext_wan_edge",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=seaf1.flix.network_segment.dc.ext_wan_edge",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "seaf1.flix.network_segment.dc.ext_wan_edge",
+      "source": "seaf1",
+      "expectedTitle": "EXT WAN-EDGE",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3992
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+      "source": "reverse",
+      "expectedTitle": "EXTERNAL-NET (Sber Cloud DC (ru-moscow-1a))",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3985
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_segments / reverse.segment.ru-moscow-1a.INTERNET",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=reverse.segment.ru-moscow-1a.INTERNET",
+      "dataset": "seaf.company.ds.ta.network_segments",
+      "id": "reverse.segment.ru-moscow-1a.INTERNET",
+      "source": "reverse",
+      "expectedTitle": "INTERNET (Sber Cloud DC (ru-moscow-1a))",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3985
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.networks",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/list",
+      "dataset": "seaf.company.ds.ta.networks",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2147
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / jupiter.network.lan.192.168.101.0",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=jupiter.network.lan.192.168.101.0",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "jupiter.network.lan.192.168.101.0",
+      "source": "seaf2",
+      "expectedTitle": "LAN сеть Sber",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3966
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / jupiter.network.lan.dc01.dmz.prod",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=jupiter.network.lan.dc01.dmz.prod",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "jupiter.network.lan.dc01.dmz.prod",
+      "source": "seaf2",
+      "expectedTitle": "DMZ-PROD",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "GET http://127.0.0.1:8080/core/storage/release-data-profile/H4sIAAAAAAAACr1WwW7jNhD9lQHXCOxCluPdNM26yGZ3CxS99NQCBWq6Ai1RDtcyqZJ0HNdwsQh6KdBjD73uYe85NEDaYvsN8h8VJCVZsaUkKIragC3NvBnO45CPXKHWmCiKBqhHuWaaUdVTlMR%2BKGYp4UtfE19RecFCqnxO9ULIqeqlkirKNdFMcNXLzQHjsSRBKDinofUgD%2BllapKnCeF6PkuMhc7ShGhjLR7NkPKCyiARoc3ppw6rxFyGBtnGHKDFIhicQislksyUz6JPrZVTbc2JENN52i6K9Ay%2B4yDnRAUFjF4ypVXbhPlBwKIgyEFmHgwCo5dKE2nKxZhjBAfGDYBRQmMNWoBkk3MNEZOO5w5KTRm3JQIXEVU0hePDRogkfPoAZEzC6USKOY8%2BE4mQ8CS2n0Z8RGMyT%2FTX9FK%2FStiEzyjXEFKuqWyMUeckEgvGJxCTRNHmcmmoCZ8kFFY7GIDXe3U%2BjY%2FiT%2FZxQkZU5pij6Hgc73IH%2BFxwnSP6%2Ff6z%2FskOYn3vnD%2BquMh8%2F%2BfiiJRicV%2FyHehDI1Vp68fRjuMT2r%2BfdnxIPj68l%2Fazk6f9PYSjXe7JwHZicOrcxRZ0bwBngJEFYIxR9i672VxtfhnAcOj7Pd%2FfapEZAPK9ao1Lu2XhADDqhURGZyw6rYJKL2ytmumEWuNoZMYDosBU6BCSpgkJaVURvN7wu1fdb0n3h8Pu82DU8zAKMOq4vE%2FCE3ocPrdsCzoDwKjgrkVApCRLoyXxnFuJaLcuSNJZQcvooXsBozQWiBGcgbHBANqlPlnMGQzNwwgGMBx1YO1GCEWS0FDfHUCM39BQG9mzdINU0phdetBSy9lYJJ1V3ogcNzRqyvi23EI4KwLeASFhDzcjnEyoUZWg0NrOyF8VU%2BH6itGg2mE309XC7Fw2NfyhXu%2B1ua7DbkzH3rp2%2Bv2YVkf98Ii6VntbgjSaFAT%2F9Srqdl%2F8BxVWFuHa%2FOULRGkhyYTaLajsqZcvmXbuUf5HHmCUvd%2B8za6zD9lt9ld2u%2Fk5u8HI2JXGqDg6F0Fztq0zT%2FjFN93sXfY%2B%2B9XlOV9UMplzbJ7WZHEOl%2BC1fXbR42kZOxO8JnAmONNCMj5xwV%2BW7y7BTPAyw3Rck2A6doFf0XAumV66sOm4jCpD2nfn1Lcr%2B8cX0HojGG%2BbBd4xHWnvzVczsjofzaiSeTOkoFaLcDzMiq3lYRyP49GIvMOjEbXl0QgpedQhHI%2BIkYk57pqPFXeNO6gcQQdFGw%2BKeTA75yXlkbnh3ZHw6sXPnqjV0wmyD9mN%2BbnO%2Fsh%2Bz27MU3maiEILMeZlalvzCjDKyzaaUVJYY97BHHnIXWfRYFVclp1CIw9J%2Bv2cSRqhwRCxCI08lEqRUmmE0uBZZKOM9qEByn5zVW2ustvNT9lt9md2vbnK%2Ft683d7DlTa7A63Xaw8JySaMmwyFjBtA9e4fKXP9L70eKjZ7PbD0eqgiDPXYKsBDbgnVI3Ofh7a7vR5Y8XtoOq4HTcdovf4HvZGVMPUMAAA%3D?params=%7B%22id%22%3A%22jupiter.network.lan.192.168.101.0%22%7D&baseuri=backend%3A%2F%2F721a51bb0a146935201b9c8d4bf8d1a3%2F :: net::ERR_ABORTED",
+          "GET http://127.0.0.1:8080/core/storage/versions/ :: net::ERR_ABORTED",
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED",
+          "GET http://127.0.0.1:8080/core/storage/release-data-profile/H4sIAAAAAAAACtVY724jNRB%2FFctEVSJtN831OHo53T%2BQeAI%2B0S0rx57d%2BrqxF9tpr1RBqEJ8QuIrEp94g0pQqSDunmHzRsjeP9lNdpvkChK0UuXO%2FDwznp9nbO8V7k2IBjzGQxCGGw56qIFEPpXTlIhL3xBfgzrnFLQvwFxIdaaHqQINwhDDpdDDQhyeclBE0dNL7GFzmVqjaUKEmU0TK4FpmhBjpeXQulLnoMJEUmfLT3OsljNFLbIfCIR6pV80fo7K8TOn0RBPQRinKce5hlEnZLT4X0aRXYOVFcNnddtW3kukPJul%2Fcqfh3opUWSqfc4GOfyU6LA%2BBd5ybXQ1xQ9DzsKwACvQMjmHanl2RjQT1I77Pc4GVxaGlo4ZtT45G6CXbcLxUlisIVdYK%2FNGQkIhmVts4aAeNhFsPe5i3iDHI%2Bt%2FRXV84vdLrbOpIW5krcy%2Fh3r5%2Bitk6UxDXCaorrfeAmwjRkEQ4OzX7Db7Lfsru83eLa7H6PjY94e%2Bv9yfAUZ7qDDmhJfOJtpDAR5SothLzp7XQZUWLaWGmwSc8OTEekVE2x0U5ggFaUIo1EP2hsdfvd7%2Fkux%2Fc7D%2FNDwZegEOAzzI7X4URUAnh0EgAtxc2hgFuC4boG9foN4byUXfKqpE5LicxHK%2F7MxiObGNxlK3xmMiqeNxdbf2u2hMJN2Gxl%2By99mf2c3ih%2Bxu8VMnjbmxDTQuPdZptNI2GhNJV2lcGrifxsmEQTT5h2gs%2B6JLSRuJS5ZWtv%2FievFjZ8aWrWZD1po9qZ65UtPIHkZ7y%2FX11%2FYWT4vRwMUbBC5LdWsVosjC4H6DF0SEPO20lqvbTDm4Y1qAWWW6uej72aZH8IQ%2BbbBd5w9YDNqWQ5i3up2rcOdW%2B%2FAatdFyVmC33fxNExv6%2Fi6df5ven2%2F%2FZc0WK3AM7e%2B%2F%2BPCm3FLF63XcXcnb1Xi%2BR2yMAsz%2F6rz98MPOsvKgyntQf20mZfcjcS3fXUVXeNi29FZy33lItu35Xc%2Bpf4OBdh7uZ6ODu%2BIGzkmsyHTDyddIeYBfaUOUfTEU50FTq8%2B4cDdyNCH0LFZyJthnMpHKXsDsz4ZZDCIyS8wX8Na8TngsbP0gCsKA2jBTnxImL7iIUUQSDRvQCqghIk4AXbUiEfp0Lf5H0ePoky60VAxUgXzMnkyigw7k51KYAjcajQ5HR624%2BYb43WVk%2B9CZ%2Ff2PhE6Ukheb3a1M2M53PUFmlwRF0RGMtklQdEA%2BPtgiQYdHj0YduLYErb4omsrmm7Gpa9xhm6rm9ahNVx6LKxG%2BAsFshddbRv1srfcAl%2Bj6tRhl77Jb%2B%2Bcm%2ByP73b4Rs5vqOiir%2FhKIyovrRsVLO8BFVwrwuOpQ7vkc2BMCezh%2F8OPxVfkJQ07eADXYwwq%2BnnEFDI%2BPMWf4xMOpkikoezW3eM7cLHulxmOc%2FZxHt7jO7hbfZ3fuKXSdvV98t%2Fw6oo3iIsbz%2BdzDUvGYC2uh%2FPpgAfUvMUzbjzGV1sPlBeBeYFihPMxoB9YqPFx8U%2BiChKV%2BPv8bP449LTYSAAA%3D?params=%7B%22id%22%3A%22jupiter.network.lan.192.168.101.0%22%7D&baseuri=backend%3A%2F%2F5d094eb7dc85983054c8c2575143bffd%2F :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5924
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / seaf1.flix.lan.office.admin.ARM",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=seaf1.flix.lan.office.admin.ARM",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "seaf1.flix.lan.office.admin.ARM",
+      "source": "seaf1",
+      "expectedTitle": "АРМ Admin",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED",
+          "GET http://127.0.0.1:8080/core/storage/release-data-profile/H4sIAAAAAAAACr1W4W7bNhB%2BlQNrGHYhy3GbdamGNO0G7An2a6YnMCLlspFJjaSTpoaHNtvPPcD%2B7g2KYQbaAcszUG80HGXZahynQX%2FMBmzq%2BJH3HT%2FenRakc8qsIAkZCuWkk8IOrWB5nOlZydRl7FhshTmXmbCxEu5CmzM7LI2wQjnmpFZ2uDanzT8XAU4i4i5L3LosmHLzWYEWMSsL5tDaDNGhORcmLXQWdozLGmv13GSI7FEF0JEckmPolMywmY0l%2FyZYlXDBXGh9Ni97DcUI8f0a8pLZtIGJ19I628NlcZpKnqZrEJ4CIih5bh0zSJdSRQl0cRqAEnsmVXAOpyw7mxo9V%2Fw7XWgDD%2FLw2YvnImfzwv0gXrsXhZyqmVAOMqGcMHvX2JeM6wupppCzwoq9OCMyx9S0ELC4gQH4dofno%2Fww%2F3oXpw0XZo055E9O84MdzPdauTViNBo9Hh3dQCz3MlSa348cx%2B%2F%2FTI4Zoy%2Fu2vwG9HOe2mG7%2B4Wd50didHfY%2BQH76uDOsB8fPRrtIOqwN3mSBiWS43q6SYv6CeAEKAkASinxf%2FpVdVX9nsB4HMfDON5WB3QA6%2FwJxsuQRtAFSoYZM%2FxE8uM2aDMLW6uTrhDBOJmgP2AWkGGNMKIsWCbaWRoNxz%2B9GPzIBm8OBk%2FTyTCiJKWkX%2B%2F7IDsST7KnIdomnAQoaWJ3OmXGsEvM73yuMiwyvc45K%2FoL6GCNqh8Asz8AKYETQBsk0NvUjIA5gTEOJpDAeNKHZe2hLnnhgO3mhJt6iKVUK6GcjR%2BOsYxJteXU26KUEoFafxIvmjBqTShJdtXxK%2F%2BXv%2FYrqH6t3lVX1Vt%2F7T%2FiCM37hPucZjty3aoUvyHUfTTio%2BxQ1BpF2%2BgEnzbRfbH8g8GzL6HUui5rFRv5PtUzDuf%2ByzPovNJS9fBarXsGkr8Fj%2BZb8VyyKZaG%2FSlYt6FuK127Da1u4w%2B5PxeKY4f65Lq3G1eoPu1MBv%2BvX%2BHPe%2F%2FR%2F%2B1XONroqZveTanabB04L4CSNW2UaRPCkqo%2BVSQidTsmyaJp9vr0lcgciYgRP8%2BlEZwkYyI5mUSkNLoUBi8j4iUPq%2FB%2BkYT4P2pW1ZX%2FUP3mP%2Fh%2F%2FPvqyl9Xb7fvEdYZqaZkuVxGRBs5lQp3aFo%2BAtpvLtziy8tmNiK7%2BXjnkjZuufwPAM4uzykJAAA%3D?params=%7B%22id%22%3A%22jupiter.network.lan.dc01.dmz.prod%22%7D&baseuri=backend%3A%2F%2F11c63c0b2e708f8e9b0caf83b23d03cc%2F :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6363
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / seaf1.flix.lan.office.ext.lan",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=seaf1.flix.lan.office.ext.lan",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "seaf1.flix.lan.office.ext.lan",
+      "source": "seaf1",
+      "expectedTitle": "OF-EXT LAN",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5711
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+      "source": "reverse",
+      "expectedTitle": "subnet-Prod",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5984
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.networks / reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+      "dataset": "seaf.company.ds.ta.networks",
+      "id": "reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+      "source": "reverse",
+      "expectedTitle": "subnet-DMZ",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 7141
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.network_links",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_links/list",
+      "dataset": "seaf.company.ds.ta.network_links",
+      "status": "OK",
+      "message": "Rows: 2",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED",
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2322
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.network_links / jupiter.link.hq_to_dc01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_links/card?id=jupiter.link.hq_to_dc01",
+      "dataset": "seaf.company.ds.ta.network_links",
+      "id": "jupiter.link.hq_to_dc01",
+      "source": "seaf2",
+      "expectedTitle": "Канал связи Офис - ЦОД-01",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3472
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.logical_links",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/list",
+      "dataset": "seaf.company.ds.ta.logical_links",
+      "status": "OK",
+      "message": "Rows: 2",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2134
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.logical_links / jupiter.link.fw_to_servers",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=jupiter.link.fw_to_servers",
+      "dataset": "seaf.company.ds.ta.logical_links",
+      "id": "jupiter.link.fw_to_servers",
+      "source": "seaf2",
+      "expectedTitle": "Связь NGFW с серверами",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 7387
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.logical_links / seaf1.flix.link.fw_to_servers",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=seaf1.flix.link.fw_to_servers",
+      "dataset": "seaf.company.ds.ta.logical_links",
+      "id": "seaf1.flix.link.fw_to_servers",
+      "source": "seaf1",
+      "expectedTitle": "Связь NGFW с серверами",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5566
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.logical_links / reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+      "dataset": "seaf.company.ds.ta.logical_links",
+      "id": "reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+      "source": "reverse",
+      "expectedTitle": "peering-Internal-External",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 8494
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.logical_links / reverse.link.vpn.vpn-hq",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=reverse.link.vpn.vpn-hq",
+      "dataset": "seaf.company.ds.ta.logical_links",
+      "id": "reverse.link.vpn.vpn-hq",
+      "source": "reverse",
+      "expectedTitle": "vpn-hq",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6583
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.softwares",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/list",
+      "dataset": "seaf.company.ds.ta.software",
+      "status": "OK",
+      "message": "Rows: 4",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2146
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.softwares / jupiter.software.windows_server",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=jupiter.software.windows_server",
+      "dataset": "seaf.company.ds.ta.software",
+      "id": "jupiter.software.windows_server",
+      "source": "seaf2",
+      "expectedTitle": "Windows Server 2019",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3471
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.softwares / jupiter.software.ubuntu",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=jupiter.software.ubuntu",
+      "dataset": "seaf.company.ds.ta.software",
+      "id": "jupiter.software.ubuntu",
+      "source": "seaf2",
+      "expectedTitle": "Ubuntu 22.04 LTS",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3468
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.softwares / seaf1.flix.licenses.cryptopro",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=seaf1.flix.licenses.cryptopro",
+      "dataset": "seaf.company.ds.ta.software",
+      "id": "seaf1.flix.licenses.cryptopro",
+      "source": "seaf1",
+      "expectedTitle": "КриптоПро",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3471
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.compute_services",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/list",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2120
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / jupiter.compute_service.ac9.app",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=jupiter.compute_service.ac9.app",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "jupiter.compute_service.ac9.app",
+      "source": "seaf2",
+      "expectedTitle": "Фронт (десктопное приложение)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3992
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / jupiter.compute_service.ac9.db",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=jupiter.compute_service.ac9.db",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "jupiter.compute_service.ac9.db",
+      "source": "seaf2",
+      "expectedTitle": "База данных AS9",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3966
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / seaf1.flix.compute_service.ac9.app",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=seaf1.flix.compute_service.ac9.app",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "seaf1.flix.compute_service.ac9.app",
+      "source": "seaf1",
+      "expectedTitle": "Фронт (десктопное приложение)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3974
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / seaf1.flix.compute_service.ac9.db",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=seaf1.flix.compute_service.ac9.db",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "seaf1.flix.compute_service.ac9.db",
+      "source": "seaf1",
+      "expectedTitle": "База данных AS9",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3985
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+      "source": "reverse",
+      "expectedTitle": "elb-ingress-test",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4004
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.compute_services / reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+      "dataset": "seaf.company.ds.ta.compute_services",
+      "id": "reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+      "source": "reverse",
+      "expectedTitle": "elb-ingress-prod",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3994
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.clusters",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/list",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2156
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / jupiter.cluster.ad",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=jupiter.cluster.ad",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "jupiter.cluster.ad",
+      "source": "seaf2",
+      "expectedTitle": "Кластер AD",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6071
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / jupiter.cluster.app_ac1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=jupiter.cluster.app_ac1",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "jupiter.cluster.app_ac1",
+      "source": "seaf2",
+      "expectedTitle": "Кластер приложений AC1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5521
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / seaf1.flix.cluster.ad",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=seaf1.flix.cluster.ad",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "seaf1.flix.cluster.ad",
+      "source": "seaf1",
+      "expectedTitle": "Кластер AD",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6063
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / seaf1.flix.cluster.app_ac1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=seaf1.flix.cluster.app_ac1",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "seaf1.flix.cluster.app_ac1",
+      "source": "seaf1",
+      "expectedTitle": "Кластер приложений AC1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3972
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / reverse.cluster.dmss.flix.dmss.7bb3c551-0fc3-4916-a853-302390af0569",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=reverse.cluster.dmss.flix.dmss.7bb3c551-0fc3-4916-a853-302390af0569",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "reverse.cluster.dmss.flix.dmss.7bb3c551-0fc3-4916-a853-302390af0569",
+      "source": "reverse",
+      "expectedTitle": "dms-rabbitmq-test",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 7309
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.clusters / reverse.cluster.dmss.flix.dmss.fc5d98f2-d0c3-4125-9354-744c786ead81",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.clusters/card?id=reverse.cluster.dmss.flix.dmss.fc5d98f2-d0c3-4125-9354-744c786ead81",
+      "dataset": "seaf.company.ds.ta.clusters",
+      "id": "reverse.cluster.dmss.flix.dmss.fc5d98f2-d0c3-4125-9354-744c786ead81",
+      "source": "reverse",
+      "expectedTitle": "dms-rabbitmq-prod",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6093
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.cluster_virtualizations",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/list",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "status": "OK",
+      "message": "Rows: 6",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2160
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.cluster_virtualizations / jupiter.cluster_virtualization.esx.cloudru",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=jupiter.cluster_virtualization.esx.cloudru",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "id": "jupiter.cluster_virtualization.esx.cloudru",
+      "source": "seaf2",
+      "expectedTitle": "Кластер виртуализации ESX в Cloud.ru",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4499
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.cluster_virtualizations / jupiter.cluster_virtualization.proxmox.vk",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=jupiter.cluster_virtualization.proxmox.vk",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "id": "jupiter.cluster_virtualization.proxmox.vk",
+      "source": "seaf2",
+      "expectedTitle": "Кластер виртуализации Proxmox в VK Cloud",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4513
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.cluster_virtualizations / seaf1.flix.cluster_virtualization.esx.cloudru",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=seaf1.flix.cluster_virtualization.esx.cloudru",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "id": "seaf1.flix.cluster_virtualization.esx.cloudru",
+      "source": "seaf1",
+      "expectedTitle": "Кластер виртуализации ESX в Cloud.ru",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4579
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.cluster_virtualizations / seaf1.flix.cluster_virtualization.proxmox.vk",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=seaf1.flix.cluster_virtualization.proxmox.vk",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "id": "seaf1.flix.cluster_virtualization.proxmox.vk",
+      "source": "seaf1",
+      "expectedTitle": "Кластер виртуализации Proxmox в VK Cloud",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4567
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.cluster_virtualizations / reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+      "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+      "id": "reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+      "source": "reverse",
+      "expectedTitle": "9f7dcs8823ed23e9cwe223ecwe22236 virtualization cluster",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5022
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.servers",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/list",
+      "dataset": "seaf.company.ds.ta.servers",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2148
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / jupiter.server_metal.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=jupiter.server_metal.01",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "jupiter.server_metal.01",
+      "source": "seaf2",
+      "expectedTitle": "Физический сервер 01",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5004
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / jupiter.server_metal.02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=jupiter.server_metal.02",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "jupiter.server_metal.02",
+      "source": "seaf2",
+      "expectedTitle": "Физический сервер 02",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4497
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / seaf1.flix.server_metal.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=seaf1.flix.server_metal.01",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "seaf1.flix.server_metal.01",
+      "source": "seaf1",
+      "expectedTitle": "Физический сервер 01",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4517
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / seaf1.flix.server_metal.02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=seaf1.flix.server_metal.02",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "seaf1.flix.server_metal.02",
+      "source": "seaf1",
+      "expectedTitle": "Физический сервер 02",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4553
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "source": "reverse",
+      "expectedTitle": "ecs-prod-someserver1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4592
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.servers / reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "dataset": "seaf.company.ds.ta.servers",
+      "id": "reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "source": "reverse",
+      "expectedTitle": "ecs-prod-someserver2",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5026
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.storages",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/list",
+      "dataset": "seaf.company.ds.ta.storages",
+      "status": "OK",
+      "message": "Rows: 6",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2209
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / jupiter.obj_storage.cloud_s3",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=jupiter.obj_storage.cloud_s3",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "jupiter.obj_storage.cloud_s3",
+      "source": "seaf2",
+      "expectedTitle": "S3 Storage in Sber",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4009
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / jupiter.obj_storage.vk_s3",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=jupiter.obj_storage.vk_s3",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "jupiter.obj_storage.vk_s3",
+      "source": "seaf2",
+      "expectedTitle": "S3 Storage in VK",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3990
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / seaf1.flix.obj_storage.cloud_s3",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=seaf1.flix.obj_storage.cloud_s3",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "seaf1.flix.obj_storage.cloud_s3",
+      "source": "seaf1",
+      "expectedTitle": "S3 Storage in Sber",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4001
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / seaf1.flix.obj_storage.vk_s3",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=seaf1.flix.obj_storage.vk_s3",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "seaf1.flix.obj_storage.vk_s3",
+      "source": "seaf1",
+      "expectedTitle": "S3 Storage in VK",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3984
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+      "source": "reverse",
+      "expectedTitle": "Daily_Backups",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4006
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.storages / flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+      "dataset": "seaf.company.ds.ta.storages",
+      "id": "flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+      "source": "reverse",
+      "expectedTitle": "Weekly_Backup",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3464
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.k8s",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/list",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "status": "OK",
+      "message": "Rows: 6",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2117
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / jupiter.k8s.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=jupiter.k8s.01",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "jupiter.k8s.01",
+      "source": "seaf2",
+      "expectedTitle": "K8s кластер",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6544
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / jupiter.k8s.02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=jupiter.k8s.02",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "jupiter.k8s.02",
+      "source": "seaf2",
+      "expectedTitle": "K8s кластер расширенный (ДЗО)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6043
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / seaf1.flix.k8s.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=seaf1.flix.k8s.01",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "seaf1.flix.k8s.01",
+      "source": "seaf1",
+      "expectedTitle": "K8s кластер",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6064
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / seaf1.flix.k8s.02",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=seaf1.flix.k8s.02",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "seaf1.flix.k8s.02",
+      "source": "seaf1",
+      "expectedTitle": "K8s кластер расширенный (ДЗО)",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4499
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+      "source": "reverse",
+      "expectedTitle": "cce-test",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 7110
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.k8s / reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+      "dataset": "seaf.company.ds.ta.k8s",
+      "id": "reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+      "source": "reverse",
+      "expectedTitle": "cce-prod",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 6107
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.backups",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/list",
+      "dataset": "seaf.company.ds.ta.backup",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2137
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.backups / jupiter.backup.cyberbackup",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=jupiter.backup.cyberbackup",
+      "dataset": "seaf.company.ds.ta.backup",
+      "id": "jupiter.backup.cyberbackup",
+      "source": "seaf2",
+      "expectedTitle": "Cyberbackup",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3961
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.backups / seaf1.flix.backup.cyberbackup",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=seaf1.flix.backup.cyberbackup",
+      "dataset": "seaf.company.ds.ta.backup",
+      "id": "seaf1.flix.backup.cyberbackup",
+      "source": "seaf1",
+      "expectedTitle": "Cyberbackup",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4026
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.backups / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "dataset": "seaf.company.ds.ta.backup",
+      "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+      "source": "reverse",
+      "expectedTitle": "Backup for ecs-prod-someserver1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4489
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.backups / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "dataset": "seaf.company.ds.ta.backup",
+      "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+      "source": "reverse",
+      "expectedTitle": "Backup for ecs-prod-someserver2",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4499
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.monitorings",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/list",
+      "dataset": "seaf.company.ds.ta.monitoring",
+      "status": "OK",
+      "message": "Rows: 5",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2138
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.monitorings / jupiter.monitoring.elk",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=jupiter.monitoring.elk",
+      "dataset": "seaf.company.ds.ta.monitoring",
+      "id": "jupiter.monitoring.elk",
+      "source": "seaf2",
+      "expectedTitle": "ELK",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4503
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.monitorings / jupiter.monitoring.zabbix",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=jupiter.monitoring.zabbix",
+      "dataset": "seaf.company.ds.ta.monitoring",
+      "id": "jupiter.monitoring.zabbix",
+      "source": "seaf2",
+      "expectedTitle": "Zabbix",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [
+          "POST http://seaf.slsdev.ru/seafplantuml/svg/zopfli :: net::ERR_ABORTED"
+        ],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4518
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.monitorings / seaf1.flix.monitoring.elk",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=seaf1.flix.monitoring.elk",
+      "dataset": "seaf.company.ds.ta.monitoring",
+      "id": "seaf1.flix.monitoring.elk",
+      "source": "seaf1",
+      "expectedTitle": "ELK",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4499
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.monitorings / seaf1.flix.monitoring.zabbix",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=seaf1.flix.monitoring.zabbix",
+      "dataset": "seaf.company.ds.ta.monitoring",
+      "id": "seaf1.flix.monitoring.zabbix",
+      "source": "seaf1",
+      "expectedTitle": "Zabbix",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4523
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.networks",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/list",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2133
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / jupiter.kb.fpsu_1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=jupiter.kb.fpsu_1",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "jupiter.kb.fpsu_1",
+      "source": "seaf2",
+      "expectedTitle": "FPSU-1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3980
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / jupiter.network_device.dc.fw.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=jupiter.network_device.dc.fw.01",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "jupiter.network_device.dc.fw.01",
+      "source": "seaf2",
+      "expectedTitle": "NGFW-01",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4604
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / seaf1.flix.kb.fpsu_1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=seaf1.flix.kb.fpsu_1",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "seaf1.flix.kb.fpsu_1",
+      "source": "seaf1",
+      "expectedTitle": "FPSU-1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4492
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / seaf1.flix.network.dc.fw.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=seaf1.flix.network.dc.fw.01",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "seaf1.flix.network.dc.fw.01",
+      "source": "seaf1",
+      "expectedTitle": "NGFW-01",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5025
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+      "source": "reverse",
+      "expectedTitle": "vpc-internal",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3985
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.networks / reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+      "dataset": "seaf.company.ds.ta.network_components",
+      "id": "reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+      "source": "reverse",
+      "expectedTitle": "vpc-external",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 3980
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.user_devices",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/list",
+      "dataset": "seaf.company.ds.ta.user_devices",
+      "status": "OK",
+      "message": "Rows: 3",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2138
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.user_devices / jupiter.user_device.pc",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/card?id=jupiter.user_device.pc",
+      "dataset": "seaf.company.ds.ta.user_devices",
+      "id": "jupiter.user_device.pc",
+      "source": "seaf2",
+      "expectedTitle": "Ноутбуки сотрудников",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4006
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.user_devices / jupiter.user_device.laptop",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/card?id=jupiter.user_device.laptop",
+      "dataset": "seaf.company.ds.ta.user_devices",
+      "id": "jupiter.user_device.laptop",
+      "source": "seaf2",
+      "expectedTitle": "Ноутбуки сотрудников",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4513
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.environments",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/list",
+      "dataset": "seaf.company.ds.ta.environments",
+      "status": "OK",
+      "message": "Rows: 4",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2146
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.environments / jupiter.environment.dev",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/card?id=jupiter.environment.dev",
+      "dataset": "seaf.company.ds.ta.environments",
+      "id": "jupiter.environment.dev",
+      "source": "seaf2",
+      "expectedTitle": "Окружение для разработки",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2128
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.environments / jupiter.environment.prod",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/card?id=jupiter.environment.prod",
+      "dataset": "seaf.company.ds.ta.environments",
+      "id": "jupiter.environment.prod",
+      "source": "seaf2",
+      "expectedTitle": "Окружение для продакшена",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2126
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.hw_storages",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.hw_storages/list",
+      "dataset": "seaf.company.ds.ta.hw_storages",
+      "status": "OK",
+      "message": "Rows: 2",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2136
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.hw_storages / jupiter.hw_storage.01",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.hw_storages/card?id=jupiter.hw_storage.01",
+      "dataset": "seaf.company.ds.ta.hw_storages",
+      "id": "jupiter.hw_storage.01",
+      "source": "seaf2",
+      "expectedTitle": "СХД IBM",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 4003
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.k8s_deployments",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_deployments/list",
+      "dataset": "seaf.company.ds.ta.k8s_deployments",
+      "status": "OK",
+      "message": "Rows: 4",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2141
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_deployments / jupiter.k8s.deployment.efs_webapp",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_deployments/card?id=jupiter.k8s.deployment.efs_webapp",
+      "dataset": "seaf.company.ds.ta.k8s_deployments",
+      "id": "jupiter.k8s.deployment.efs_webapp",
+      "source": "seaf2",
+      "expectedTitle": "EFS WebApp Deployment",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2122
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_deployments / jupiter.k8s.deployment.efs_rm",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_deployments/card?id=jupiter.k8s.deployment.efs_rm",
+      "dataset": "seaf.company.ds.ta.k8s_deployments",
+      "id": "jupiter.k8s.deployment.efs_rm",
+      "source": "seaf2",
+      "expectedTitle": "EFS RM Deployment",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2126
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.k8s_hpa",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/list",
+      "dataset": "seaf.company.ds.ta.k8s_hpas",
+      "status": "OK",
+      "message": "Rows: 4",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2120
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_hpa / jupiter.k8s.hpa.efs_webapp",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/card?id=jupiter.k8s.hpa.efs_webapp",
+      "dataset": "seaf.company.ds.ta.k8s_hpas",
+      "id": "jupiter.k8s.hpa.efs_webapp",
+      "source": "seaf2",
+      "expectedTitle": "HPA for EFS WebApp",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2148
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_hpa / jupiter.k8s.hpa.efs_rm",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/card?id=jupiter.k8s.hpa.efs_rm",
+      "dataset": "seaf.company.ds.ta.k8s_hpas",
+      "id": "jupiter.k8s.hpa.efs_rm",
+      "source": "seaf2",
+      "expectedTitle": "HPA for EFS RM",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2134
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.k8s_namespace",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespace/list",
+      "dataset": "seaf.company.ds.ta.k8s_namespaces",
+      "status": "OK",
+      "message": "Rows: 3",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2143
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_namespace / jupiter.ns.efs",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespace/card?id=jupiter.ns.efs",
+      "dataset": "seaf.company.ds.ta.k8s_namespaces",
+      "id": "jupiter.ns.efs",
+      "source": "seaf2",
+      "expectedTitle": "EFS Namespace",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2165
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_namespace / jupiter.ns.llm_apps",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespace/card?id=jupiter.ns.llm_apps",
+      "dataset": "seaf.company.ds.ta.k8s_namespaces",
+      "id": "jupiter.ns.llm_apps",
+      "source": "seaf2",
+      "expectedTitle": "LLM Apps Namespace",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2148
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.components.k8s_nodes",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/list",
+      "dataset": "seaf.company.ds.ta.k8s_nodes",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2131
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_nodes / jupiter.k8s.node01.master1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/card?id=jupiter.k8s.node01.master1",
+      "dataset": "seaf.company.ds.ta.k8s_nodes",
+      "id": "jupiter.k8s.node01.master1",
+      "source": "seaf2",
+      "expectedTitle": "K8s Master 1",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2120
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.components.k8s_nodes / jupiter.k8s.node01.master2",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/card?id=jupiter.k8s.node01.master2",
+      "dataset": "seaf.company.ds.ta.k8s_nodes",
+      "id": "jupiter.k8s.node01.master2",
+      "source": "seaf2",
+      "expectedTitle": "K8s Master 2",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2123
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.kbs",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/list",
+      "dataset": "seaf.company.ds.ta.kb",
+      "status": "OK",
+      "message": "Rows: 11",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2215
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.kbs / jupiter.kb.1",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/card?id=jupiter.kb.1",
+      "dataset": "seaf.company.ds.ta.kb",
+      "id": "jupiter.kb.1",
+      "source": "seaf2",
+      "expectedTitle": "Инструментальный контроль защищенности",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5041
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.kbs / jupiter.kb.11",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/card?id=jupiter.kb.11",
+      "dataset": "seaf.company.ds.ta.kb",
+      "id": "jupiter.kb.11",
+      "source": "seaf2",
+      "expectedTitle": "S11",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 5526
+    },
+    {
+      "type": "List",
+      "name": "seaf.company.ta.services.stands",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.stands/list",
+      "dataset": "seaf.company.ds.ta.stands",
+      "status": "OK",
+      "message": "Rows: 2",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2124
+    },
+    {
+      "type": "Card",
+      "name": "seaf.company.ta.services.stands / jupiter.stand.prod",
+      "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.stands/card?id=jupiter.stand.prod",
+      "dataset": "seaf.company.ds.ta.stands",
+      "id": "jupiter.stand.prod",
+      "source": "seaf2",
+      "expectedTitle": "stand.prod",
+      "status": "OK",
+      "message": "",
+      "diagnostics": {
+        "widget": {
+          "plantuml": "OK",
+          "dataProfile": "OK",
+          "jsError": "OK",
+          "evidence": {
+            "plantumlHttp": [],
+            "templateHttp": [],
+            "dataProfileHttp": [],
+            "console": [],
+            "page": []
+          }
+        },
+        "httpErrors": [],
+        "consoleErrors": [],
+        "pageErrors": [],
+        "requestFailed": [],
+        "plantumlPayloads": []
+      },
+      "durationMs": 2139
+    }
+  ]
+}

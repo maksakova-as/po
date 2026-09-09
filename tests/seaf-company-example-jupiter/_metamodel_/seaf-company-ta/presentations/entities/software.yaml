@@ -1,0 +1,135 @@
+entities:
+  seaf.company.ta.services.softwares:
+    presentations:
+      list:
+        title: Программное обеспечение
+        type: table
+        headers:
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: vendor
+            text: Производитель
+            align: left
+          - value: type
+            text: Тип лицензии
+            align: left
+          - value: support
+            text: Поддержка
+            align: left
+          - value: expiration
+            text: Срок действия
+            align: left
+          - value: lic_qty
+            text: Количество
+            align: right
+        origin: seaf.company.ds.ta.software
+        source: >
+          (
+            $.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "vendor": $val.vendor,
+              "type": $val.type,
+              "support": $val.support,
+              "expiration": $val.expiration,
+              "lic_qty": $val.lic_qty
+            }[];
+          )
+      card:
+        title: Карточка ПО
+        type: mkr-grid
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: software_details
+            align: "v"
+            order: 10
+          related_services:
+            title: Связанные техсервисы
+            presentation: software_related_services
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      details:
+        title: Атрибуты
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Поле
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $fields := [
+              {"field": "ID", "value": $obj.__id__},
+              {"field": "Название", "value": $obj.title},
+              {"field": "Описание", "value": $obj.description},
+              {"field": "Производитель ПО", "value": $obj.vendor},
+              {"field": "Тип лицензии", "value": $obj.type},
+              {"field": "Поддержка", "value": $obj.support},
+              {"field": "Срок действия", "value": $obj.expiration},
+              {"field": "Количество лицензий", "value": $obj.lic_qty}
+            ];
+            $fields[$exists(value)]
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

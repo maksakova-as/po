@@ -1,0 +1,400 @@
+imports: []
+
+entities:
+  seaf.company.ta.services.compute_services:
+
+    presentations:
+      card:
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: compute_service_details
+            align: "v"
+            order: 10
+          location_tree:
+            title: Локация / сети
+            presentation: compute_service_location_tree
+            align: "v"
+            order: 20
+          networks:
+            title: Подключённые сети
+            presentation: compute_service_networks
+            align: "v"
+            order: 30
+          apps:
+            title: Приложения/компоненты
+            presentation: compute_service_apps
+            align: "v"
+            order: 40
+
+      compute_service_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Поле
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          services: seaf.company.ds.ta.compute_services
+          networks: seaf.company.ds.ta.networks
+          azs: seaf.company.ds.ta.dc_azs
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          stands: seaf.company.ds.ta.stands
+        source: >
+          (
+            $svc := $lookup(services, $params.id);
+            $networks := networks;
+            $azs := azs;
+            $dcs := dcs;
+            $offices := offices;
+            $stands := stands;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $ha := $svc.high_availability;
+            $ha_type := $exists($ha.type)
+              ? $ha.type
+              : ($exists($ha) and $type($ha) = "string" ? $ha : "Нет");
+            $ha_reservation := $exists($ha.capacity_reservation_type)
+              ? $ha.capacity_reservation_type
+              : "Отсутствует";
+            $ha_capacity := $exists($ha.capacity_management)
+              ? $ha.capacity_management
+              : "Отсутствует";
+            $az_rows :=
+              $to_list($svc.availabilityzone).(
+                $az := $lookup($azs, $);
+                {
+                  "field": "Зона доступности",
+                  "value": $exists($az) ? $az.title : $,
+                  "link": $exists($az) ? "/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ : null
+                }
+              );
+            $loc_rows :=
+              $to_list($svc.location).(
+                $loc := $resolve_location($);
+                {
+                  "field": "Локация",
+                  "value": $exists($loc) ? $loc.title : $,
+                  "link": $exists($loc) ? "/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ : null
+                }
+              );
+            $net_rows :=
+              $to_list($svc.network_connection).(
+                $net := $lookup($networks, $);
+                {
+                  "field": "Сеть",
+                  "value": $exists($net) ? $net.title : $,
+                  "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null
+                }
+              );
+            $stand_rows :=
+              $to_list($svc.stand).(
+                $s := $lookup($stands, $);
+                {
+                  "field": "Стенд",
+                  "value": $exists($s) ? $s.title : $,
+                  "link": $exists($s) ? "/entities/" & $s.__entity_id__ & "/card?id=" & $s.__id__ : null
+                }
+              );
+            $base := [
+              {"field": "ID", "value": $svc.__id__},
+              {"field": "Название", "value": $svc.title},
+              {"field": "Описание", "value": $svc.description},
+              {"field": "Тип сервиса", "value": $svc.service_type},
+              {"field": "Кластер", "value": $ha_type = "Да" ? "Да" : "Нет"},
+              {"field": "Высокая доступность (HA)", "value": $ha_type},
+              {"field": "Тип резервирования", "value": $ha_reservation},
+              {"field": "Полнота резервирования", "value": $ha_capacity},
+              {"field": "Внешний ID", "value": $svc.external_id},
+              {"field": "Компоненты приложений", "value": $join($to_list($svc.app_components), ", ")}
+            ];
+            $exists($svc)
+              ? $base ~> $append($az_rows) ~> $append($loc_rows) ~> $append($net_rows) ~> $append($stand_rows)
+              : []
+          )
+
+      compute_service_location_tree:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          services: seaf.company.ds.ta.compute_services
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $services := services;
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $svc := $lookup($services, $params.id);
+            $has_svc := $exists($svc.__id__);
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $svc_node :=
+              $has_svc
+                ? "node \"Сервис: [[/entities/" & $svc.__entity_id__ & "/card?id=" & $svc.__id__ & " " & $svc.title & "]]\" as svc_" & $replace($svc.__id__,"[^A-Za-z0-9_]","_") & " #d1c4e9\n"
+                : "";
+            $loc_nodes :=
+              $has_svc and $exists($svc.location)
+                ? $svc.location[].(
+                    $loc := $resolve_location($);
+                    $exists($loc.__id__)
+                      ? "node \"Локация: [[/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ & " " & $loc.title & "]]\" as loc_" & $replace($loc.__id__,"[^A-Za-z0-9_]","_") & " #bbdefb\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $net_nodes :=
+              $has_svc and $exists($svc.network_connection)
+                ? $svc.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $exists($net.__id__)
+                      ? "node \"Сеть: [[/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ & " " & $net.title & "]]\" as net_" & $replace($net.__id__,"[^A-Za-z0-9_]","_") & " #c8e6c9\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $seg_nodes :=
+              $has_svc and $exists($svc.network_connection)
+                ? $svc.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "node \"Сегмент: [[/entities/" & $seg.__entity_id__ & "/card?id=" & $seg.__id__ & " " & $seg.title & "]]\" as seg_" & $replace($seg.__id__,"[^A-Za-z0-9_]","_") & " #ffecb3\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_loc_net :=
+              $has_svc and $exists($svc.location) and $exists($svc.network_connection)
+                ? $svc.location[].(
+                    $loc := $resolve_location($);
+                    $loc_id := $replace($loc.__id__,"[^A-Za-z0-9_]","_");
+                    $svc.network_connection[].(
+                      $net := $lookup($networks, $);
+                      $exists($net.__id__)
+                        ? "loc_" & $loc_id & " --> net_" & $replace($net.__id__,"[^A-Za-z0-9_]","_") & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_net_seg :=
+              $has_svc and $exists($svc.network_connection)
+                ? $svc.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $net_id := $replace($net.__id__,"[^A-Za-z0-9_]","_");
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "net_" & $net_id & " --> seg_" & $replace($seg.__id__,"[^A-Za-z0-9_]","_") & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_svc :=
+              $has_svc
+                ? (
+                    $exists($svc.location)
+                      ? $svc.location[].(
+                          $loc := $resolve_location($);
+                          $exists($loc.__id__)
+                            ? "loc_" & $replace($loc.__id__,"[^A-Za-z0-9_]","_") & " --> svc_" & $replace($svc.__id__,"[^A-Za-z0-9_]","_") & "\n"
+                            : ""
+                        ) ~> $join("")
+                      : ""
+                  ) &
+                  (
+                    $exists($svc.network_connection)
+                      ? $svc.network_connection[].(
+                          $net := $lookup($networks, $);
+                          $exists($net.__id__)
+                            ? "net_" & $replace($net.__id__,"[^A-Za-z0-9_]","_") & " --> svc_" & $replace($svc.__id__,"[^A-Za-z0-9_]","_") & "\n"
+                            : ""
+                        ) ~> $join("")
+                      : ""
+                  )
+                : "";
+            $diagram :=
+              $has_svc
+                ? (
+                    "@startuml\n" &
+                    "left to right direction\n" &
+                    "skinparam nodesep 60\n" &
+                    "skinparam ranksep 60\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam rectangle {\n" &
+                    "  BackgroundColor #f2f4f7\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    $loc_nodes & $seg_nodes & $net_nodes & $svc_node & $edges_loc_net & $edges_net_seg & $edges_svc &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Сервис не найден\" as no_obj\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      compute_service_networks:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Сеть
+            link: link
+          - value: segment
+            text: Сегмент
+            link: segment_link
+        origin:
+          services: seaf.company.ds.ta.compute_services
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+        source: >
+          (
+            $svc := $lookup(services, $params.id);
+            $networks := networks;
+            $segments := segments;
+            $exists($svc.network_connection)
+              ? $svc.network_connection[].(
+                  $net := $lookup($networks, $);
+                  $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                  $seg_titles := $seg_ids.($lookup($segments, $).title) ~> $join(", ");
+                  $seg_link := $exists($seg_ids[0]) ? "/entities/seaf.ta.services.network_segments/card?id=" & $seg_ids[0] : null;
+                  {
+                    "title": $net.title,
+                    "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null,
+                    "segment": $seg_titles,
+                    "segment_link": $seg_link
+                  }
+                )
+              : []
+          )
+
+      compute_service_apps:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Объект
+            link: link
+          - value: id
+            text: ID
+        origin:
+          services: seaf.company.ds.ta.compute_services
+          objects: seaf.ds.objects
+          ta_objects: seaf.company.ds.ta.all_objects
+          data_lake: seaf.ds.data_lake
+        source: >
+          (
+            $svc := $lookup(services, $params.id);
+            $objects := objects;
+            $ta_objects := ta_objects;
+            $data_lake := data_lake;
+            $resolve_kadzo := function($id){
+              (
+                $sys := $lookup($data_lake."kadzo.v2023.systems", $id);
+                $kb := $lookup($data_lake."kadzo.v2023.kb_systems", $id);
+                $exists($sys)
+                  ? {
+                      "title": $sys.title,
+                      "link": "/entities/kadzo.v2023.systems.systems/card?id=" & $id
+                    }
+                  : (
+                      $exists($kb)
+                        ? {
+                            "title": $kb.title,
+                            "link": "/entities/kadzo.v2023.kb_systems.kb_systems/card?id=" & $id
+                          }
+                        : {}
+                    )
+              )
+            };
+            $app_ids := $exists($svc.app_components) ? $svc.app_components : [];
+            $app_ids := $type($app_ids) = "array" ? $app_ids : ($exists($app_ids) ? [$app_ids] : []);
+            $app_ids.(
+              $obj := $lookup($objects, $);
+              $ta := $lookup($ta_objects, $);
+              $kad := $resolve_kadzo($);
+              {
+                "title": $exists($obj.title)
+                  ? $obj.title
+                  : ($exists($ta.title)
+                    ? $ta.title
+                    : ($exists($kad.title) ? $kad.title : $)),
+                "link": $exists($obj.__entity_id__)
+                  ? "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__
+                  : (
+                      $exists($ta.__entity_id__)
+                        ? "/entities/" & $ta.__entity_id__ & "/card?id=" & $ta.__id__
+                        : ($exists($kad.link) ? $kad.link : null)
+                    ),
+                "id": $
+              }
+            )
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

@@ -1,0 +1,85 @@
+# Назначение: Единый реестр кластеров виртуализации.
+# Используется: widgets, internal_docs, docs, ta, presentations, auto_tests и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.cluster_virtualizations:
+    description: |
+      Коллекция кластеров виртуализации
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_platform_cache: seaf.company.ds.ta._cache.reverse_platform
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.cluster_virtualizations";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.cluster_virtualization";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: $merge([
+                    {
+                      "__id__": $new_id,
+                      "__entity_id__": "seaf.company.ta.services.cluster_virtualizations",
+                      "__link_to_card__": "/entities/seaf.company.ta.services.cluster_virtualizations/card?id=" & $new_id,
+                      "legacy_id": $id,
+                      "source": "seaf1"
+                    },
+                    $obj,
+                    {
+                      "availabilityzone": $obj.availabilityzone ? $obj.availabilityzone.("seaf1." & $) : [],
+                      "location": $obj.location ? $obj.location.("seaf1." & $) : [],
+                      "network_connection": $obj.network_connection ? $obj.network_connection.("seaf1." & $) : []
+                    }
+                  ])
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $reverse_cloud := reverse_platform_cache.cluster_virtualizations_cloud ? reverse_platform_cache.cluster_virtualizations_cloud : {};
+              $reverse_vmware := reverse_platform_cache.cluster_virtualizations_vmware ? reverse_platform_cache.cluster_virtualizations_vmware : {};
+              $merge([$reverse_cloud, $reverse_vmware])
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+            )
+          )
+        );
+
+        $normalize_networks := function($v){
+          $type($v) = "array"
+            ? $v
+            : (
+                $type($v) = "string"
+                  ? $distinct($match($v, /reverse\.network[^\"]+/).match)
+                  : ($exists($v) ? [$v] : [])
+              )
+        };
+
+        $clusters := $merge($merge_list);
+        $clusters.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          {
+            $id: $merge([
+              $obj,
+              { "network_connection": $normalize_networks($obj.network_connection) }
+            ])
+          }
+        ) ~> $merge()
+      )

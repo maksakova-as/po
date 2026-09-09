@@ -1,0 +1,17 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam rectangle {
+  FontColor black
+  BorderColor #37474F
+}
+{{#graph.nodes}}
+rectangle "{{title}}\n<<{{type}}>>" as {{ref}}{{#link}} [[{{{link}}}]]{{/link}} {{color}}
+{{/graph.nodes}}
+{{#graph.edges}}
+{{from_ref}} --> {{to_ref}}{{#relation}} : {{relation}}{{/relation}}
+{{/graph.edges}}
+{{^graph.nodes}}
+note "??? ?????? ? ????????????" as N
+{{/graph.nodes}}
+@enduml

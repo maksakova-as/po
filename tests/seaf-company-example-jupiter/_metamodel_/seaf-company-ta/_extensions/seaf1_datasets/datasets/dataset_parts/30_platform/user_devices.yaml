@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.user_devices` (user devices) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.user_devices
+datasets:
+  seaf.company.ds.ta.user_devices:
+    description: |
+      Пользовательские устройства
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.components.user_devices") ? by_entities."seaf.company.ta.components.user_devices" : {};
+        $list := data_lake."seaf.ta.components.user_device";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.components.user_devices",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.components.user_devices"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

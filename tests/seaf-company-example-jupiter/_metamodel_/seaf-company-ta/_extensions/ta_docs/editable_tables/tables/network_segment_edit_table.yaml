@@ -1,0 +1,173 @@
+docs:
+  seaf.company.ta.docs.network_segments.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Сеть/Сегменты/Изменение сегментов
+    description: Редактор architecture/ta/network_segment.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+
+    origin:
+      segments: seaf.company.ds.ta.network_segments
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_segment.yaml
+
+      - value: location
+        text: Локация
+        width: 220px
+        type: select
+        options: >
+          (
+            $segments := $exists(segments) ? segments : {};
+            $locations := (
+              $distinct(
+                $map($keys($segments), function($segment_id){(
+                  $segment := $lookup($segments, $segment_id);
+                  $segment.location
+                )})
+              ) ~> $filter(function($loc){ $exists($loc) })
+            );
+            $map($locations, function($loc){(
+              {
+                "value": $loc,
+                "text": $loc
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_segment.yaml
+
+      - value: zone
+        text: Зона
+        width: 180px
+        type: select
+        options: >
+          (
+            $segments := $exists(segments) ? segments : {};
+            $zones := (
+              $distinct(
+                $map($keys($segments), function($segment_id){(
+                  $segment := $lookup($segments, $segment_id);
+                  $segment.zone
+                )})
+              ) ~> $filter(function($zone){ $exists($zone) })
+            );
+            $map($zones, function($zone){(
+              {
+                "value": $zone,
+                "text": $zone
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_segment.yaml
+
+      - value: sber_location
+        text: Sber.location
+        width: 220px
+        type: select
+        options: >
+          (
+            $segments := $exists(segments) ? segments : {};
+            $locations := (
+              $distinct(
+                $map($keys($segments), function($segment_id){(
+                  $segment := $lookup($segments, $segment_id);
+                  $segment.location
+                )})
+              ) ~> $filter(function($loc){ $exists($loc) })
+            );
+            $map($locations, function($loc){(
+              {
+                "value": $loc,
+                "text": $loc
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_segment.yaml
+
+      - value: sber_zone
+        text: Sber.zone
+        width: 180px
+        type: select
+        options: >
+          (
+            $segments := $exists(segments) ? segments : {};
+            $zones := (
+              $distinct(
+                $map($keys($segments), function($segment_id){(
+                  $segment := $lookup($segments, $segment_id);
+                  $segment.zone
+                )})
+              ) ~> $filter(function($zone){ $exists($zone) })
+            );
+            $map($zones, function($zone){(
+              {
+                "value": $zone,
+                "text": $zone
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/network_segment.yaml
+
+    source: >
+      (
+        $segments := $exists(segments) ? segments : {};
+        $rows := $map($keys($segments), function($segment_id){(
+          $segment := $lookup($segments, $segment_id);
+          {
+            $segment_id: {
+              "id": $segment_id,
+              "title": $segment.title,
+              "location": $segment.location,
+              "zone": $segment.zone,
+              "sber_location": $segment.sber.location,
+              "sber_zone": $segment.sber.zone
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_segments := $lookup(file, "seaf.company.ta.services.network_segments");
+        $existing := $exists($file_segments) ? $file_segments : {};
+        $segment_updates := $map($keys($table), function($id){(
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "location": $row.location,
+              "zone": $row.zone,
+              "sber": {
+                "location": $row.sber_location,
+                "zone": $row.sber_zone
+              }
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.network_segments": $merge([$existing, $segment_updates])
+        }
+      )

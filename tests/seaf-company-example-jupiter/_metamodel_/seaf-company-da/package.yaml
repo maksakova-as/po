@@ -1,0 +1,21 @@
+# Метаданные пакета
+$package:
+  seaf-company-da: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF company Data Architecture
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Модуль расширения домена Архитектура Данных
+    # Версия
+    version: 1.3.0
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+      seaf-common: ">=1.5.0"
+
+imports:
+  - _shared/_root.yaml
+  - da/_root.yaml
+  - _docs/_root.yaml
+

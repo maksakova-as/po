@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.change.goals:
+    description: |
+      Датасет формирует коллекцию всех целей
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.change.goals";
+      )

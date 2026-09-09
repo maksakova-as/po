@@ -1,0 +1,5 @@
+seaf.configs:
+  seaf.company.ba:
+    root_menu: "Бизнес-архитектура"
+    root_menu_order: 2000
+

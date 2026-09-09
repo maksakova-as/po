@@ -1,0 +1,152 @@
+# Назначение: Построение иерархии размещения ресурсов (Локация -> Сегмент -> Ресурс) для систем.
+# Используется: _extensions/app/systems/presentations/*.yaml и карточки прикладных систем.
+datasets:
+  seaf.company.ds.app.systems_deployment_topology:
+    description: |
+      Иерархическая топология развертывания прикладных систем (Локация -> Сегмент -> Ресурс).
+    origin:
+      apps: seaf.ds.objects_by_entities
+      ta_all: seaf.company.ds.ta.all_objects_light
+      dcs: seaf.company.ds.ta.dcs
+      offices: seaf.company.ds.ta.dc_offices
+      segments: seaf.company.ds.ta.network_segments
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $apps_map := $lookup(apps, "seaf.company.app.systems");
+        $ta_index := ta_all;
+        $all_dcs := dcs;
+        $all_offices := offices;
+        $all_segments := segments;
+        $all_networks := networks;
+        $system_ids := $keys($apps_map);
+        $normalize := function($value){ $type($value) = "array" ? $value : ($exists($value) ? [$value] : []) };
+        $sanitize := function($value){ $replace($value, /[^A-Za-z0-9_]/, "_") };
+        
+        $system_ids.{
+            $: (
+                $sys_id := $;
+                
+                $resources := $ta_index.*[$sys_id in $normalize(app_components)];
+                
+                $resources_enriched := $resources.(
+                    $loc_id := (
+                        $loc := location[0];
+                        $exists($lookup($all_dcs, $loc)) or $exists($lookup($all_offices, $loc))
+                          ? $loc
+                          : "unknown"
+                    );
+                    $net_id := (
+                        $net := network_connection[0];
+                        $exists($lookup($all_networks, $net))
+                          ? $net
+                          : "unknown"
+                    );
+                    $seg_id := (
+                        $seg := $exists($lookup($all_networks, $net_id).segment[0])
+                          ? $lookup($all_networks, $net_id).segment[0]
+                          : "unknown";
+                        $exists($lookup($all_segments, $seg))
+                          ? $seg
+                          : "unknown"
+                    );
+                    $merge([$,
+                      {
+                        "_loc_id": $loc_id,
+                        "_net_id": $net_id,
+                        "_seg_id": $seg_id
+                      }
+                    ])
+                );
+
+                $by_location := $resources_enriched{ _loc_id: $ };
+                
+                $locations_list := $keys($by_location)[$ != "unknown"].(
+                    $loc_id := $;
+                    $loc_obj := $lookup($all_dcs, $loc_id) ? $lookup($all_dcs, $loc_id) : $lookup($all_offices, $loc_id);
+                    $loc_res := $lookup($by_location, $loc_id);
+                    
+                    $loc_res_enriched := $loc_res.(
+                        $merge([$, {
+                            "_net_id": ($exists(_net_id) ? _net_id : "unknown"),
+                            "_seg_id": ($exists(_seg_id) ? _seg_id : "unknown")
+                        }])
+                    );
+
+                    $by_segment := $loc_res_enriched{ _seg_id: $ };
+                    
+                    $segments_list := $keys($by_segment)[$ != "unknown"].(
+                        $seg_id := $;
+                        $seg_obj := $lookup($all_segments, $seg_id);
+                        $seg_res := $lookup($by_segment, $seg_id);
+                        {
+                            "id": $seg_id,
+                            "title": $seg_obj.title,
+                            "ref": "seg_" & $sanitize($sys_id) & "_" & $sanitize($seg_id),
+                            "color": "#ffecb3",
+                            "resources": $seg_res.{
+                                "id": __id__,
+                                "title": title,
+                                "type": $exists(service_type) ? service_type : ($exists(type) ? type : "Resource"),
+                                "ref": "res_" & $sanitize($sys_id) & "_" & $sanitize(__id__),
+                                "color": "#d1c4e9"
+                            }
+                        }
+                    );
+                    
+                    $orphaned_in_loc := $lookup($by_segment, "unknown");
+                    $by_network := $orphaned_in_loc{ _net_id: $ };
+                    
+                    $networks_list := $keys($by_network)[$ != "unknown"].(
+                        $net_id := $;
+                        $net_obj := $lookup($all_networks, $net_id);
+                        $net_res := $lookup($by_network, $net_id);
+                        {
+                            "id": $net_id,
+                            "title": $net_obj.title,
+                            "ref": "net_" & $sanitize($sys_id) & "_" & $sanitize($net_id),
+                            "color": "#c8e6c9",
+                            "resources": $net_res.{
+                                "id": __id__,
+                                "title": title,
+                                "type": $exists(service_type) ? service_type : ($exists(type) ? type : "Resource"),
+                                "ref": "res_" & $sanitize($sys_id) & "_" & $sanitize(__id__),
+                                "color": "#d1c4e9"
+                            }
+                        }
+                    );
+                    
+                    $resources_in_loc_only := $lookup($by_network, "unknown");
+                    
+                    {
+                        "id": $loc_id,
+                        "title": $loc_obj.title,
+                        "ref": "loc_" & $sanitize($sys_id) & "_" & $sanitize($loc_id),
+                        "color": "#bbdefb",
+                        "segments": $segments_list,
+                        "networks": $networks_list,
+                        "resources": $resources_in_loc_only.{
+                            "id": __id__,
+                            "title": title,
+                            "type": $exists(service_type) ? service_type : ($exists(type) ? type : "Resource"),
+                            "ref": "res_" & $sanitize($sys_id) & "_" & $sanitize(__id__),
+                            "color": "#d1c4e9"
+                        }
+                    }
+                );
+                
+                $orphans := $lookup($by_location, "unknown");
+                
+                {
+                    "locations": $locations_list,
+                    "orphans": $orphans.{
+                        "id": __id__,
+                        "title": title,
+                        "type": $exists(service_type) ? service_type : ($exists(type) ? type : "Resource"),
+                        "ref": "res_" & $sanitize($sys_id) & "_" & $sanitize(__id__),
+                        "color": "#d1c4e9"
+                    }
+                }
+            )
+        } ~> $merge()
+      )

@@ -1,0 +1,26 @@
+# Метаданные пакета
+$package:
+  seaf-company-artefacts: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF Company Artefacts
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Пакет-расширение с определением сущностей "артефакты"
+    # Версия
+    version: 1.0.0-beta.8
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.21.1"
+      seaf-common: ">=1.5.0"
+
+imports:
+  - _shared/_root.yaml
+  - artefacts/_root.yaml
+  # Патчим внешние по отн. к нашему модули:
+  - ba/_root.yaml
+  - change/_root.yaml
+  - da/_root.yaml
+  - app/_root.yaml
+  - services/_root.yaml
+  - cybersec/_root.yaml

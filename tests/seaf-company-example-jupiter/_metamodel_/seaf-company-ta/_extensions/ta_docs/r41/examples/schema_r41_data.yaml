@@ -1,0 +1,3333 @@
+# File: dc_az.yaml
+seaf.company.ta.services.dc_azs:
+  jupiter.dc_az.moscow:
+    title: AZ Москва
+    description: Основная зона доступности Jupiter в Москве
+    external_id: dc_az.moscow
+    region: jupiter.dc_region.russia
+    vendor: Jupiter IT
+
+# File: dc_office.yaml
+seaf.company.ta.services.dc_offices:
+  jupiter.dc_office.hq:
+    title: Головной офис
+    description: Головная площадка обслуживания пользователей Jupiter
+    address: Москва, Берёзовый бульвар, д. 14
+    region: jupiter.dc_region.russia
+    external_id: office.hq
+
+# File: dc_region.yaml
+seaf.company.ta.services.dc_regions:
+  jupiter.dc_region.russia:
+    title: Регион Россия
+    description: Регион присутствия ЦОДов и офисов Jupiter
+    external_id: dc_region.russia
+
+# File: dc.yaml
+seaf.company.ta.services.dcs:
+  jupiter.dc.moscow_dc01:
+    title: Sber Cloud DC
+    description: Sber Cloud Advanced
+    ownership: Собственный
+    type: Основной
+    vendor: Sber
+    address: Москва, ул. Промышленная 10
+    rack_qty: 5
+    tier: "3"
+    availabilityzone: jupiter.dc_az.moscow
+    external_id: dc.01
+  jupiter.dc.moscow_dc02:
+    title: VK DC
+    description: VK Cloud
+    ownership: Собственный
+    type: Резервный
+    vendor: VK
+    address: Москва, ул. Южная 5
+    rack_qty: 0
+    tier: "3"
+    availabilityzone: jupiter.dc_az.moscow
+    external_id: dc.02
+
+# File: network_segment.yaml
+seaf.company.ta.services.network_segment:
+  jupiter.network_segment.dc.dmz:
+    title: DMZ
+    location: jupiter.dc.moscow_dc01
+    zone: DMZ
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: DMZ
+  jupiter.network_segment.dc.ext_wan_edge:
+    title: EXT WAN-EDGE
+    location: jupiter.dc.moscow_dc01
+    zone: EXT-WAN-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: EXT-WAN-EDGE
+  jupiter.network_segment.dc.inet_edge:
+    title: INET-EDGE
+    location: jupiter.dc.moscow_dc01
+    zone: INET-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: INET-EDGE
+  jupiter.network_segment.dc.int_net:
+    title: Внутренняя сеть ЦОД
+    location: jupiter.dc.moscow_dc01
+    zone: INT-NET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: INT-NET
+  jupiter.network_segment.dc.int_security_net:
+    title: Защищенный сегмент данных
+    location: jupiter.dc.moscow_dc01
+    zone: INT-SECURITY-NET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: INT-SECURITY-NET
+  jupiter.network_segment.dc.int_wan_edge:
+    title: INT WAN-EDGE
+    location: jupiter.dc.moscow_dc01
+    zone: INT-WAN-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: INT-WAN-EDGE
+  jupiter.network_segment.dc.internet:
+    title: Internet
+    location: jupiter.dc.moscow_dc01
+    zone: INTERNET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: INTERNET
+  jupiter.network_segment.dc.transport:
+    title: Транспортная сеть
+    location: jupiter.dc.moscow_dc01
+    zone: TRANSPORT-WAN
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc01
+      zone: TRANSPORT-WAN
+  jupiter.network_segment.dc02.dmz:
+    title: DMZ DC02
+    location: jupiter.dc.moscow_dc02
+    zone: DMZ
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: DMZ
+  jupiter.network_segment.dc02.ext_wan_edge:
+    title: EXT WAN-EDGE DC02
+    location: jupiter.dc.moscow_dc02
+    zone: EXT-WAN-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: EXT-WAN-EDGE
+  jupiter.network_segment.dc02.inet_edge:
+    title: INET-EDGE DC02
+    location: jupiter.dc.moscow_dc02
+    zone: INET-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: INET-EDGE
+  jupiter.network_segment.dc02.int_net:
+    title: Внутренняя сеть ЦОД DC02
+    location: jupiter.dc.moscow_dc02
+    zone: INT-NET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: INT-NET
+  jupiter.network_segment.dc02.int_security_net:
+    title: Защищенный сегмент данных DC02
+    location: jupiter.dc.moscow_dc02
+    zone: INT-SECURITY-NET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: INT-SECURITY-NET
+  jupiter.network_segment.dc02.int_wan_edge:
+    title: INT WAN-EDGE DC02
+    location: jupiter.dc.moscow_dc02
+    zone: INT-WAN-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: INT-WAN-EDGE
+  jupiter.network_segment.dc02.internet:
+    title: Internet DC02
+    location: jupiter.dc.moscow_dc02
+    zone: INTERNET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: INTERNET
+  jupiter.network_segment.dc02.transport:
+    title: Транспортная сеть DC02
+    location: jupiter.dc.moscow_dc02
+    zone: TRANSPORT-WAN
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc.moscow_dc02
+      zone: TRANSPORT-WAN
+  jupiter.network_segment.internet:
+    title: Internet
+    location: jupiter.dc_office.hq
+    zone: INTERNET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: INTERNET
+  jupiter.network_segment.office.access:
+    title: УС уровня доступа
+    location: jupiter.dc_office.hq
+    zone: DMZ
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: DMZ
+  jupiter.network_segment.office.inet_edge:
+    title: INET-EDGE
+    location: jupiter.dc_office.hq
+    zone: INET-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: INET-EDGE
+  jupiter.network_segment.office.int:
+    title: Внутренняя сеть офиса (ЛВС)
+    location: jupiter.dc_office.hq
+    zone: INT-NET
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: INT-NET
+  jupiter.network_segment.office.wan_edge:
+    title: WAN-EDGE
+    location: jupiter.dc_office.hq
+    zone: INT-WAN-EDGE
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: INT-WAN-EDGE
+  jupiter.network_segment.transport:
+    title: Транспортная сеть
+    location: jupiter.dc_office.hq
+    zone: TRANSPORT-WAN
+    sber: # Временная секция для совместимости с SEAF2DRAWIO
+      location: jupiter.dc_office.hq
+      zone: TRANSPORT-WAN
+
+# File: network_component.yaml
+seaf.company.ta.components.networks:
+  jupiter.kb.fpsu_1:
+    description: ФПСУ для шифрования канала
+    location:
+      - jupiter.dc.moscow_dc01
+    model: Защита 100
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.vpn
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.lan.dc01.dmz.vdi
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.dmz
+    title: FPSU-1
+    type: Криптошлюз
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.01:
+    address: 10.10.21.1
+    description: Пограничный NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.inet_edge
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.dmz.test
+    purpose: Пограничный NGFW Internet
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.dmz
+    title: NGFW-01
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.02:
+    address: 10.10.21.2
+    description: Пограничный NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.inet_edge
+      - jupiter.network.lan.dc01.dmz.test
+      - jupiter.network.lan.dc01.dmz.prod
+    purpose: Пограничный NGFW Internet
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.dmz
+    title: NGFW-02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.03:
+    address: 10.10.21.3
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.ext.wan
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.int.dmz
+      - jupiter.network.lan.dc01.dmz.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.dmz
+    title: NGFW-03
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.04:
+    address: 10.10.21.4
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.ext.wan
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.int.dmz
+      - jupiter.network.lan.dc01.dmz.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.dmz
+    title: NGFW-04
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.05:
+    address: 10.10.26.1
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.int.wan
+      - jupiter.network.lan.dc01.int.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_wan_edge
+    title: NGFW-05
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.06:
+    address: 10.10.26.2
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.int.wan
+      - jupiter.network.lan.dc01.int.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_wan_edge
+    title: NGFW-06
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.07:
+    address: 10.10.29.1
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc01.int.prod
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_security_net
+    title: NGFW-07
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.08:
+    address: 10.10.29.2
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc01.int.prod
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_security_net
+    title: NGFW-08
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.ngfw.cntxt1:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc.moscow_dc01
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.dc01.int.it.services
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.dc.dmz
+    title: CNTXT1 NGFW-01/02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.01:
+    address: 10.110.10.2
+    description: Пограничный маршрутизатор интернет провайдера
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.lan.dc01.inet_edge
+    network_connection_devices:
+      - flix.link.hq_to_dc01
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.inet_edge
+    title: DC Router 01
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.02:
+    address: 10.110.10.3
+    description: Пограничный маршрутизатор интернет провайдера
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.isp.02
+      - jupiter.network.lan.dc01.inet_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.inet_edge
+    title: DC Router 02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.03:
+    address: 10.10.31.3
+    description: Пограничный маршрутизатор SP1
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.lan.dc01.ext.wan
+    purpose: Пограничный маршрутизатор EXT_WAN
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.ext_wan_edge
+    title: DC Router 03
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.04:
+    address: 10.10.31.4
+    description: Пограничный маршрутизатор SP2
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.isp.02
+      - jupiter.network.lan.dc01.ext.wan
+    purpose: Пограничный маршрутизатор EXT_WAN
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.ext_wan_edge
+    title: DC Router 04
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.05:
+    address: 10.10.32.5
+    description: Пограничный маршрутизатор WAN SP1
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.sp.01
+      - jupiter.network.lan.dc01.int.wan
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_wan_edge
+    title: DC Router 05
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.06:
+    address: 10.10.32.6
+    description: Пограничный маршрутизатор WAN SP2
+    location:
+      - jupiter.dc.moscow_dc01
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc01.sp.02
+      - jupiter.network.lan.dc01.int.wan
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc.int_wan_edge
+    title: DC Router 06
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.kb.fpsu_1_dc02:
+    description: ФПСУ для шифрования канала
+    location:
+      - jupiter.dc.moscow_dc02
+    model: Защита 100
+    network_connection:
+      - jupiter.network.lan.dc02.dmz.vpn
+      - jupiter.network.wan.dc02.isp.01
+      - jupiter.network.lan.dc02.dmz.vdi
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.dmz
+    title: FPSU-1 DC02
+    type: Криптошлюз
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.01_dc02:
+    address: 10.10.21.1
+    description: Пограничный NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.inet_edge
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.dmz.test
+    purpose: Пограничный NGFW Internet
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.dmz
+    title: NGFW-01 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.02_dc02:
+    address: 10.10.21.2
+    description: Пограничный NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.inet_edge
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.dmz.test
+    purpose: Пограничный NGFW Internet
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.dmz
+    title: NGFW-02 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.03_dc02:
+    address: 10.10.21.3
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.ext.wan
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.int.dmz
+      - jupiter.network.lan.dc02.dmz.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.dmz
+    title: NGFW-03 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.04_dc02:
+    address: 10.10.21.4
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.ext.wan
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.int.dmz
+      - jupiter.network.lan.dc02.dmz.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.dmz
+    title: NGFW-04 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.05_dc02:
+    address: 10.10.26.1
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.int.wan
+      - jupiter.network.lan.dc02.int.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_wan_edge
+    title: NGFW-05 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.06_dc02:
+    address: 10.10.26.2
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.int.wan
+      - jupiter.network.lan.dc02.int.test
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_wan_edge
+    title: NGFW-06 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.07_dc02:
+    address: 10.10.29.1
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.int.sec.prod
+      - jupiter.network.lan.dc02.int.prod
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_security_net
+    title: NGFW-07 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.fw.08_dc02:
+    address: 10.10.29.2
+    description: Сегментирующий NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.int.sec.prod
+      - jupiter.network.lan.dc02.int.prod
+    purpose: Сегментирующий NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_security_net
+    title: NGFW-08 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.ngfw.cntxt1_dc02:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc.moscow_dc02
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.int.it.services
+      - jupiter.network.lan.dc02.int.prod
+      - jupiter.network.lan.192.168.2.0
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.dc02.dmz
+    title: CNTXT1 NGFW-01/02 DC02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.01_dc02:
+    address: 10.110.10.2
+    description: Пограничный маршрутизатор интернет провайдера
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.isp.01
+      - jupiter.network.lan.dc02.inet_edge
+    network_connection_devices:
+      - flix.link.hq_to_dc01
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.inet_edge
+    title: DC Router 01 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.02_dc02:
+    address: 10.110.10.3
+    description: Пограничный маршрутизатор интернет провайдера
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.isp.02
+      - jupiter.network.lan.dc02.inet_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.inet_edge
+    title: DC Router 02 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.03_dc02:
+    address: 10.20.31.3
+    description: Пограничный маршрутизатор SP1
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.isp.01
+      - jupiter.network.lan.dc02.ext.wan
+    purpose: Пограничный маршрутизатор EXT_WAN
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.ext_wan_edge
+    title: DC Router 03 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.04_dc02:
+    address: 10.20.31.4
+    description: Пограничный маршрутизатор SP2
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.isp.02
+      - jupiter.network.lan.dc02.ext.wan
+    purpose: Пограничный маршрутизатор EXT_WAN
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.ext_wan_edge
+    title: DC Router 04 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.05_dc02:
+    address: 10.20.32.5
+    description: Пограничный маршрутизатор WAN SP1
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.sp.01
+      - jupiter.network.lan.dc02.int.wan
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_wan_edge
+    title: DC Router 05 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.dc.router.06_dc02:
+    address: 10.20.32.6
+    description: Пограничный маршрутизатор WAN SP2
+    location:
+      - jupiter.dc.moscow_dc02
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.dc02.sp.02
+      - jupiter.network.lan.dc02.int.wan
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.dc02.int_wan_edge
+    title: DC Router 06 DC02
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.guest.router:
+    address: 192.168.8.15
+    description: Пограничный маршрутизатор гостевого интернет провайдера
+    location:
+      - jupiter.dc_office.hq
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.office.isp.guest
+      - jupiter.network.lan.office.inet_guest_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: Guest Router
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.01:
+    address: 192.168.8.21
+    description: Пограничный NGFW 1
+    location:
+      - jupiter.dc_office.hq
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.office.inet_edge
+      - jupiter.network.lan.office.ext.lan
+      - jupiter.network.lan.office.security
+    purpose: Пограничный NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: NGFW 01
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.02:
+    address: 192.168.8.22
+    description: Пограничный NGFW 2
+    location:
+      - jupiter.dc_office.hq
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.office.inet_edge
+      - jupiter.network.lan.office.ext.lan
+      - jupiter.network.lan.office.security
+    purpose: Пограничный NGFW
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: NGFW 02
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt1:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.ext.lan
+      - jupiter.network.lan.office.int.lan
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.access
+    title: CNTXT1-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt10:
+    description: Контекст правил безопасности NGFW для PR-Security
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.pr.security
+      - jupiter.network.lan.office.int.lan
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT10-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt2:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.ext.lan
+      - jupiter.network.lan.office.int.lan
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.access
+    title: CNTXT2-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt3:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.wifi.arm
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT3-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt4:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.wired.ARM
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT4-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt5:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.admin.ARM
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT5-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt6:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.printers
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT6-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt7:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.ipphones
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT7-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt8:
+    description: Контекст правил безопасности NGFW
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.mgmt
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT8-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.cntxt9:
+    description: Контекст правил безопасности NGFW для новой MGMT-сети
+    location:
+      - jupiter.dc_office.hq
+    model: FortiGate 4800F
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+      - jupiter.network.lan.office.wan_edge
+    purpose: Контекст NGFW
+    realization_type: Виртуальный
+    segment: jupiter.network_segment.office.int
+    title: CNTXT9-NGFW
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.ngfw.guest:
+    address: 192.168.8.23
+    description: Пограничный NGFW Guest
+    location:
+      - jupiter.dc_office.hq
+    model: 4800F
+    network_connection:
+      - jupiter.network.lan.office.inet_guest_edge
+      - jupiter.network.lan.office.wifi.guest
+    purpose: Пограничный NGFW подключения к интернет гостевой
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: NGFW Guest
+    type: МСЭ
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.router.01:
+    address: 192.168.1.1
+    description: Пограничный маршрутизатор ISP1
+    location:
+      - jupiter.dc_office.hq
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.office.isp.01
+      - jupiter.network.lan.office.inet_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: Router 1
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.router.02:
+    address: 192.168.8.17
+    description: Пограничный маршрутизатор ISP2
+    location:
+      - jupiter.dc_office.hq
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.office.isp.02
+      - jupiter.network.lan.office.inet_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.office.inet_edge
+    title: Router 2
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.router.03:
+    address: 192.168.8.18
+    description: Пограничный маршрутизатор SP1
+    location:
+      - jupiter.dc_office.hq
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.office.sp.01
+      - jupiter.network.lan.office.wan_edge
+    network_connection_devices:
+      - flix.link.hq_to_dc01
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.office.wan_edge
+    title: Router 3
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.router.04:
+    address: 192.168.8.19
+    description: Пограничный маршрутизатор SP2
+    location:
+      - jupiter.dc_office.hq
+    model: ASR 1001-X
+    network_connection:
+      - jupiter.network.wan.office.sp.02
+      - jupiter.network.lan.office.wan_edge
+    purpose: Пограничный маршрутизатор
+    realization_type: Физический
+    segment: jupiter.network_segment.office.wan_edge
+    title: Router 4
+    type: Маршрутизатор
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.wificontroller.arm:
+    address: 192.168.8.20
+    description: WIiFi Router ARM
+    location:
+      - jupiter.dc_office.hq
+    model: Cisco
+    network_connection:
+      - jupiter.network.lan.office.mgmt
+    purpose: Controller сети WiFI ARM
+    realization_type: Физический
+    segment: jupiter.network_segment.office.int
+    title: Wireless Controller ARM
+    type: Контроллер WiFi
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.wificontroller.guest:
+    address: 192.168.8.20
+    description: WIiFi Router Guest
+    location:
+      - jupiter.dc_office.hq
+    model: Cisco
+    network_connection:
+      - jupiter.network.lan.office.wifi.guest
+    purpose: Controller сети WiFI Guest
+    realization_type: Физический
+    segment: jupiter.network_segment.office.access
+    title: Wireless Controller Guest
+    type: Контроллер WiFi
+    stand:
+      - jupiter.stand.prod
+  jupiter.network_device.efs_lb:
+    title: L7 балансировщик для АС ЕФС
+    description: Виртуальный балансировщик нагрузки для распределения трафика на веб-компоненты АС ЕФС.
+    type: Балансировщик
+    realization_type: Виртуальный
+    location:
+      - jupiter.dc.moscow_dc01
+    segment: jupiter.network_segment.dc.dmz
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.int.prod
+    monitoring:
+      - jupiter.monitoring.zabbix
+
+# File: network_links.yaml
+seaf.company.ta.services.network_links:
+  jupiter.link.hq_to_dc01:
+    description: VPN туннель между головным офисом и ЦОД Sber
+    encapsulation: GRE
+    encryption: ipsec
+    network_connection:
+      - jupiter.network.lan.office.ext.lan
+      - jupiter.network.lan.dc01.int.test
+    routing: bgpevpn
+    sla: provider
+    technology: s2svpn
+    title: Канал связи Офис - ЦОД-01
+    typeL1: Ethernet(over Dark Fiber)
+    typeL2: MPLS
+
+# File: network.yaml
+seaf.company.ta.services.networks:
+  jupiter.network.lan.192.168.101.0:
+    title: LAN сеть Sber
+    type: LAN
+    description: Сеть внутри Sber
+    external_id: lan.192.168.101.0
+    lan_type: Проводная
+    ipnetwork: 192.168.101.0/24
+    vlan: 101
+    segment:
+      - jupiter.network_segment.dc.int_net
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.dmz.prod:
+    title: DMZ-PROD
+    type: LAN
+    description: DMZ Prod
+    lan_type: Проводная
+    ipnetwork: 10.10.21.0/24
+    vlan: 21
+    segment:
+      - jupiter.network_segment.dc.dmz
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.dmz.test:
+    title: DMZ-TEST
+    type: LAN
+    description: DMZ Test in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.24.0/24
+    vlan: 24
+    segment:
+      - jupiter.network_segment.dc.dmz
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.dmz.vdi:
+    title: DMZ-VDI-DC01
+    type: LAN
+    description: DMZ VDI in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.26.0/24
+    vlan: 216
+    segment:
+      - jupiter.network_segment.dc.dmz
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.dmz.vpn:
+    title: DMZ-VPN
+    type: LAN
+    description: DMZ VPN in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.25.0/24
+    vlan: 25
+    segment:
+      - jupiter.network_segment.dc.dmz
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.ext.wan:
+    title: EXT-WAN
+    type: LAN
+    description: External WAN in Sber DC
+    lan_type: Проводная
+    ipnetwork: 203.0.113.0/24
+    vlan: 31
+    segment:
+      - jupiter.network_segment.dc.ext_wan_edge
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.inet_edge:
+    title: DC01-Internet-edge
+    type: LAN
+    description: Сеть модуля подключения к Интернет в ЦОД-01
+    lan_type: Проводная
+    ipnetwork: 198.51.100.0/24
+    vlan: 110
+    segment:
+      - jupiter.network_segment.dc.inet_edge
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.dmz:
+    title: INT-DMZ
+    type: LAN
+    description: Internal DMZ in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.30.0/24
+    vlan: 30
+    segment:
+      - jupiter.network_segment.dc.dmz
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.it.services:
+    title: INT-IT Services
+    type: LAN
+    description: Internal It services in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.27.0/24
+    vlan: 27
+    segment:
+      - jupiter.network_segment.dc.int_net
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.prod:
+    title: INT-PROD
+    type: LAN
+    description: Internal Prod in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.40.0/24
+    vlan: 40
+    segment:
+      - jupiter.network_segment.dc.int_net
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.sec.prod:
+    title: SDZ-PROD
+    type: LAN
+    description: Внутренняя защищенная сеть ЦОД-а
+    lan_type: Проводная
+    ipnetwork: 10.10.29.0/24
+    vlan: 29
+    segment:
+      - jupiter.network_segment.dc.int_security_net
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.test:
+    title: INT-TEST
+    type: LAN
+    description: Internal test network in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.26.0/24
+    vlan: 26
+    segment:
+      - jupiter.network_segment.dc.int_net
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.dc01.int.wan:
+    title: INT-WAN
+    type: LAN
+    description: Internal WAN in Sber DC
+    lan_type: Проводная
+    ipnetwork: 10.10.32.0/24
+    vlan: 32
+    segment:
+      - jupiter.network_segment.dc.int_wan_edge
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.wan.dc01.isp.01:
+    title: ISP01 DC01
+    type: WAN
+    wan_ip: 10.30.10.0/24
+    provider: Beeline
+    autonomous_system: AS65001
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc.internet
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.wan.dc01.isp.02:
+    title: ISP02 DC01
+    type: WAN
+    wan_ip: 10.30.11.0/24
+    provider: Ростелеком
+    autonomous_system: AS65002
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc.internet
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.wan.dc01.sp.01:
+    title: SP01 DC01
+    type: WAN
+    wan_ip: 10.30.12.0/24
+    provider: МТС
+    autonomous_system: AS65003
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc.transport
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.wan.dc01.sp.02:
+    title: SP02 DC01
+    type: WAN
+    wan_ip: 10.30.13.0/24
+    provider: Ростелеком
+    autonomous_system: AS65004
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc.transport
+    location:
+      - jupiter.dc.moscow_dc01
+  jupiter.network.lan.192.168.2.0:
+    title: LAN сеть VK
+    type: LAN
+    description: Сеть внутри VK
+    external_id: lan.192.168.2.0
+    lan_type: Проводная
+    ipnetwork: 192.168.2.0/24
+    vlan: 150
+    segment:
+      - jupiter.network_segment.dc02.int_net
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.dmz.prod:
+    title: DMZ-PROD-DC02
+    type: LAN
+    description: DMZ Prod in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.21.0/24
+    vlan: 221
+    segment:
+      - jupiter.network_segment.dc02.dmz
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.dmz.test:
+    title: DMZ-TEST DC02
+    type: LAN
+    description: DMZ Test in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.24.0/24
+    vlan: 124
+    segment:
+      - jupiter.network_segment.dc02.dmz
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.dmz.vdi:
+    title: DMZ-VDI-DC02
+    type: LAN
+    description: DMZ VDI in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.26.0/24
+    vlan: 226
+    segment:
+      - jupiter.network_segment.dc02.dmz
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.dmz.vpn:
+    title: DMZ-VPN-DC02
+    type: LAN
+    description: DMZ VPN in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.25.0/24
+    vlan: 225
+    segment:
+      - jupiter.network_segment.dc02.dmz
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.ext.wan:
+    title: EXT-WAN DC02
+    type: LAN
+    description: External WAN in VK DC
+    lan_type: Проводная
+    ipnetwork: 203.0.114.0/24
+    vlan: 131
+    segment:
+      - jupiter.network_segment.dc02.ext_wan_edge
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.inet_edge:
+    title: DC02-Internet-edge
+    type: LAN
+    description: Сеть модуля подключения к Интернет в ЦОД-02
+    lan_type: Проводная
+    ipnetwork: 198.51.101.0/24
+    vlan: 120
+    segment:
+      - jupiter.network_segment.dc02.inet_edge
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.dmz:
+    title: INT-DMZ DC02
+    type: LAN
+    description: Internal DMZ in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.30.0/24
+    vlan: 130
+    segment:
+      - jupiter.network_segment.dc02.dmz
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.it.services:
+    title: INT-IT Services DC02
+    type: LAN
+    description: Internal It services in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.27.0/24
+    vlan: 127
+    segment:
+      - jupiter.network_segment.dc02.int_net
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.prod:
+    title: INT-PROD DC02
+    type: LAN
+    description: Internal Prod in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.40.0/24
+    vlan: 140
+    segment:
+      - jupiter.network_segment.dc02.int_net
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.sec.prod:
+    title: SDZ-PROD DC02
+    type: LAN
+    description: Внутренняя защищенная сеть ЦОД-а
+    lan_type: Проводная
+    ipnetwork: 10.20.29.0/24
+    vlan: 129
+    segment:
+      - jupiter.network_segment.dc02.int_security_net
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.test:
+    title: INT-TEST DC02
+    type: LAN
+    description: Internal test network in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.26.0/24
+    vlan: 126
+    segment:
+      - jupiter.network_segment.dc02.int_net
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.dc02.int.wan:
+    title: INT-WAN DC02
+    type: LAN
+    description: Internal WAN in VK DC
+    lan_type: Проводная
+    ipnetwork: 10.20.32.0/24
+    vlan: 132
+    segment:
+      - jupiter.network_segment.dc02.int_wan_edge
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.wan.dc02.isp.01:
+    title: ISP01 DC02
+    type: WAN
+    wan_ip: 10.40.10.0/24
+    provider: Beeline
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc02.internet
+    location:
+      - jupiter.dc.02
+  jupiter.network.wan.dc02.isp.02:
+    title: ISP02 DC02
+    type: WAN
+    wan_ip: 10.40.11.0/24
+    provider: Ростелеком
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc02.internet
+    location:
+      - jupiter.dc.02
+  jupiter.network.wan.dc02.sp.01:
+    title: SP01 DC02
+    type: WAN
+    wan_ip: 10.40.12.0/24
+    provider: МТС
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc02.transport
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.wan.dc02.sp.02:
+    title: SP02 DC02
+    type: WAN
+    wan_ip: 10.40.13.0/24
+    provider: Ростелеком
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.dc02.transport
+    location:
+      - jupiter.dc.moscow_dc02
+  jupiter.network.lan.office.admin.ARM:
+    title: АРМ Admin
+    type: LAN
+    description: Сеть АРМ администраторов
+    lan_type: Проводная
+    ipnetwork: 192.168.5.0/24
+    vlan: 19
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.ext.lan:
+    title: OF-EXT LAN
+    type: LAN
+    description: Core сети УС офиса
+    lan_type: Проводная
+    ipnetwork: 192.168.10.0/24
+    vlan: 13
+    segment:
+      - jupiter.network_segment.office.access
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.inet_edge:
+    title: OF-Internet EDGE LAN
+    type: LAN
+    description: Сеть модуля подключения к внешним сетям
+    lan_type: Проводная
+    ipnetwork: 203.0.113.0/24
+    vlan: 11
+    segment:
+      - jupiter.network_segment.office.inet_edge
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.inet_guest_edge:
+    title: OF-Guest Internet EDGE LAN
+    type: LAN
+    description: Сеть модуля подключения к внешним сетям - гостевая
+    lan_type: Проводная
+    ipnetwork: 198.51.100.0/24
+    vlan: 10
+    segment:
+      - jupiter.network_segment.office.inet_edge
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.int.lan:
+    title: OF-INT LAN
+    type: LAN
+    description: Core сети УС офиса
+    lan_type: Проводная
+    ipnetwork: 192.168.0.0/20
+    vlan: 16
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.ipphones:
+    title: IP Phones
+    type: LAN
+    description: Сеть IP телефонов
+    lan_type: Проводная
+    ipnetwork: 192.168.7.0/24
+    vlan: 21
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.mgmt:
+    title: OF-MGMT
+    type: LAN
+    description: Сеть интерфейсов управления
+    lan_type: Проводная
+    ipnetwork: 192.168.9.0/24
+    vlan: 22
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.pr.security:
+    title: PR-Security
+    type: LAN
+    description: Сеть периметровых средств безопасности
+    lan_type: Проводная
+    ipnetwork: 192.168.8.0/24
+    vlan: 22
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.printers:
+    title: Printers
+    type: LAN
+    description: Сеть печатающих устройств
+    lan_type: Проводная
+    ipnetwork: 192.168.6.0/24
+    vlan: 20
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.security:
+    title: OF-Security
+    type: LAN
+    description: Сеть систем безопасности офиса
+    lan_type: Проводная
+    ipnetwork: 192.168.12.0/24
+    vlan: 15
+    segment:
+      - jupiter.network_segment.office.access
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.wan_edge:
+    title: OF-WAN EDGE LAN
+    type: LAN
+    description: Сеть модуля транспортной сети
+    lan_type: Проводная
+    ipnetwork: 10.10.12.0/24
+    vlan: 12
+    segment:
+      - jupiter.network_segment.office.wan_edge
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.wifi.arm:
+    title: Wi-Fi АРМ
+    type: LAN
+    description: Беспроводная сеть АРМ
+    lan_type: Беспроводная
+    ipnetwork: 192.168.3.0/24
+    vlan: 17
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.wifi.guest:
+    title: WiFi Guest LAN
+    type: LAN
+    description: Сеть гостевого WiFi
+    lan_type: Беспроводная
+    ipnetwork: 192.168.11.0/24
+    vlan: 14
+    segment:
+      - jupiter.network_segment.office.access
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.lan.office.wired.ARM:
+    title: Wired АРМ
+    type: LAN
+    description: Проводная сеть АРМ
+    lan_type: Проводная
+    ipnetwork: 192.168.4.0/24
+    vlan: 18
+    segment:
+      - jupiter.network_segment.office.int
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.wan.office.isp.01:
+    title: ISP01 Office
+    type: WAN
+    wan_ip: 10.20.11.0/24
+    provider: МТС
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.internet
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.wan.office.isp.02:
+    title: ISP02 Office
+    type: WAN
+    wan_ip: 10.20.12.0/24
+    provider: Megafon
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.internet
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.wan.office.isp.guest:
+    title: ISP Guest
+    type: WAN
+    wan_ip: 10.20.10.0/24
+    provider: МТС
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.internet
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.wan.office.sp.01:
+    title: SP01 Office
+    type: WAN
+    wan_ip: 10.20.13.0/24
+    provider: МТС
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.transport
+    location:
+      - jupiter.dc_office.hq
+  jupiter.network.wan.office.sp.02:
+    title: SP02 Office
+    type: WAN
+    wan_ip: 10.20.14.0/24
+    provider: Ростелеком
+    autonomous_system: AS12345
+    ip_version: v4
+    segment:
+      - jupiter.network_segment.transport
+    location:
+      - jupiter.dc_office.hq
+
+# File: cluster_virtualization.yaml
+seaf.company.ta.services.cluster_virtualization:
+  jupiter.cluster_virtualization.esx.cloudru:
+    title: Кластер виртуализации ESX в Cloud.ru
+    description: Кластер виртуализации на базе ESX в ЦОД Cloud.ru
+    hypervisor: ESX
+    oversubscription_rate: 1
+    drs_support: true
+    sdrs_support: true
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster_virtualization.proxmox.vk:
+    title: Кластер виртуализации Proxmox в VK Cloud
+    description: Кластер виртуализации Proxmox в ЦОД VK Cloud
+    hypervisor: Proxmox VE
+    oversubscription_rate: 1
+    drs_support: false
+    sdrs_support: false
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.192.168.2.0
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster_virtualization.vmware.sber:
+    title: Кластер виртуализации VMware в Sber DC
+    description: Кластер виртуализации VMware для ресурсов в ЦОД Sber
+    hypervisor: VMware vSphere
+    oversubscription_rate: 1
+    drs_support: true
+    sdrs_support: true
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+    stand:
+      - jupiter.stand.prod
+
+# File: cluster.yaml
+seaf.company.ta.services.cluster:
+  jupiter.cluster.ad:
+    title: Кластер AD
+    description: Кластер Active Directory
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    service_type: Управление ИТ-службой, ИТ-инфраструктурой и ИТ-активами (CMDB, ITSM
+      и т.д.)
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.app_ac1:
+    title: Кластер приложений AC1
+    description: Кластер приложений AC1
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    service_type: Серверы приложений и т.д.
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.app_ac2:
+    title: Кластер приложений AC2
+    description: Кластер приложений AC2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    service_type: Серверы приложений и т.д.
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.db_ac1:
+    title: Кластер СУБД рекомендаций
+    description: Кластер СУБД рекомендаций
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    service_type: СУБД
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.db_ac2:
+    title: Кластер СУБД токенов
+    description: Кластер СУБД токенов
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    service_type: СУБД
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.db_ac3:
+    title: Кластер базы данных 1С
+    description: Кластер базы данных 1С
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    service_type: СУБД
+    stand:
+      - jupiter.stand.prod
+    app_components:
+      - jupiter.1c.db
+  jupiter.cluster.mail:
+    title: Почтовый кластер
+    description: Почтовый кластер
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    service_type: Коммуникации (АТС, Почта, мессенджеры, СМС шлюзы и т.д.)
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.vdi:
+    title: Кластер vdi
+    description: Кластер vdi
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.vdi
+      - jupiter.network.lan.dc02.dmz.vdi
+    service_type: Виртуализация рабочих мест (ВАРМ и VDI)
+    stand:
+      - jupiter.stand.prod
+  jupiter.cluster.wildfly:
+    title: Кластер приложений Wildfly
+    description: Кластер для корпоративных Java-приложений
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+    service_type: Серверы приложений и т.д.
+    stand:
+      - jupiter.stand.prod
+    app_components:
+      - jupiter.app_system.mes_clothing
+      - jupiter.app_system.ecm_news
+      - jupiter.app_system.tms
+    external_id: cluster.01
+    fqdn: wildfly.flix.ru
+    reservation_type: Active-Active
+  jupiter.cluster.1c:
+    title: Кластер приложений 1С
+    description: flix.cluster.wildfly
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.192.168.2.0
+      - jupiter.network.lan.192.168.101.0
+    service_type: Серверы приложений и т.д.
+    stand:
+      - jupiter.stand.prod
+    app_components:
+      - jupiter.1c
+    external_id: cluster.1c
+    reservation_type: Active-Active
+  jupiter.cluster.db_efs:
+    title: Кластер СУБД для АС ЕФС
+    description: Отказоустойчивый кластер баз данных типа Pangolin для нужд АС "Единый Фронт Сотрудника".
+    app_components:
+      - jupiter.sys_component.efs_db
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+    monitoring:
+      - jupiter.monitoring.zabbix
+      - jupiter.monitoring.elk
+    backup:
+      - jupiter.backup.cyberbackup
+
+# File: compute_service.yaml
+seaf.company.ta.services.compute_service:
+  jupiter.compute_service.ac9.app:
+    title: Фронт (десктопное приложение)
+    description: Фронт (десктопное приложение)
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.ac9.db:
+    title: База данных AS9
+    description: База данных Simphony
+    service_type: СУБД
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.as8.app:
+    title: Фронт (десктопное приложение) АС8
+    description: Сервер АС AdReality
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.as8.web:
+    title: Web сервер АС8
+    description: Сервер АС AdReality
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.bpm.db:
+    title: База данных BPM
+    description: База данных BPM
+    service_type: СУБД
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.bpm.front:
+    title: Фронт (web-приложение) BPM
+    description: Система управления бизнес-процессами
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.cms:
+    title: CMS
+    description: Система управления контентом
+    service_type: СУБД
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.db_ac5:
+    title: База данных AC5
+    description: База данных AC5
+    service_type: СУБД
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.dhcp:
+    description: Сервис DHCP в ЦОД1
+    service_type: Управление сетевым адресным пространством (DHCP, DNS и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.dns:
+    title: DNS
+    description: Сервис DNS в ЦОД1
+    service_type: Управление сетевым адресным пространством (DHCP, DNS и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.fir:
+    title: Файловый ресурс
+    description: Файловый ресурс
+    service_type: Файловый ресурс (FTP, NFS, SMB, S3 и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.ntp:
+    title: NTP
+    description: Сервис NTP в ЦОД1
+    service_type: Управление сетевым адресным пространством (DHCP, DNS и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.web_ac4:
+    title: Фронт (web-приложение) AC4
+    description: Фронт (web-приложение) AC4
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.web_ac5:
+    title: Фронт (web-приложение) AC5
+    description: Фронт (web-приложение)AC5
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.web_ac6:
+    title: Шлюз AC6
+    description: Шлюз AC6
+    service_type: Шлюз, Балансировщик, прокси
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.web_ac7:
+    title: Web AC7
+    description: Web AC7
+    service_type: Шлюз, Балансировщик, прокси
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.compute_service.yandex_metrika:
+    title: Yandex Metrika
+    description: Yandex Metrika
+    service_type: Серверы приложений и т.д.
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    stand:
+      - jupiter.stand.prod
+  jupiter.gitlab:
+    title: Devops инструменты GitLab
+    description: Инструменты разработки GitLab
+    service_type: Управление разработкой и хранения кода (Gitlab, Jira и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+  jupiter.infra.tools_1:
+    title: Ansible
+    description: Инструменты автоматизации развертывания инфраструктуры
+    service_type: Управление и автоматизацией (Ansible, Terraform, Jenkins и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+  jupiter.network.remote_1:
+    title: R.Access
+    description: Сервис удаленного доступа
+    service_type: Инфраструктура удаленного доступа
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.vpn
+      - jupiter.network.lan.dc02.dmz.vpn
+  jupiter.network.tools_1:
+    title: DNS
+    description: Внутренний DNS
+    service_type: Управление сетевым адресным пространством (DHCP, DNS и т.д.)
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+# File: k8s.yaml
+seaf.company.ta.services.k8s:
+  jupiter.k8s.01:
+    app_components:
+      - jupiter.sys_component.efs_webapp
+      - jupiter.sys_component.efs_rm
+      - jupiter.sys_component.efs_news
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    cluster_autoscaler: true
+    cni: Calico
+    description: K8s кластер в az.moscow
+    external_id: k8s.01
+    is_own: true
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+    registries:
+      - jupiter.kb.registry.harbor
+      - jupiter.kb.repo.corp
+    monitoring:
+      - jupiter.monitoring.elk
+    backup:
+      - jupiter.backup.cyberbackup
+    management_networks:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    service_mesh: Istio
+    software: '1.28'
+    stand:
+      - jupiter.stand.prod
+    title: K8s кластер
+  jupiter.k8s.02:
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    cluster_autoscaler: true
+    cni: Calico
+    description: K8s кластер в az.moscow расширенный для ДЗО
+    external_id: k8s.02
+    is_own: false
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    registries:
+      - jupiter.kb.registry.harbor
+      - jupiter.kb.repo.corp
+    monitoring:
+      - jupiter.monitoring.elk
+    backup:
+      - jupiter.backup.cyberbackup
+    management_networks:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    service_mesh: Istio
+    software: '1.28'
+    title: K8s кластер расширенный (ДЗО)
+  jupiter.k8s.llm.01:
+    title: LLM Kubernetes Cluster
+    description: K8s кластер для LLM сервисов на bare-metal GPU нодах и виртуальных
+      мастерах
+    external_id: k8s.llm.01
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    is_own: true
+    software: '1.29'
+    cni: Calico
+    service_mesh: Istio
+    cluster_autoscaler: false
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.int.prod
+    management_networks:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    stand:
+      - jupiter.stand.prod
+    registries:
+      - jupiter.kb.registry.harbor
+    monitoring:
+      - jupiter.monitoring.zabbix
+      - jupiter.monitoring.elk
+    backup:
+      - jupiter.backup.cyberbackup
+
+# File: server.yaml
+seaf.company.ta.components.servers:
+  jupiter.server_metal.01:
+    title: Физический сервер 01
+    type: Физический
+    vendor: HP
+    model: DL360 G10
+    fqdn: server-metal-01.vk.flix.ru
+    external_id: server_metal.01
+    os:
+      bit: '64'
+      type: Proxmox VE
+    cpu:
+      cores: 16
+      frequency: 2400
+    ram: 128
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 4
+    location:
+      - jupiter.dc.moscow_dc02
+    is_part_of:
+      - jupiter.cluster_virtualization.proxmox.vk
+    stand:
+      - jupiter.stand.prod
+    fan_qty: 4
+    power_module_qty: 2
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    rack_mount: true
+    raid_level:
+      - 1
+      - 6
+    raid_spare_disks: 2
+  jupiter.server_metal.02:
+    title: Физический сервер 02
+    type: Физический
+    vendor: HP
+    model: DL360 G10
+    fqdn: server-metal-02.vk.flix.ru
+    external_id: server_metal.02
+    os:
+      bit: '64'
+      type: Proxmox VE
+    cpu:
+      cores: 16
+      frequency: 2400
+    ram: 128
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 4
+    location:
+      - jupiter.dc.moscow_dc02
+    is_part_of:
+      - jupiter.cluster_virtualization.proxmox.vk
+    stand:
+      - jupiter.stand.prod
+    fan_qty: 4
+    power_module_qty: 2
+    rack_mount: true
+    raid_level:
+      - 1
+      - 6
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    raid_spare_disks: 2
+  jupiter.server_virtual.ad01:
+    title: Виртуальный сервер AD01
+    type: Виртуальный
+    fqdn: ad01.sber.flix.ru
+    external_id: server_virtual.ad01
+    os:
+      bit: '64'
+      type: Windows Server 2019
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    virtualization: jupiter.cluster_virtualization.vmware.sber
+    is_part_of:
+      - jupiter.cluster.ad
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+  jupiter.server_virtual.ad02:
+    title: Виртуальный сервер AD02
+    type: Виртуальный
+    fqdn: ad02.sber.flix.ru
+    external_id: server_virtual.ad02
+    os:
+      bit: '64'
+      type: Windows Server 2019
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    virtualization: jupiter.cluster_virtualization.vmware.sber
+    is_part_of:
+      - jupiter.cluster.ad
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+  jupiter.server_virtual.k8s01-master1:
+    title: K8s Master 1 (Cloud.ru)
+    type: Виртуальный
+    fqdn: k8s01-m1.cloud.flix.ru
+    external_id: server_virtual.k8s01-m1
+    os:
+      bit: '64'
+      type: Ubuntu 20.04
+    cpu:
+      cores: 2
+      frequency: 2200
+    ram: 8
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    virtualization: jupiter.cluster_virtualization.esx.cloudru
+    is_part_of:
+      - jupiter.k8s.01
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+  jupiter.server_virtual.k8s01-worker1:
+    title: K8s Worker 1 (Cloud.ru)
+    type: Виртуальный
+    fqdn: k8s01-w1.cloud.flix.ru
+    external_id: server_virtual.k8s01-w1
+    os:
+      bit: '64'
+      type: Ubuntu 20.04
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    virtualization: jupiter.cluster_virtualization.esx.cloudru
+    is_part_of:
+      - jupiter.k8s.01
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+  jupiter.server_virtual.mail01:
+    title: Виртуальный сервер Mail01
+    type: Виртуальный
+    fqdn: mail01.sber.flix.ru
+    external_id: server_virtual.mail01
+    os:
+      bit: '64'
+      type: Windows Server 2019
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    virtualization: jupiter.cluster_virtualization.vmware.sber
+    is_part_of:
+      - jupiter.cluster.mail
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+  jupiter.server_virtual.mail02:
+    title: Виртуальный сервер Mail02
+    type: Виртуальный
+    fqdn: mail02.sber.flix.ru
+    external_id: server_virtual.mail02
+    os:
+      bit: '64'
+      type: Windows Server 2019
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    virtualization: jupiter.cluster_virtualization.vmware.sber
+    is_part_of:
+      - jupiter.cluster.mail
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+  jupiter.server_virtual.wildfly01:
+    title: Виртуальный сервер Wildfly 01
+    type: Виртуальный
+    fqdn: wildfly01.vk.flix.ru
+    external_id: server_virtual.wildfly01
+    os:
+      bit: '64'
+      type: Ubuntu 20.04
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    virtualization: jupiter.cluster_virtualization.proxmox.vk
+    is_part_of:
+      - jupiter.cluster.wildfly
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+  jupiter.server_virtual.wildfly02:
+    title: Виртуальный сервер Wildfly 02
+    type: Виртуальный
+    fqdn: wildfly02.vk.flix.ru
+    external_id: server_virtual.wildfly02
+    os:
+      bit: '64'
+      type: Ubuntu 20.04
+    cpu:
+      cores: 4
+      frequency: 2200
+    ram: 16
+    disks:
+      - name: disk0
+        size: 100
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    virtualization: jupiter.cluster_virtualization.proxmox.vk
+    is_part_of:
+      - jupiter.cluster.wildfly
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+  jupiter.server_metal.gpu-worker-01:
+    title: Физический сервер для LLM-воркеров 01
+    type: Физический
+    vendor: Supermicro
+    model: SYS-421GU-TNXR
+    fqdn: gpu-worker-01.sber.flix.ru
+    os:
+      type: Ubuntu 22.04
+      bit: '64'
+    cpu:
+      cores: 64
+      frequency: 3000
+    ram: 512
+    disks:
+      - name: disk0
+        size: 4000
+        type: SSD
+    nic_qty: 2
+    location:
+      - jupiter.dc.moscow_dc01
+    subnets:
+      - jupiter.network.lan.dc01.int.prod
+    is_part_of:
+      - jupiter.k8s.llm.01
+    stand:
+      - jupiter.stand.prod
+    gpu:
+      - model: NVIDIA H100
+        count: 4
+        memory_gb: 80
+  jupiter.server_metal.gpu-worker-02:
+    title: Физический сервер для LLM-воркеров 02
+    type: Физический
+    vendor: Supermicro
+    model: SYS-421GU-TNXR
+    fqdn: gpu-worker-02.vk.flix.ru
+    os:
+      type: Ubuntu 22.04
+      bit: '64'
+    cpu:
+      cores: 64
+      frequency: 3000
+    ram: 512
+    disks:
+      - name: disk0
+        size: 4000
+        type: SSD
+    nic_qty: 2
+    location:
+      - jupiter.dc.moscow_dc02
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    is_part_of:
+      - jupiter.k8s.llm.01
+    stand:
+      - jupiter.stand.prod
+    gpu:
+      - model: NVIDIA H100
+        count: 4
+        memory_gb: 80
+  jupiter.server_virtual.llm-master-01:
+    title: Виртуальный сервер для LLM-мастера 01
+    type: Виртуальный
+    fqdn: llm-master-01.sber.flix.ru
+    os:
+      type: Ubuntu 22.04
+      bit: '64'
+    cpu:
+      cores: 8
+      frequency: 2200
+    ram: 32
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+    virtualization: jupiter.cluster_virtualization.esx.cloudru
+    is_part_of:
+      - jupiter.k8s.llm.01
+    stand:
+      - jupiter.stand.prod
+  jupiter.server_virtual.llm-master-02:
+    title: Виртуальный сервер для LLM-мастера 02
+    type: Виртуальный
+    fqdn: llm-master-02.sber.flix.ru
+    os:
+      type: Ubuntu 22.04
+      bit: '64'
+    cpu:
+      cores: 8
+      frequency: 2200
+    ram: 32
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+    subnets:
+      - jupiter.network.lan.dc01.int.it.services
+    virtualization: jupiter.cluster_virtualization.esx.cloudru
+    is_part_of:
+      - jupiter.k8s.llm.01
+    stand:
+      - jupiter.stand.prod
+  jupiter.server_virtual.llm-master-03:
+    title: Виртуальный сервер для LLM-мастера 03
+    type: Виртуальный
+    fqdn: llm-master-03.vk.flix.ru
+    os:
+      type: Ubuntu 22.04
+      bit: '64'
+    cpu:
+      cores: 8
+      frequency: 2200
+    ram: 32
+    disks:
+      - name: disk0
+        size: 200
+        type: SSD
+    nic_qty: 2
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc02
+    subnets:
+      - jupiter.network.lan.dc02.int.it.services
+    virtualization: jupiter.cluster_virtualization.proxmox.vk
+    is_part_of:
+      - jupiter.k8s.llm.01
+    stand:
+      - jupiter.stand.prod
+  jupiter.server_metal.proxmox_node_01:
+    title: Proxmox Node 01
+    type: Физический
+    vendor: HP
+    model: DL360 G10
+    fqdn: proxmox-node-01.vk.flix.ru
+    external_id: server_metal.proxmox_node_01
+    os:
+      bit: '64'
+      type: Proxmox VE
+    cpu:
+      cores: 32
+      frequency: 2400
+    ram: 256
+    disks:
+      - name: sys_disk
+        size: 500
+        type: SSD
+    nic_qty: 4
+    location:
+      - jupiter.dc.moscow_dc02
+    is_part_of:
+      - jupiter.cluster_virtualization.proxmox.vk
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    rack_mount: true
+  jupiter.server_metal.proxmox_node_02:
+    title: Proxmox Node 02
+    type: Физический
+    vendor: HP
+    model: DL360 G10
+    fqdn: proxmox-node-02.vk.flix.ru
+    external_id: server_metal.proxmox_node_02
+    os:
+      bit: '64'
+      type: Proxmox VE
+    cpu:
+      cores: 32
+      frequency: 2400
+    ram: 256
+    disks:
+      - name: sys_disk
+        size: 500
+        type: SSD
+    nic_qty: 4
+    location:
+      - jupiter.dc.moscow_dc02
+    is_part_of:
+      - jupiter.cluster_virtualization.proxmox.vk
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    rack_mount: true
+  jupiter.server_metal.proxmox_node_03:
+    title: Proxmox Node 03
+    type: Физический
+    vendor: HP
+    model: DL360 G10
+    fqdn: proxmox-node-03.vk.flix.ru
+    external_id: server_metal.proxmox_node_03
+    os:
+      bit: '64'
+      type: Proxmox VE
+    cpu:
+      cores: 32
+      frequency: 2400
+    ram: 256
+    disks:
+      - name: sys_disk
+        size: 500
+        type: SSD
+    nic_qty: 4
+    location:
+      - jupiter.dc.moscow_dc02
+    is_part_of:
+      - jupiter.cluster_virtualization.proxmox.vk
+    stand:
+      - jupiter.stand.prod
+    subnets:
+      - jupiter.network.lan.dc02.int.prod
+    rack_mount: true
+
+# File: stand.yaml
+seaf.company.ta.services.stands:
+  jupiter.stand.prod:
+    description: Стенд для продакшена
+    env: jupiter.environment.prod
+    external_id: flix.environment.prod
+    title: stand.prod
+
+# File: storage.yaml
+seaf.company.ta.services.storages:
+  jupiter.obj_storage.cloud_s3:
+    title: S3 Storage in Sber
+    description: S3 Storage in Sber Cloud
+    type: Simple Storage Service
+    software: SaaS
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+    stand:
+      - jupiter.stand.prod
+    external_id: obj_storage.cloud_s3
+    sla: 99
+  jupiter.obj_storage.vk_s3:
+    title: S3 Storage in VK
+    description: S3 Storage in VK Cloud
+    type: Simple Storage Service
+    software: SaaS
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    network_connection:
+      - jupiter.network.lan.192.168.2.0
+    stand:
+      - jupiter.stand.prod
+    external_id: obj_storage.vk_s3
+    sla: 99
+  jupiter.sw_storage.01:
+    title: Storage CEPH
+    description: SDS Storage
+    type: Software Defined Storage
+    software: CEPH
+    volume: 1000
+    disk_type: SSD
+    erasure_coding: 2
+    protocols: SMB, S3
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+    stand:
+      - jupiter.stand.prod
+    external_id: sw_storage.01
+
+# File: kb.yaml
+seaf.company.ta.services.kb:
+  jupiter.kb.1:
+    description: Сервис кибер безопасности
+    tag: SCAN
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    software_name: Sonarqube
+    status: Используется
+    technology: Инструментальный контроль защищенности
+    title: Инструментальный контроль защищенности
+  jupiter.kb.11:
+    description: Сервис кибер безопасности
+    tag: CS
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    software_name: S11
+    status: Используется
+    technology: Безопасность конфигураций
+    title: S11
+  jupiter.kb.12:
+    description: Сервис кибер безопасности
+    tag: CS
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: S12
+    status: Используется
+    technology: Безопасность конфигураций
+    title: S12
+  jupiter.kb.2:
+    description: Сервис кибер безопасности
+    tag: FW
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: S2
+    status: Используется
+    technology: Управление доступом пользователей
+    title: S2
+  jupiter.kb.3:
+    description: Сервис кибер безопасности
+    tag: IDS
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: S3
+    status: Используется
+    technology: Сигнатурный анализ режим обнаружения вторжений
+    title: IDS
+  jupiter.kb.4:
+    description: Сервис кибер безопасности
+    tag: FW
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc01.int.prod
+      - jupiter.network.lan.dc02.dmz.prod
+      - jupiter.network.lan.dc02.int.prod
+    software_name: Forti
+    status: Используется
+    technology: Межсетевое экранирование
+    title: МСЭ
+  jupiter.kb.5:
+    description: Сервис кибер безопасности
+    tag: AV
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: Kaspersky
+    status: Используется
+    technology: Потоковый антивирус
+    title: Сервис антивирус
+    protected_services:
+      - jupiter.server_virtual.ad01
+      - jupiter.server_virtual.ad02
+      - jupiter.server_virtual.mail01
+      - jupiter.server_virtual.mail02
+  jupiter.kb.6:
+    description: Сервис кибер безопасности
+    tag: NAC
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: S6
+    status: Используется
+    technology: Контроль подключений к сети
+    title: S6
+  jupiter.kb.7:
+    description: Сервис кибер безопасности
+    network_connection:
+      - jupiter.network.lan.dc01.ext.wan
+      - jupiter.network.lan.dc02.ext.wan
+    technology: Шлюзы безопасности прикладного уровня
+    title: S7
+    software_name: S7
+    tag: ALG
+    status: Создается
+  jupiter.kb.8:
+    description: Сервис кибер безопасности
+    tag: ALG
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    software_name: S8
+    status: Используется
+    technology: Контентная фильтрация и разграничение доступа в Интернет
+    title: S8
+  jupiter.kb.9:
+    description: Сервис кибер безопасности
+    tag: Log
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    software_name: S9
+    status: Используется
+    technology: Аудит событий КБ
+    title: S9
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+  jupiter.kb.ddos_1:
+    description: Сервис защиты от DDOs от BiZone
+    tag: DDoS
+    network_connection:
+      - jupiter.network.lan.dc01.inet_edge
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.lan.dc02.inet_edge
+      - jupiter.network.wan.dc02.isp.01
+    software_name: DDOS
+    status: Создается
+    technology: Защита от атак типа "Отказ от обслуживания"
+    title: DDOS
+  jupiter.kb.sandbox:
+    description: Сервис кибер безопасности
+    tag: Sandbox
+    network_connection:
+      - jupiter.network.lan.dc01.dmz.prod
+      - jupiter.network.lan.dc02.dmz.prod
+    software_name: Sandbox
+    status: Используется
+    technology: Динамический анализ угроз Sandbox
+    title: Sandbox
+    protected_services:
+      - jupiter.server_virtual.mail01
+      - jupiter.server_virtual.mail02
+  jupiter.kb.seam:
+    description: Сервис кибер безопасности
+    tag: IPS
+    network_connection:
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.wan.dc02.isp.01
+    software_name: SEAM
+    status: Используется
+    technology: Сигнатурный анализ режим предотвращения вторжений
+    title: SEAM
+  jupiter.kb.waf_1:
+    description: WAF for All-App
+    tag: WAF
+    network_connection:
+      - jupiter.network.lan.dc01.inet_edge
+      - jupiter.network.wan.dc01.isp.01
+      - jupiter.network.wan.dc01.isp.02
+      - jupiter.network.lan.dc02.inet_edge
+      - jupiter.network.wan.dc02.isp.01
+      - jupiter.network.wan.dc02.isp.02
+    software_name: Nginx
+    status: Используется
+    technology: Защита веб-приложений WAF
+    title: WAF
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+  jupiter.service.kb.radius:
+    description: Сервис RADIUS в ЦОД1
+    tag: IDFW
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: Аркан
+    status: Используется
+    technology: Управление доступом пользователей
+    title: RADIUS
+  jupiter.service.kb.skud:
+    description: Сервис СКУД в офисе
+    tag: NAC
+    network_connection:
+      - jupiter.network.lan.office.pr.security
+    software_name: Аркан
+    status: Используется
+    technology: Контроль подключений к сети
+    title: СКУД
+  jupiter.kb.audit.siem:
+    description: Централизованный сбор и анализ логов (SIEM)
+    tag: Log
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: SIEM
+    status: Используется
+    technology: Аудит событий КБ
+    title: SIEM/Logs
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+      - jupiter.cluster_virtualization.esx.cloudru
+      - jupiter.cluster_virtualization.proxmox.vk
+      - jupiter.cluster_virtualization.vmware.sber
+  jupiter.kb.cmc:
+    description: ЦУЦ для управления сертификатами
+    tag: CMC
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: CMC
+    status: Используется
+    technology: Центр управления сертификатами ИБ
+    title: Corporate CMC
+  jupiter.kb.idm.corp:
+    description: Сервис управления учетными записями (IdM)
+    tag: IdM
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: IdM
+    status: Используется
+    technology: Управление учетными записями (IdM)
+    title: Corporate IdM
+    protected_services:
+      - jupiter.server_virtual.ad01
+      - jupiter.server_virtual.ad02
+  jupiter.kb.pam.central:
+    description: Сервис привилегированного доступа (PAM)
+    tag: PAM
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: PAM
+    status: Используется
+    technology: Управление привилегированным доступом
+    title: Central PAM
+    protected_services:
+      - jupiter.cluster_virtualization.esx.cloudru
+      - jupiter.cluster_virtualization.proxmox.vk
+      - jupiter.cluster_virtualization.vmware.sber
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+  jupiter.kb.registry.harbor:
+    description: Корпоративный реестр контейнеров
+    tag: Registry
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: Harbor
+    status: Используется
+    technology: Реестр контейнеров
+    title: Harbor Registry
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+  jupiter.kb.repo.corp:
+    description: Корпоративный репозиторий ПО
+    tag: Repo
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: Nexus
+    status: Используется
+    technology: Репозиторий ПО
+    title: Corporate Repo
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+  jupiter.kb.idp.keycloak:
+    description: Провайдер идентификации (IdP) для доступа к кластеру
+    tag: IdP
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: Keycloak
+    status: Используется
+    technology: Провайдер идентификации (IdP)
+    title: Keycloak IdP
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+  jupiter.kb.secrets.vault:
+    description: Хранилище секретов для k8s кластеров
+    tag: Secrets
+    network_connection:
+      - jupiter.network.lan.dc01.int.sec.prod
+      - jupiter.network.lan.dc02.int.sec.prod
+    software_name: Vault
+    status: Используется
+    technology: Сервис хранения секретов
+    title: Vault Secrets
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+  jupiter.kb.policy.kyverno:
+    description: Политики безопасности для кластеров Kubernetes
+    tag: Policy
+    network_connection:
+      - jupiter.network.lan.192.168.101.0
+      - jupiter.network.lan.192.168.2.0
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    software_name: Kyverno
+    status: Используется
+    technology: Политики Kubernetes
+    title: Kyverno Policy
+    protected_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+
+# File: logical_link.yaml
+seaf.company.ta.services.logical_link:
+  jupiter.link.fw_to_servers:
+    description: Логическая связь от NGFW к серверам в ЦОД Sber
+    direction: <==>
+    source: jupiter.network_device.dc.fw.01
+    stand:
+      - jupiter.stand.prod
+    target:
+      - jupiter.cluster.ad
+      - jupiter.cluster.mail
+    title: Связь NGFW с серверами
+
+# File: monitoring.yaml
+seaf.company.ta.services.monitorings:
+  jupiter.monitoring.elk:
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    description: Сбор логов
+    ha: false
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    app_components:
+      - jupiter.sys_component.efs_db
+      - jupiter.sys_component.efs_webapp
+      - jupiter.sys_component.efs_rm
+      - jupiter.sys_component.efs_news
+      - jupiter.app_system.aihub
+      - jupiter.app_system.aihub_model_ds1
+      - jupiter.app_system.1c_erp
+      - jupiter.app_system.mes_clothing
+      - jupiter.app_system.ecm_news
+      - jupiter.app_system.tms
+      - jupiter.app_system.mp_favorite_clientв
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    role:
+      - Журналирование
+    stand:
+      - jupiter.stand.prod
+    title: ELK
+    monitored_services:
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+      - jupiter.kb.audit.siem
+      - jupiter.server_virtual.wildfly01
+      - jupiter.server_virtual.wildfly02
+  jupiter.monitoring.zabbix:
+    availabilityzone:
+      - jupiter.dc_az.moscow
+    description: Инфраструктурный мониторинг (ДЗО)
+    external_id: monitoring.01
+    ha: true
+    location:
+      - jupiter.dc.moscow_dc01
+      - jupiter.dc.moscow_dc02
+    network_connection:
+      - jupiter.network.lan.dc01.int.it.services
+      - jupiter.network.lan.dc02.int.it.services
+    role:
+      - Инфраструктурный
+      - Журналирование
+    app_components:
+      - jupiter.sys_component.efs_db
+      - jupiter.sys_component.efs_webapp
+      - jupiter.sys_component.efs_rm
+      - jupiter.sys_component.efs_news
+      - jupiter.app_system.aihub
+      - jupiter.app_system.aihub_model_ds1
+      - jupiter.app_system.1c_erp
+      - jupiter.app_system.mes_clothing
+      - jupiter.app_system.ecm_news
+      - jupiter.app_system.tms
+      - jupiter.app_system.mp_favorite_client
+      - jupiter.sys_component.efs_bal
+    sber:
+      alarm_transport:
+        - mail
+        - TG
+      frequency: 5
+      history: 365
+      monitoring_console: https://zabbix.flix.ru
+      pam_anabled: true
+      sber_radar: https://console.radar.sber.ru
+      siem_anabled: true
+    stand:
+      - jupiter.stand.prod
+    title: Zabbix
+    monitored_services:
+      - jupiter.server_metal.01
+      - jupiter.server_metal.02
+      - jupiter.server_metal.gpu-worker-01
+      - jupiter.server_metal.gpu-worker-02
+      - jupiter.server_metal.proxmox_node_01
+      - jupiter.server_metal.proxmox_node_02
+      - jupiter.server_metal.proxmox_node_03
+      - jupiter.server_virtual.ad01
+      - jupiter.server_virtual.ad02
+      - jupiter.server_virtual.mail01
+      - jupiter.server_virtual.mail02
+      - jupiter.server_virtual.wildfly01
+      - jupiter.server_virtual.wildfly02
+      - jupiter.k8s.01
+      - jupiter.k8s.02
+      - jupiter.k8s.llm.01
+      - jupiter.cluster_virtualization.esx.cloudru
+      - jupiter.cluster_virtualization.proxmox.vk
+      - jupiter.cluster_virtualization.vmware.sber
+      - jupiter.sw_storage.01
+      - jupiter.backup.cyberbackup
+
+# File: user_device.yaml
+seaf.company.ta.components.user_device:
+  jupiter.user_device.pc:
+    description: Клиентский ПК сотрудника
+    device_type: АРМ
+    location:
+      - jupiter.dc_office.hq
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+    title: Ноутбуки сотрудников
+  jupiter.user_device.laptop:
+    description: Клиентский ноутбук сотрудника
+    device_type: АРМ
+    location:
+      - jupiter.dc_office.hq
+    network_connection:
+      - jupiter.network.lan.office.int.lan
+    title: Ноутбуки сотрудников
+
+# File: backup.yaml
+seaf.company.ta.services.backups:
+  jupiter.backup.cyberbackup:
+    availabilityzone:
+    - jupiter.dc_az.moscow
+    description: Резервное копирование Cyberbackup
+    location:
+    - jupiter.dc.moscow_dc01
+    - jupiter.dc.moscow_dc02
+    network_connection:
+    - jupiter.network.lan.dc01.int.it.services
+    - jupiter.network.lan.dc02.int.it.services
+    app_components:
+    - jupiter.sys_component.efs_db
+    - jupiter.sys_component.efs_webapp
+    - jupiter.sys_component.efs_rm
+    - jupiter.sys_component.efs_news
+    - jupiter.app_system.aihub
+    - jupiter.app_system.aihub_model_ds1
+    - jupiter.app_system.1c_erp
+    - jupiter.app_system.mes_clothing
+    - jupiter.app_system.ecm_news
+    - jupiter.app_system.tms
+    - jupiter.app_system.mp_favorite_client
+    path: /mnt/backup
+    replication: false
+    stand:
+    - jupiter.stand.prod
+    title: Cyberbackup
+    backed_up_services:
+    - jupiter.server_virtual.ad01
+    - jupiter.server_virtual.ad02
+    - jupiter.server_virtual.mail01
+    - jupiter.server_virtual.mail02
+    - jupiter.server_virtual.wildfly01
+    - jupiter.server_virtual.wildfly02
+    - jupiter.k8s.01
+    - jupiter.k8s.02
+    - jupiter.sw_storage.01
+    - jupiter.kb.audit.siem
+    - jupiter.kb.idm.corp
+    - jupiter.kb.secrets.vault
+    - jupiter.kb.registry.harbor
+    - jupiter.kb.repo.corp
+
+# File: environment.yaml
+seaf.company.ta.services.environments:
+  jupiter.environment.dev:
+    external_id: environment.dev
+    title: Окружение для разработки
+  jupiter.environment.prod:
+    external_id: environment.prod
+    title: Окружение для продакшена
+  jupiter.environment.test:
+    external_id: environment.test
+    title: Окружение для тестирования
+
+# File: hw_storage.yaml
+seaf.company.ta.components.hw_storages:
+  jupiter.hw_storage.01:
+    title: СХД IBM
+    description: Аппаратное хранилище
+    vendor: IBM Storwize 7000
+    volume: 10000
+    disk_type: SSD
+    protocols: FC, Ethernet
+    network_connection:
+    - jupiter.network.lan.192.168.101.0
+    - jupiter.network.lan.dc01.int.prod
+    location:
+    - jupiter.dc.moscow_dc01
+    stand:
+    - jupiter.stand.prod
+    external_id: hw_storage.01
+    sber:
+      compression_rate: 5
+      dedup_rate: 2
+      erasure_coding: 1
+      links_qty: 4
+      ntp_server: ntp.flix.ru
+      nvram_amount: 64
+      pwr_supply_qty: 4
+      reservation_ratio: 100
+      snapshot_lic: true
+      ssd_cache_qty: 4
+      storage_console: https://console-hw-storage.01.flix.ru
+      storage_controller_qty: 2
+      storage_spare_disk_qty: 2
+
+
+

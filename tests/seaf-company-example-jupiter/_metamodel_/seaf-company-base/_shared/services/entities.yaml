@@ -1,0 +1,198 @@
+entities:
+  seaf.company.services:
+    title: &entity_title Сервисы
+    description: &entity_description |
+      Опубликованная функциональность систем для использования потребителями.
+      Сервисы выполняют роль контракта, поставщиком которого является система, публикующая свой функционал, 
+      потребителем может выступать другая система, сервис или пользователь.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.srv.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      service:
+        route: "/"
+        title: Сервис
+        symbol: srv
+
+    schema:
+      $defs:
+        seaf.company.def.service:
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+            - $ref: "#/$defs/seaf.company.def.system_sla_parameters"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры объектов
+              $ref: "#/$rels/seaf.company.services.service"
+
+            integration_type:
+              title: Тип интеграции
+              description: |
+                Основной тип интеграции, реализуемый данным сервисом
+              type: string
+              enum:
+                - API
+                - Очереди
+                - Файлы
+                - Базы данных
+                - Почта
+                - RPA
+                - UI
+
+            trigger_type:
+              title: Тип запуска
+              description: |
+                "По запросу" - инициатором обмена выступает потребитель данных, который запрашивает данные у источника (поставщика) данных, т.е. используется логика pull-запросов. 
+                "По событию" - заранее определены наборы событий, при наступлении которых запускается обмен данными от источника (поставщика) данных к потребителю данных, т.е. реализуется логика push-запросов
+                "По расписанию" - есть процесс, следящий за расписанием, и при наступлении запланированнорго события данный процесс инициирует интеграционный обмен
+              enum:
+                - По запросу (pull)
+                - По событию (push)
+                - По расписанию
+
+            communication_mode:
+              title: Режим коммуникации
+              description: Асинхронный или синхронный режим коммуникации между системой-потребителем и системой-поставщиком сервиса
+              enum:
+                - async
+                - sync
+
+            integration_technologies: # TODO разобраться с сутью поля - не дублирует ли оно по смыслу другие
+              title: Технологии интеграции
+              description: |
+                Протоколы, программные и технологические средства, используемые при реализации интеграции в рамках 
+                данного сервиса. Пример HTTPS, JSON
+              type: array
+              minItems: 1
+              items:
+                type: string
+
+            endpoint_uri:
+              title: URI точки взаимодействия
+              description: Перечисление адресов ресурсов, через которые поставщик предоставляет сервис
+              type: array
+              minItems: 1
+              items:
+                type: string
+
+            specs:
+              title: Спецификации
+              description: |
+                Перечисление ссылок на документы описаний интеграционных спецификаций (OpenAPI / Swagger, GraphQL SDL, AsyncAPI и т.п.),
+                используемых в рамках данного контракта
+              type: array
+              minItems: 1
+              items:
+                type: string
+
+            protection_methods:
+              title: Средства защиты
+              description: |
+                Средства защиты данных на стороне сервиса. Например:
+                  - шифрование с указанием способа (mTLS 1.2, ГОСТ, RSA, DSS)
+                  - обеспечение целостности (HMAC, электронная подпись, простое хеширование)
+              type: array
+              items:
+                type: string
+
+            data_flow:
+              title: Потоки данных
+              description: |
+                Информация о составе и направлении передачи данных в рамках настоящего сервиса
+              type: array
+              minItems: 1
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  data_object:
+                    title: Объект данных
+                    description: Объект данных, передаваемый в рамках сервиса
+                    $ref: "#/$rels/seaf.company.da.logical_entities.logical_entity"
+
+                  description:
+                    title: Описание
+                    description: Описание предназначения передачи данных
+                    type: string
+
+                  direction:
+                    title: Направление
+                    description: |
+                      Направление передачи данных:
+                      \n-  Вход - данные передаются от системы-потребителя на вход системы-поставщика сервиса
+                      \n-  Выход - данные (как результат работы) передаются от поставщика сервиса к системе-потребителю
+                    type: string
+                    enum:
+                      - Вход
+                      - Выход
+                required:
+                  - data_object
+                  - direction
+
+
+            supporting_services:
+              title: Обеспечивающие сервисы
+              description: |
+                Перечень сервисов, обеспечивающих корректное функционирование данного сервиса. 
+                Обеспечивающие сервисы не выполняют бизнес-логику (сутевую часть работы нашего сервиса), 
+                но обеспечивают функционирование нашего сервиса на техническом уровне
+              type: array
+              minItems: 1
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  service:
+                    title: Сервис
+                    description: Ссылка на обеспечивающий сервис
+                    $ref: "#/$rels/seaf.company.services.service"
+
+                  description:
+                    title: Описание
+                    type: string
+                    description: Описание использования обеспечивающего сервиса
+
+                  type:
+                    title: Тип
+                    description: >
+                      Тип обеспечивающего сервиса - какую основную роль он выполняет по отношению к нашему сервису.
+                      \nВыберите значение из справочника. Если не найдено подходящее - введите свой текст
+                    anyOf:
+                      - type: string
+                        enum:
+                          - Интеграционный транспорт
+                          - Шлюз
+                          - Кибербезопасность
+                          - Мониторинг
+                      - type: string
+                        minLength: 3
+
+                required:
+                  - service
+                  - type
+
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title # это название используется как имя подсущности в ER диаграмме
+          description: *entity_description
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            #  конструируем сущность из компонентов схемы
+            - $ref: "#/$defs/seaf.company.def.service"

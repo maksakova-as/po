@@ -1,0 +1,42 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.dcs` (dcs) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.dcs:
+    description: |
+      Builds reverse DC objects from `seaf.ta.services.dc` to support VMware On-Prem imports.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dcs := data_lake."seaf.ta.services.dc";
+        $dcs ? $dcs.$spread().(
+          $key := $keys()[0];
+          $obj := $.*[0];
+          $id_part := $normalize($key);
+          $id_part := $id_part != "" ? $id_part : $normalize($obj.id);
+          $rid := "reverse.dc." & $id_part;
+          {
+            ($rid): {
+              "__id__": $rid,
+              "__entity_id__": "seaf.company.ta.services.dcs",
+              "__entity_title__": "Datacenter (vmware reverse import)",
+              "__link_to_card__": "/entities/seaf.company.ta.services.dcs/card?id=" & $rid,
+              "link": "/entities/seaf.company.ta.services.dcs/card?id=" & $rid,
+              "title": $obj.title,
+              "description": $obj.description,
+              "address": $obj.address,
+              "tier": $obj.tier,
+              "vendor": $obj.vendor,
+              "external_id": $obj.id ? $obj.id : $key,
+              "source_key": $key,
+              "reverse_source": "seaf.ta.services.dc",
+              "is_reverse": true
+            }
+          }
+        ) ~> $merge()
+        : {}
+      )
+

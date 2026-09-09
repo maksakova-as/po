@@ -1,0 +1,13 @@
+{
+  "name": "seaf-ta-ui-tests",
+  "version": "1.0.0",
+  "description": "UI Smoke Tests for SEAF TA",
+  "main": "run_ui_smoke_test.js",
+  "scripts": {
+    "test": "node run_ui_smoke_test.js",
+    "generate": "python generate_test_urls.py"
+  },
+  "dependencies": {
+    "playwright": "^1.57.0"
+  }
+}

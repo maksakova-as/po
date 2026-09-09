@@ -1,0 +1,111 @@
+entities:
+  seaf.test_entities:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        # Добавляем собственный виджет
+        widgets:
+          tree:
+            title: Дерево
+            # Расположение вверху
+            align: "v"
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: tree
+            # Порядок расположения
+            order: 0
+            # Определяем стиль виджета
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+
+      # Презентация для виджета
+      tree:
+        type: plantuml
+        template: tree.puml
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $id := $params.id;
+          $objects_links := objects_links;
+          $objects := objects;
+          
+          /* Получаем массив родителей */
+          $get_parents := function($id) {(
+              $exists($objects.$lookup($id))
+              ? (
+                  $link2parent := $objects_links.$lookup($id)[link_dir="direct" and link_attr="is_part_of"];
+                  $exists($link2parent) ? $append($get_parents($link2parent.linked_id), [$id]) : [$id]
+              )
+          )};
+          
+          /* Получаем массив детей */
+          $get_children := function($id, $level) {(
+              $exists($objects.$lookup($id))
+              ? (
+                  $link2children := $objects_links.$lookup($id)[link_dir="reverse" and link_attr="is_part_of"]^(linked_id);
+                  $exists($link2children) 
+                  ? (
+                      $ch_arr := $map($link2children, function($l2c){(
+                          $get_children($l2c.linked_id, $level+1);
+                      )});
+                      /* превращаем массив массивов в плоский массив */
+                      $ch_arr := $ch_arr@$i.$append($a, $i);
+                      $append([{ "object_id": $id, "level": $level }], $ch_arr);
+                  ) 
+                  : [{ "object_id": $id, "level": $level }]
+              )
+          )};
+          
+          $obj2present := $objects.$lookup($id);
+          /* инициализтируем дерево */
+          $tree := [{
+                  "object_id": $obj2present.__entity_id__,
+                  "object_title": $obj2present.__entity_title__,
+                  "object_link": "/entities/" & $obj2present.__entity_id__ & "/list",
+                  "style": "",
+                  "level": 1,
+                  "stars": "*"
+              }];
+          /* дополняем дерево родителями */
+          $tree := $append( $tree, $map($get_parents($id), function($val, $i){(
+              $obj := $objects.$lookup($val);
+              $level := $i+2;
+              {
+                  "object_id": $obj.__id__,
+                  "object_title": $obj.title,
+                  "object_link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__,
+                  "style": ($obj.__id__ = $id ? "[#FFBBCC]" : ""),
+                  "level": $level,
+                  "stars": [1..$level].$append(["*"], $a)~>$join()
+              }
+          )}));
+          /* дополняем дерево детьми */
+          $current_level := $tree[object_id=$id].level;
+          $tree := $append( $tree, $map($get_children($id, $current_level), function($val){(
+              $obj := $objects.$lookup($val.object_id);
+              {
+                  "object_id": $obj.__id__,
+                  "object_title": $obj.title,
+                  "object_link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__,
+                  "style": ($obj.__id__ = $id ? "[#FFBBCC]" : ""),
+                  "level": $val.level,
+                  "stars": [1..$val.level].$append(["*"], $a)~>$join()
+              }
+          )}));
+          $tree := $distinct($tree);
+          /* отдаем коллекцию на отрисовку */
+          {
+              "objects": $tree
+          }
+          )

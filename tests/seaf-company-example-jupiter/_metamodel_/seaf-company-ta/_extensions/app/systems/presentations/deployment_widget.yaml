@@ -1,0 +1,14 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      card:
+        widgets:
+          deployment_topology:
+            title: Топология развертывания
+            presentation: deployment_view
+            align: "v"
+            order: 4060
+            style:
+              margin: 4px
+              padding: 0px
+              border: true

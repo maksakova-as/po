@@ -1,0 +1,99 @@
+seaf.company.technologies:
+
+  jupiter.software.1c_erp:
+    title: ПП 1С ERP
+    description: Программный продукт 1С Управление предприятием
+    type:
+      - Программное средство
+    vendor:
+      title: Компания 1С
+      website: www.1c.ru
+    license: Коммерческая
+    status: HOLD
+    tags:
+      - Прикладное ПО
+      - РРПО # Реестр российского ПО
+    references:
+      - title: Внутренняя документация по платформе
+        url: docs.jupiter.ru
+        type: Документация
+
+  jupiter.technology.java:
+    title: Язык программирования Java
+    description: Язык и реализация компилятора и виртуальной машины Java
+    type:
+      - Программное средство
+      - Язык
+    vendor:
+      title: OpenJDK
+      website: https://openjdk.org/
+    version: SE 25
+    license: JPL-2.0
+    status: ADOPT
+    tags:
+      - DevOps
+      - DevTools
+    references:
+      - url: https://docs.oracle.com/javase/specs/jls/se25/html/index.html
+        type: Документация
+        title: Спецификация Java
+      - url: https://github.com/openjdk/jdk
+        type: Git репозиторий
+    comments:
+      - Комментарий 1 к java
+      - Комментарий 2 к java
+
+  jupiter.technology.xyz_lang:
+    title: Язык программирования XYZ
+    description: Спецификация языка программирования XYZ
+    type:
+      - Язык
+    vendor:
+      title: XYZ company
+      website: https://xyz-lang.org/
+    version: 22
+    license: Коммерческая
+    status: TRIAL
+    references:
+      - url: https://xyz-lang.doc.org
+        type: Документация
+        title: Спецификация xyz
+      - url: https://github.com/xyz-lang
+        type: Git репозиторий
+
+  jupiter.technology.xyz_compiler:
+    title: Компилятор XYZ
+    description: Компилятор языка программирования XYZ
+    type:
+      - Программное средство
+    vendor:
+      title: XYZ company
+      website: https://xyz-lang-compiler.org/
+    version: 2.34.12-beta.15
+    license: Open Source
+    status: TRIAL
+    dependencies:
+      - jupiter.technology.xyz_lang
+    tags:
+      - DevTools
+    references:
+      - url: https://xyz-lang-compiler.org
+        type: Дистрибутив
+        title: Дистрибутив компилятора
+
+  jupiter.software.dbms_pangolin_standard:
+    title: СУБД Pangolin DB Stsndard
+    description: |
+      СУБД для высоконагруженных систем. Специальная сборка PostgreSQL повышенной надежности и безопасности
+    license: Open Source
+    type:
+      - Программное средство
+    status: ADOPT
+    vendor:
+      website: https://pangolin.sbertech.ru/
+      title: Сбертех
+    tags:
+      - DB
+
+
+

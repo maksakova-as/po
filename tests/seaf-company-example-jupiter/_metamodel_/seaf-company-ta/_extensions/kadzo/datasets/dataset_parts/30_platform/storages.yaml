@@ -1,0 +1,35 @@
+# Назначение: Подготовка датасета `kadzo.ds.ta.storages` (storages) в контуре kadzo.
+# Используется: ta/dataset_parts/* и объединенные TA-таблицы через reverse2seaf2.ds.ta.kadzo.*.
+datasets:
+  kadzo.ds.ta.storages:
+    source: >
+      (
+        $services := data_lake."kadzo.v2023.tech_services";
+        $target_classes := ["СУБД", "Кэш, распределенный кеш"];
+        
+        $services.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          
+          $is_target := $obj.class in $target_classes;
+          
+          $is_target ? {
+            "kadzo.storage." & $id : {
+              "__id__": "kadzo.storage." & $id,
+              "__entity_id__": "seaf.company.ta.services.storages",
+              "__entity_title__": "Система хранения данных",
+              "title": $obj.title,
+              "description": $obj.description,
+              "app_components": $obj.provides ? $obj.provides : [],
+              "type": $obj.class = "СУБД" ? "Software Defined Storage" : "Simple Storage Service",
+              "software": $obj.softwares ? $obj.softwares.("kadzo.software." & $)[0] : null,
+              "volume": 0,
+              "availabilityzone": [],
+              "location": [],
+              "network_connection": [],
+              "source": "kadzo",
+              "legacy_id": $id
+            }
+          } : {}
+        ) ~> $merge()
+      )

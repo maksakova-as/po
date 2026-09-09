@@ -1,0 +1,89 @@
+entities:
+  seaf.company.app.systems:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          integrations_out:
+            title: "Интеграции: данная система потребляет сервисы других систем"
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: integrations_out
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 410
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      integrations_out:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: integration
+            text: Интеграция
+            link: link
+          - value: description
+            text: Описание
+            align: left
+          - value: system1
+            text: Система1 (потребитель)
+            link: system1_link
+            align: left
+          - value: system2
+            text: Система2 (поставщик)
+            link: system2_link
+            align: left
+          - value: service
+            text: Сервис
+            link: service_link
+            align: left
+          - value: data_flow
+            text: Передаваемые данные
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+
+        origin:
+          integrations: seaf.company.ds.systems.integrations_by_systems
+          objects: seaf.ds.objects
+        source: >
+          (
+          $integrations := integrations;
+          $objects := objects;
+          $id := $params.id;
+          $data2present := [$integrations.$lookup($id)[__type__="consumer"]];
+          $exists($data2present) and  $data2present != null
+          ? $map($data2present, function($val, $i) {(
+              $sys1 := $lookup($objects, $val.system1);
+              $sys2 := $lookup($objects, $val.system2);
+              $srv := $lookup($objects, $val.service);
+              {
+                  "integration": $val.__local_id__ &" "& $val.title,
+                  "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "title": $val.title,
+                  "system1": $sys1.title,
+                  "system1_link": $sys1.__link_to_card__,
+                  "system2": $sys2.title,
+                  "system2_link": $sys2.__link_to_card__,
+                  "service": $srv.title,
+                  "service_link": $srv.__link_to_card__,
+                  "data_flow": $val.data_flow.(number &". "& data_object_title &" ("& data_direction &")") ~> $join(",\n"),
+                  "lifecycle_stage": $val.lifecycle_stage,
+                  "description": $val.description
+              }
+            )})[];
+          )

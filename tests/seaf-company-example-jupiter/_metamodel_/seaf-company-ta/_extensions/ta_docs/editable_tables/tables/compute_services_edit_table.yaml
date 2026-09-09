@@ -1,0 +1,157 @@
+docs:
+  seaf.company.ta.docs.compute_services.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Платформа/Вычислительные сервисы/Изменение вычислительных сервисов
+    description: Редактирование вычислительных сервисов из architecture/ta/compute_service.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      compute_services: seaf.company.ds.ta.compute_services
+      azs: seaf.company.ds.ta.dc_azs
+      networks: seaf.company.ds.ta.networks
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: service_type
+        text: Тип сервиса
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: availabilityzone
+        text: Зоны доступности
+        width: 250px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: network_connection
+        text: Сети
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: stand
+        text: ??????
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/compute_service.yaml
+
+    source: >
+      (
+        $services := $exists(compute_services) ? compute_services : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($services), function($service_id){(
+          $service := $lookup($services, $service_id);
+          {
+            $service_id: {
+              "id": $service_id,
+              "title": $service.title,
+              "description": $service.description,
+              "service_type": $service.service_type,
+              "availabilityzone": $to_array($service.availabilityzone),
+              "network_connection": $to_array($service.network_connection),
+              "stand": $to_array($service.stand),
+              "external_id": $service.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($service_id){(
+          $row := $lookup($table, $service_id);
+          {
+            $service_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "service_type": $row.service_type,
+              "availabilityzone": $to_array($row.availabilityzone),
+              "network_connection": $to_array($row.network_connection),
+              "stand": $to_array($row.stand),
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.compute_services": $rows
+        }
+      )

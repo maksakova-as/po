@@ -1,0 +1,65 @@
+entities:
+  seaf.company.ba.channels:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          realization:
+            title: Реализуется в системах
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: realization
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 220
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      realization:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: link_to_card
+          - value: linked_title
+            text: Название
+            link: link_to_card
+          - value: description
+            text: Описание использования
+
+        origin:
+          channels: seaf.company.ds.ba.channels
+          objects: seaf.ds.objects
+        source: >
+          (
+          $channels := channels;
+          $objects := objects;
+          $id := $params.id;
+          $data2present := $lookup($channels, $id).realization;
+          $map($data2present, function($val, $i) {(
+              $sys := $lookup($objects, $val.system);
+              {
+                "number": $i+1,
+                "linked_id": $sys.__id__,
+                "link_to_card": $sys.__link_to_card__,
+                "linked_title": $sys.title,
+                "description": $val.description
+              }
+          )})[];
+          )

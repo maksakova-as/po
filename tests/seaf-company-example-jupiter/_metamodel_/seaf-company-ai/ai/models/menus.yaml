@@ -1,0 +1,33 @@
+entities:
+  seaf.company.ai.models:
+    menu:
+      # Для задания меню для списков и прочих общих презентаций для данной сущности необходимо заполнить в origin
+      # массив menu_items. Для каждого элемента указываем presentation, menu_item_name и menu_item_order
+      origin:
+        configs: seaf.ds.configs
+        objects_by_entities: seaf.ds.objects_by_entities
+        menu_items:
+          - presentation: list
+            menu_item_name: ИИ-модели
+            menu_item_order: 100
+      source: >
+        (        
+        $objects_by_entities := objects_by_entities;
+        $configs := configs;
+        $menu_items := menu_items;
+        $entity_id := "seaf.company.ai.models";
+        $domain_id := "seaf.company.ai";
+        $root_menu := $seaf_fn_get_root_menu($configs, $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($configs, $domain_id);
+        
+        $exists($objects_by_entities.$lookup($entity_id)) 
+        ?   /* В цикле формируем меню для всех элементов массива $menu_items */
+            $map($menu_items, function($val) {(
+                {
+                "link": "/entities/" & $entity_id & "/" & $val.presentation,
+                "location": $seaf_fn_generate_menu_item($val.menu_item_name, $root_menu),
+                "order": $root_menu_order + $val.menu_item_order
+                }
+            )})[]
+        : []
+        )

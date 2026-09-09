@@ -1,0 +1,141 @@
+{
+  "kadzo.components": {
+    "title": "Технические компоненты",
+    "description": "Технический компонент - объект управления в IT-архитектуре, имеющий один или несколько исполняемых экземпляров на вычислительных ресурсах и/или ресурсах хранения данных.",
+    "schema": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "__refdef__": {
+                "type": "object",
+                "properties": {
+                  "interactions": {
+                    "title": "Исходящие взаимодействия",
+                    "type": "object",
+                    "__refdef__": {
+                      "title": "Исходящие взаимодействия",
+                      "type": "object",
+                      "patternProperties": {
+                        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "title": "Наименование",
+                              "type": "string",
+                              "minLength": 2
+                            },
+                            "description": {
+                              "title": "Описание",
+                              "type": "string",
+                              "minLength": 2
+                            },
+                            "to": {
+                              "title": "Компонент, c которым осуществляется взаимодействие",
+                              "type": "string",
+                              "__refrel__": "kadzo.components"
+                            },
+                            "point": {
+                              "title": "Точка взаимодействия",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "title"
+                          ],
+                          "anyOf": [
+                            {
+                              "required": [
+                                "to"
+                              ]
+                            },
+                            {
+                              "required": [
+                                "point"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "__refdef__": {
+                "type": "object",
+                "properties": {
+                  "technical_usage": {
+                    "title": "Технологические взаимодействия",
+                    "type": "object",
+                    "__refdef__": {
+                      "title": "Использование тех сервиса",
+                      "type": "object",
+                      "patternProperties": {
+                        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "title": "Наименование",
+                              "type": "string",
+                              "minLength": 2
+                            },
+                            "to": {
+                              "title": "Компонент, c которым осуществляется взаимодействие",
+                              "type": "string",
+                              "__refrel__": "kadzo.v2023.tech_services"
+                            }
+                          },
+                          "required": [
+                            "to"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "title": {
+              "title": "Наименование",
+              "type": "string",
+              "minLength": 2
+            },
+            "description": {
+              "title": "Описание",
+              "type": "string",
+              "minLength": 2
+            },
+            "is_part_of": {
+              "title": "Логический родитель (объект управления), в состав которого входит технический компонент",
+              "type": "string",
+              "oneOf": [
+                {
+                  "__refrel__": "kadzo.v2023.systems"
+                },
+                {
+                  "__refrel__": "kadzo.v2023.kb_systems"
+                },
+                {
+                  "__refrel__": "kadzo.v2023.tech_services"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "objects": {
+      "component": {
+        "route": "/",
+        "title": "Прикладные компоненты",
+        "symbol": "cmp"
+      }
+    }
+  }
+}

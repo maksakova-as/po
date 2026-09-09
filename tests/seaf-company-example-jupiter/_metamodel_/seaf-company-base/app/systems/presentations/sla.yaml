@@ -1,0 +1,48 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.app.systems:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          sla:
+            title: Параметры эксплуатации и обслуживания
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: sla
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 320
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      sla:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.app.systems
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          
+          [
+              { "field_name": "Производительность", "field_content": { "value":$obj2present.performance } },
+              { "field_name": "RTO (час)", "field_content": { "value":$obj2present.rto } },
+              { "field_name": "RPO (час)", "field_content": { "value":$obj2present.rpo } },
+              { "field_name": "Уровень доступности SLA (%)", "field_content": { "value":$obj2present.sla } }
+          ];
+          )

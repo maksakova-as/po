@@ -1,0 +1,146 @@
+# Назначение: Единый реестр серверов (физических и виртуальных) с нормализацией связей сервисов.
+# Используется: auto_tests, presentations, widgets, ta, reverse, kadzo и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.servers:
+    description: |
+      Коллекция физических и виртуальных серверов
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_core_cache: seaf.company.ds.ta._cache.reverse_core
+      cfg: seaf.company.ds.ta._config
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.components.servers";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.components.server";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: $merge([
+                    {
+                      "__id__": $new_id,
+                      "__entity_id__": "seaf.company.ta.components.servers",
+                      "__link_to_card__": "/entities/seaf.company.ta.components.servers/card?id=" & $new_id,
+                      "legacy_id": $id,
+                      "source": "seaf1"
+                    },
+                    $obj,
+                    {
+                      "availabilityzone": $obj.availabilityzone ? $obj.availabilityzone.("seaf1." & $) : [],
+                      "location": $obj.location ? $obj.location.("seaf1." & $) : [],
+                      "network_connection": $obj.network_connection ? $obj.network_connection.("seaf1." & $) : []
+                    }
+                  ])
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $reverse_cloud := reverse_core_cache.servers_cloud ? reverse_core_cache.servers_cloud : {};
+              $reverse_vmware := reverse_core_cache.servers_vmware ? reverse_core_cache.servers_vmware : {};
+              $merge([$reverse_cloud, $reverse_vmware])
+            )
+          : {};
+
+        /* Hide duplicated SEAF1 servers when the same source object exists in reverse. */
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dedupe_key := function($obj){
+          $exists($obj.legacy_id) ? $string($obj.legacy_id) : (
+            $exists($obj.source_key) ? $string($obj.source_key) : (
+              $exists($obj.external_id) ? $string($obj.external_id) : (
+                $exists($obj.resource_id) ? $string($obj.resource_id) : $string($obj.__id__)
+              )
+            )
+          )
+        };
+        $reverse_keys := $reverse_data ? $reverse_data.*.($dedupe_key($)) : [];
+        $seaf1_filtered := $seaf1_data
+          ? (
+              $seaf1_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $legacy_norm := $normalize($obj.legacy_id);
+                $reverse_vm_id := $legacy_norm != "" ? "reverse.server.vmwareonprem." & $legacy_norm : null;
+                ($k in $reverse_keys) or ($reverse_vm_id != null and $exists($lookup($reverse_data, $reverse_vm_id)))
+                  ? {}
+                  : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_filtered : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+            )
+          )
+        );
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $all_networks := networks ? networks : {};
+        $by_source_key := $all_networks.$spread().(
+          $nid := $keys()[0];
+          $nobj := $.*[0];
+          $src_key := $normalize($nobj.source_key);
+          $src_key != "" ? { ($src_key): $nid } : {}
+        ) ~> $merge();
+        $resolve_network_ref := function($ref){
+          (
+            $rid := $string($ref);
+            $exists($lookup($all_networks, $rid))
+              ? $rid
+              : (
+                  $legacy := $replace($rid, /^reverse\.network\.vmwareonprem\./, "");
+                  $candidate := $lookup($by_source_key, $normalize($legacy));
+                  $candidate ? $candidate : null
+                )
+          )
+        };
+        $normalize_network_refs := function($value){
+          $to_list($value).(
+            $resolved := $resolve_network_ref($);
+            $resolved != null ? $resolved : null
+          )[$ != null] ~> $distinct()
+        };
+        $normalize_service_refs := function($obj){
+          $distinct(
+            $to_list($obj.is_part_of)
+            ~> $append($to_list($obj.is_part_of_cluster))
+            ~> $append($to_list($obj.is_part_of_compute_service))
+            ~> $append($to_list($obj.is_part_of_k8s_cluster))
+            ~> $append($to_list($obj.is_part_of_cluster_virtualization))
+          )
+        };
+        $merged := $merge($merge_list);
+        $merged.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          {
+            $id: $merge([
+              $obj,
+              {
+                "subnets": $normalize_network_refs($obj.subnets),
+                "network_connection": $normalize_network_refs($obj.network_connection),
+                "is_part_of": $normalize_service_refs($obj)
+              }
+            ])
+          }
+        ) ~> $merge()
+      )

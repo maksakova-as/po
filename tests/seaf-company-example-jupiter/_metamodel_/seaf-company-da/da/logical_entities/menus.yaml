@@ -1,0 +1,50 @@
+entities:
+  seaf.company.da.logical_entities:
+
+    menu: >
+      (
+      $entity_id := "seaf.company.da.logical_entities";
+      $domain_id := "seaf.company.da";
+      $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+      $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        
+      $menu := [];
+      /*  Список сущностей  */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Логическая Модель Данных/Сущности", $root_menu);
+          $menu_item_order := $root_menu_order + 300;
+          $exists($.$lookup($entity_id)) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu_item_name,
+              "order": $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      
+      /*  Список всех атрибутов  */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Логическая Модель Данных/Атрибуты", $root_menu);
+          $menu_item_order := $root_menu_order + 400;
+          $exists($.$lookup($entity_id)) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/all_attr_list",
+              "location": $menu_item_name,
+              "order": $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      
+      /*  Диаграмма ЛМД  */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Логическая Модель Данных/Диаграмма", $root_menu);
+          $menu_item_order := $root_menu_order + 600;
+          $exists($.$lookup($entity_id)) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/diagram",
+              "location": $menu_item_name,
+              "order": $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      )

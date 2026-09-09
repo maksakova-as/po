@@ -1,0 +1,61 @@
+entities:
+  seaf.company.ta.components.servers:
+    presentations:
+      server_kadzo_systems:
+        title: Прикладные системы (КА ДЗО)
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: description
+            text: Описание
+
+        origin:
+          servers: seaf.company.ds.ta.servers
+          data_lake: seaf.ds.data_lake
+          configs: seaf.ds.configs
+        source: >
+          (
+            $configs := configs;
+            $cfg_root := $exists($configs."seaf.configs") ? $configs."seaf.configs" : $configs;
+            $ta_cfg := $lookup($cfg_root, "seaf.company.ta");
+            $active_profile := $exists($ta_cfg.data_sources.profile) ? $ta_cfg.data_sources.profile : null;
+            $server := $lookup(servers, $params.id);
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $kadzo_systems := $lookup(data_lake, "kadzo.v2023.systems");
+
+            /* Dataset kadzo.v2023.systems may return {"kadzo.v2023.systems": {...}} */
+            $kadzo_map := $exists($kadzo_systems."kadzo.v2023.systems")
+              ? $kadzo_systems."kadzo.v2023.systems"
+              : $kadzo_systems;
+
+            $sys_list := $to_list($server.app_systems);
+
+            $active_profile = "seaf2_only"
+              ? []
+              : $sys_list.(
+                  $id := $;
+                  $obj := $lookup($kadzo_map, $id);
+                  $obj
+                    ? {
+                        "title": $obj.title ? $obj.title : $id,
+                        "link": "/entities/kadzo.v2023.systems/card?id=" & $id,
+                        "description": $obj.description
+                      }
+                    : {
+                        "title": $id,
+                        "link": "/entities/kadzo.v2023.systems/card?id=" & $id,
+                        "description": ""
+                      }
+                )
+          )

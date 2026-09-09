@@ -1,0 +1,43 @@
+seaf.company.systems:
+
+  jupiter.app_system.mp_favorite_client:
+    title: МП Любимый клиент
+    description: Мобильное приложение для клиентов компании
+    class: Каналы обслуживания клиентов (фронтальные решения)
+    location: Внутренняя
+    categories:
+      - jupiter.fo.gen_ai
+      - jupiter.fo.news_production
+      - jupiter.sys_group.internal_cloudru
+    criticality_level: Office Productivity
+    lifecycle_stage: Промышленная эксплуатация
+    realizes_functions:
+      - function: jupiter.function.mobile_lk
+        lifecycle_stage: Промышленная эксплуатация
+        description: Личный кабинет клиента компании
+        target_status: Целевая
+        service: jupiter.srv.lk_customer
+    integrations:
+      i_01:
+        service: jupiter.srv.news_publish
+        title: Интеграция с новостным бэком
+        lifecycle_stage: Опытная эксплуатация
+
+  jupiter.app_system.website:
+    title: АС Веб-сайт
+    description: Основной веб-сайт компании
+    class: Сайт компании
+    location: Внутренняя
+    categories:
+      - jupiter.sys_group.internal_cloudru
+    criticality_level: Business Operational
+    lifecycle_stage: Промышленная эксплуатация
+
+# Сервисы систем
+seaf.company.services:
+  jupiter.srv.lk_customer:
+    title: UI ЛК Клиента
+    description: Сервис личного кабинета клиента
+    integration_type: UI
+    lifecycle_stage: Используется
+

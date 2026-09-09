@@ -1,0 +1,16 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - header.yaml
+  - summary.yaml
+  - comments.yaml
+  - attributes.yaml
+  - oper_params.yaml
+  - logical_entities.yaml
+  - physical_tables.yaml
+  - attr_card.yaml
+  - attr_header.yaml
+  - attr_summary.yaml
+  - attr_tech_params.yaml
+  - attr_comments.yaml
+  - diagram.yaml

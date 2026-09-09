@@ -1,0 +1,174 @@
+# Назначение: Единый реестр сетей с нормализацией location/segment и связей.
+# Используется: internal_docs, ta, rules, auto_tests, widgets, presentations и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.networks:
+    description: |
+      Коллекция LAN и WAN сетей
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_network_cache: seaf.company.ds.ta._cache.reverse_network
+      cfg: seaf.company.ds.ta._config
+      segments: seaf.company.ds.ta.network_segments
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+        $segments := segments;
+
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dedupe_key := function($obj){
+          $normalize($obj.legacy_id) != "" ? $normalize($obj.legacy_id) : (
+            $normalize($obj.source_key) != "" ? $normalize($obj.source_key) : (
+              $normalize($obj.external_id) != "" ? $normalize($obj.external_id) : (
+                $normalize($obj.resource_id) != "" ? $normalize($obj.resource_id) : (
+                  $normalize($obj.ipnetwork) != "" ? $normalize($obj.ipnetwork) : $normalize($obj.__id__)
+                )
+              )
+            )
+          )
+        };
+        $seaf2_raw := objects."seaf.company.ta.services.networks";
+        $seaf2_data := $seaf2_raw ? $seaf2_raw.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          {
+            $id: $merge([
+              $obj,
+              {
+                "location": $to_list($obj.location),
+                "segment": $to_list($obj.segment)
+              }
+            ])
+          }
+        ) ~> $merge() : {};
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.network";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.networks",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.networks/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "type": $obj.type,
+                    "ipnetwork": $obj.ipnetwork,
+                    "vlan": $obj.vlan,
+                    "lan_type": $obj.lan_type,
+                    "provider": $obj.provider,
+                    "wan_ip": $obj.wan_ip,
+                    "location": (
+                      $exists($obj.location) and $count($to_list($obj.location)) > 0
+                        ? $to_list($obj.location)
+                        : $to_list($obj.dc)
+                    ).("seaf1." & $),
+                    "segment": $to_list($obj.segment).("seaf1." & $),
+                    "source_key": $id,
+                    "external_id": $obj.original_id ? $obj.original_id : ($obj.id ? $obj.id : null),
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $reverse_cloud := reverse_network_cache.networks_cloud ? reverse_network_cache.networks_cloud : {};
+              $reverse_vmware := reverse_network_cache.networks_vmware ? reverse_network_cache.networks_vmware : {};
+              $merge([$reverse_cloud, $reverse_vmware])
+            )
+          : {};
+
+        $seaf2_keys := $seaf2_data ? $seaf2_data.*.($dedupe_key($)) : [];
+        $seaf1_keys := $seaf1_data ? $seaf1_data.*.($dedupe_key($)) : [];
+        $seaf1_filtered := $seaf1_data
+          ? (
+              $seaf1_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $k in $seaf2_keys ? {} : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+        $reverse_filtered := $reverse_data
+          ? (
+              $dedupe_block := $distinct($append($seaf2_keys, $seaf1_keys));
+              $reverse_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $k in $dedupe_block ? {} : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_filtered : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_filtered : {}
+            )
+          )
+        );
+
+        $merged := $merge($merge_list);
+        $merged.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          $locs := $to_list($obj.location);
+          $legacy_dc_loc := (
+            $legacy := $string($obj.legacy_id);
+            $legacy_match := $match($legacy, /^([^.]+)\.([^.]+)\.network\.dvportgroup-\d+$/);
+            $exists($legacy_match.groups[0]) and $exists($legacy_match.groups[1])
+              ? "seaf1." & $legacy_match.groups[0] & ".dc." & $legacy_match.groups[1]
+              : null
+          );
+          $locs_effective := $exists($locs[0]) ? $locs : (
+            $legacy_dc_loc != null ? [$legacy_dc_loc] : []
+          );
+          $segment_raw := $to_list($obj.segment);
+          $segment_prefixed := $segment_raw.(
+            $sid := $string($);
+            $contains($sid, ".") ? $sid : "seaf1." & $sid
+          );
+          $segment_valid := $segment_prefixed.(
+            $seg := $lookup($segments, $);
+            $exists($seg.__id__) ? $seg.__id__ : null
+          )[$ != null] ~> $distinct();
+          $is_vmware_network := $contains($string($id), "reverse.network.vmwareonprem.")
+            or $contains($string($obj.legacy_id), ".network.dvportgroup-")
+            or $contains($string($obj.source_key), ".network.dvportgroup-")
+            or $contains($string($obj.external_id), "DistributedVirtualPortgroup");
+          $vmware_segment_fallback := $is_vmware_network and $exists($locs_effective[0])
+            ? "reverse.segment.vmware." & $replace($string($locs_effective[0]), /^seaf1\./, "") & ".VMWARE-LAN"
+            : null;
+          $segment_value := $count($segment_valid) > 0
+            ? $segment_valid
+            : (
+                $vmware_segment_fallback != null and $exists($lookup($segments, $vmware_segment_fallback))
+                  ? [$vmware_segment_fallback]
+                  : []
+              );
+          {
+            $id: $merge([
+            $obj,
+            {
+              "location": $locs_effective,
+              "segment": $segment_value
+            }
+          ])
+        }
+      ) ~> $merge()
+      )

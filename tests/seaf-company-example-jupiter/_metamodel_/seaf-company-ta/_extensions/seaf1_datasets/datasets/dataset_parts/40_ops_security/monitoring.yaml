@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.monitoring` (monitoring) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.monitoring
+datasets:
+  seaf.company.ds.ta.monitoring:
+    description: |
+      Сервисы мониторинга
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.services.monitorings") ? by_entities."seaf.company.ta.services.monitorings" : {};
+        $list := data_lake."seaf.ta.services.monitoring";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.services.monitorings",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.services.monitorings"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

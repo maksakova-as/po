@@ -1,0 +1,294 @@
+entities:
+  seaf.company.ta.components.k8s_hpa:
+    presentations:
+      list:
+        title: Kubernetes HPA
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: cluster
+            text: Кластер
+            link: cluster_link
+          - value: target
+            text: Цель
+            link: target_link
+          - value: app_system
+            text: АС
+            link: app_system_link
+          - value: min
+            text: Мин
+          - value: max
+            text: Макс
+        origin:
+          hpas: seaf.company.ds.ta.k8s_hpas
+          k8s: seaf.company.ds.ta.k8s
+          deployments: seaf.company.ds.ta.k8s_deployments
+          apps: seaf.ds.objects_by_entities
+        source: >
+          (
+            $hpas := hpas;
+            $k8s := k8s;
+            $deployments := deployments;
+            $apps := $lookup(apps, "seaf.company.app.systems");
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $hpas.*@$hpa.(
+              $cluster := $lookup($k8s, $hpa.cluster);
+              $target := $lookup($deployments, $hpa.target);
+              $app_ids := $exists($target) ? $to_list($target.app_components) : [];
+              $app_titles := $app_ids.(
+                $app := $lookup($apps, $);
+                $exists($app) ? $app.title : $
+              );
+              $first_app_id := $app_ids[0];
+              $first_app := $exists($first_app_id) ? $lookup($apps, $first_app_id) : {};
+              {
+                "id": $hpa.__id__,
+                "link": "/entities/" & $hpa.__entity_id__ & "/card?id=" & $hpa.__id__,
+                "title": $hpa.title,
+                "cluster": $cluster.title,
+                "cluster_link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null,
+                "target": $target.title,
+                "target_link": $exists($target) ? "/entities/" & $target.__entity_id__ & "/card?id=" & $target.__id__ : null,
+                "app_system": $count($app_titles) > 0 ? $app_titles ~> $join(", ") : "-",
+                "app_system_link": $exists($first_app.__id__) ? "/entities/" & $first_app.__entity_id__ & "/card?id=" & $first_app.__id__ : null,
+                "min": $hpa.min,
+                "max": $hpa.max
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка HPA
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: k8s_hpa_details
+            align: "v"
+            order: 10
+          topology:
+            title: Размещение
+            presentation: k8s_hpa_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      k8s_hpa_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          hpas: seaf.company.ds.ta.k8s_hpas
+          k8s: seaf.company.ds.ta.k8s
+          deployments: seaf.company.ds.ta.k8s_deployments
+          apps: seaf.ds.objects_by_entities
+        source: >
+          (
+            $hpa := $lookup(hpas, $params.id);
+            $cluster := $exists($hpa) ? $lookup(k8s, $hpa.cluster) : {};
+            $target := $exists($hpa) ? $lookup(deployments, $hpa.target) : {};
+            $apps := $lookup(apps, "seaf.company.app.systems");
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $app_ids := $exists($target) ? $to_list($target.app_components) : [];
+            $app_titles := $app_ids.(
+              $app := $lookup($apps, $);
+              $exists($app) ? $app.title : $
+            );
+            $first_app_id := $app_ids[0];
+            $first_app := $exists($first_app_id) ? $lookup($apps, $first_app_id) : {};
+            $exists($hpa)
+            ? [
+                {"field": "ID", "value": $hpa.__id__},
+                {"field": "Название", "value": $hpa.title},
+                {
+                  "field": "Кластер",
+                  "value": $cluster.title,
+                  "link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null
+                },
+                {
+                  "field": "Цель",
+                  "value": $target.title,
+                  "link": $exists($target) ? "/entities/" & $target.__entity_id__ & "/card?id=" & $target.__id__ : null
+                },
+                {
+                  "field": "АС",
+                  "value": $count($app_titles) > 0 ? $app_titles ~> $join(", ") : "-",
+                  "link": $exists($first_app.__id__) ? "/entities/" & $first_app.__entity_id__ & "/card?id=" & $first_app.__id__ : null
+                },
+                {"field": "Мин. реплик", "value": $hpa.min},
+                {"field": "Макс. реплик", "value": $hpa.max}
+              ]
+            : []
+          )
+
+      k8s_hpa_topology:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: ../widgets/templates/server_location.puml
+        origin:
+          hpas: seaf.company.ds.ta.k8s_hpas
+          k8s: seaf.company.ds.ta.k8s
+          deployments: seaf.company.ds.ta.k8s_deployments
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          dcs: seaf.company.ds.ta.dcs
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $hpas := hpas;
+            $k8s := k8s;
+            $deployments := deployments;
+            $namespaces := namespaces;
+            $dcs := dcs;
+            $azs := azs;
+            $regions := regions;
+            $hpa := $lookup($hpas, $params.id);
+            $cluster := $exists($hpa) ? $lookup($k8s, $hpa.cluster) : {};
+            $deployment := $exists($hpa) ? $lookup($deployments, $hpa.target) : {};
+            $namespace := $exists($deployment) ? $lookup($namespaces, $deployment.namespace) : {};
+            $sanitize := function($value){ $replace($value, /[^A-Za-z0-9_]/, "_") };
+            $dc_ids := $exists($cluster.location)
+              ? ($type($cluster.location) = "array" ? $cluster.location : [$cluster.location])
+              : [];
+
+            $region_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__)
+                ? "node \"Регион: [[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_" & $sanitize($region.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__)
+                ? "node \"ЦОД: [[/entities/" & $dc.__entity_id__ & "/card?id=" & $dc.__id__ & " " & $dc.title & "]]\" as dc_" & $sanitize($dc.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_node := $exists($cluster.__id__)
+              ? "node \"K8s: [[/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ & " " & $cluster.title & "]]\" as k8s_" & $sanitize($cluster.__id__) & " #d1c4e9\n"
+              : "";
+            $ns_node := $exists($namespace.__id__)
+              ? "node \"Namespace: [[/entities/" & $namespace.__entity_id__ & "/card?id=" & $namespace.__id__ & " " & $namespace.title & "]]\" as ns_" & $sanitize($namespace.__id__) & " #ffecb3\n"
+              : "";
+            $dep_node := $exists($deployment.__id__)
+              ? "node \"Deployment: [[/entities/" & $deployment.__entity_id__ & "/card?id=" & $deployment.__id__ & " " & $deployment.title & "]]\" as dep_" & $sanitize($deployment.__id__) & " #d1c4e9\n"
+              : "";
+            $hpa_node := $exists($hpa.__id__)
+              ? "node \"HPA: [[/entities/" & $hpa.__entity_id__ & "/card?id=" & $hpa.__id__ & " " & $hpa.title & "]]\" as hpa_" & $sanitize($hpa.__id__) & " #d1c4e9\n"
+              : "";
+
+            $region_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__) and $exists($dc.__id__)
+                ? "region_" & $sanitize($region.__id__) & " --> dc_" & $sanitize($dc.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__) and $exists($cluster.__id__)
+                ? "dc_" & $sanitize($dc.__id__) & " --> k8s_" & $sanitize($cluster.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_ns_edge := $exists($cluster.__id__) and $exists($namespace.__id__)
+              ? "k8s_" & $sanitize($cluster.__id__) & " --> ns_" & $sanitize($namespace.__id__) & "\n"
+              : "";
+            $ns_dep_edge := $exists($namespace.__id__) and $exists($deployment.__id__)
+              ? "ns_" & $sanitize($namespace.__id__) & " --> dep_" & $sanitize($deployment.__id__) & "\n"
+              : "";
+            $dep_hpa_edge := $exists($deployment.__id__) and $exists($hpa.__id__)
+              ? "dep_" & $sanitize($deployment.__id__) & " --> hpa_" & $sanitize($hpa.__id__) & "\n"
+              : "";
+
+            $diagram :=
+              $exists($hpa.__id__)
+                ? (
+                    "@startuml\n" &
+                    "left to right direction\n" &
+                    "skinparam nodesep 60\n" &
+                    "skinparam ranksep 60\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    $region_nodes & $dc_nodes & $k8s_node & $ns_node & $dep_node & $hpa_node &
+                    $region_edges & $dc_edges & $k8s_ns_edge & $ns_dep_edge & $dep_hpa_edge &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"HPA не найден\" as no_obj\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

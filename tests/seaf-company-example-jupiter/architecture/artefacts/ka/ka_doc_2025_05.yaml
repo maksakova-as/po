@@ -1,0 +1,50 @@
+seaf.company.artefacts:
+  jupiter.ka.doc_2025_05:
+    menu: КА/КА проекта 2025_05
+    template: ka_doc_2025_05.md
+
+    title: КА проекта 2025_05
+    type: Концептуальная архтитектура (КА)
+    date_created: 2025Q3
+    version: 2.0.0
+    status: Действующий
+
+    task_tracker_links:
+      - https://jira.sberbank.ru/browse/SEAFDEV-222
+
+    authors:
+      - name: Сидоров Сидор
+        comment: автор первой версии документа
+
+    stakeholders:
+      - role: Согласующий
+        name: Васильев Василий
+        department: Кибербезопасность
+      - role: Утверждающий
+        name: Михайлов Михаил
+
+    references:
+      - url: path.to/document.pdf
+        comment: Бизнес-требования
+
+    change_activities:
+      - activity: jupiter.activity.2025_l2p_01
+        comment: КА описывает завершаюущую стадию проекта L2P
+
+    change_start_date: 2024Q4
+    change_finish_date: 2028Q4
+
+    changed_ba_objects:
+      - object: jupiter.client.young_person
+        change_type: Удаляется
+        change_description: >
+          Прекращаем работать с данным сегментом клиентов
+      - object: jupiter.process.knowledge_management
+        change_type: Дорабатывается
+        change_description: >
+          Доработка процесса - исключение сегмента "молодые люди"
+
+    changed_app_objects:
+      - object: jupiter.app_system.ecm_news
+        change_type: Удаляется
+        change_description: Система переводится в статус Архивная

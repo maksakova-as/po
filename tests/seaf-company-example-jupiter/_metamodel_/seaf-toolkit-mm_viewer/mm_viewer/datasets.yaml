@@ -1,0 +1,516 @@
+datasets:
+  seaf.toolkit.ds.data_lake:
+    # Автор: Бизяев Андрей
+    description: Датасет возвращает все озеро данных текущей модели
+    source: >
+      ($)
+
+  seaf.toolkit.ds.datasets_links:
+    # Автор: Мячин Константин
+    source: >
+      (
+      $ds_list := $.datasets.$keys();
+      { 
+        "links" :
+            $each($.datasets, function($v, $k){( 
+                $exists($v.origin) and $v.origin in $ds_list ? (
+                    $type($v.origin) = "string" ? ($not($exists($v.origin ~> /.yaml/)) ? {$k : $v.origin})
+                        : $type($v.origin) = "object" ? $each($v.origin, function($obj, $key){ ( $not($exists($obj ~> /.yaml/)) ? {$k : $obj}) })
+                ) : {$k : "($)"}
+            )}).$map($, $append(?))
+              ~> | $| $.* = "($)" ? {$.$keys() : "origin"} |
+                ~> $map(?, function($v) {({ "from": $v.$keys(), "to": $v.* })})
+      }
+      )
+
+  seaf.toolkit.ds.entities_with_subentities:
+    # Автор: Бизяев Андрей
+    origin: seaf.toolkit.ds.entities
+    description: Датасет расширяет коллекцию сущностей за счет найденных подсущностей (наследников, описанных в разных patternProperties основной сущности)
+    source: >
+      (
+      $entities := $; /* на вход ожидаем коллекцию сущностей с атрибутами */
+      $entities_with_subentities := $each($entities, function($e_val, $e_key) {(
+         /* группируем все атрибуты по подсущностям */
+          $grouped_attrs := $e_val.attrs.* ~> $map(function($a_val) {(
+              $sub_entity_found := $match($a_val.__id__, /^(<.*>)\.(.*)$/)[0].groups;
+              $sub_entity_found != []
+              ?   {
+                       $e_key & "." & $sub_entity_found[0] : {
+                          "attrs" : [
+                              { 
+                                  $sub_entity_found[1]: $merge([$a_val, {"__id__": $sub_entity_found[1]}])
+                              }
+                          ]
+                      }  
+                  }
+              :   { 
+                      $e_key: { 
+                          "attrs": [
+                              { $a_val."__id__" : $a_val }
+                          ]
+                      } 
+                  }
+          )})[];
+          /* Получаем список подсущностей */
+          $subentities_list := $grouped_attrs.$keys() ~> $distinct();
+          /* Проходим по каждой подсущности и гененируем json объект по ней */
+          $map($subentities_list, function($sub_ent_id) {
+              {
+                  $sub_ent_id: { 
+                      "__id__": $sub_ent_id,
+                      "title": $e_val.title,
+                      "description": $e_val.description,
+                      "attrs": $lookup($grouped_attrs, $sub_ent_id).attrs
+                  }
+              }
+          })~>$merge();
+      )})~>$merge();
+      )
+
+  seaf.toolkit.ds.entities:
+    # Автор: Бизяев Андрей
+    origin: seaf.toolkit.ds.entities_raw
+    description: Датасет формирует коллекцию сущностей, подготовленную для использования в ER диаграммах
+    source: >
+      (
+      /* Функция подготавливает данные атрибута к дедупликации*/
+      $get_attr_dedup_info := function($attr_id, $attr_entity_id, $attr_value_type) {(
+          $candidate_found := $match($attr_id, /^(.*)\.(\(var[0-9]+\))$/ )[0].groups;
+          $candidate_found != []
+          ?
+              {   
+              "__global_id__": $attr_entity_id &"_"& $attr_id,
+              "__dedup_id__": $attr_entity_id &"_"& $candidate_found[0] &"_"& $attr_value_type,
+              "__new_id__": $candidate_found[0] & ".(vars)"
+              }
+          :
+              {   
+              "__global_id__": $attr_entity_id &"_"& $attr_id,
+              "__dedup_id__": $attr_entity_id &"_"& $attr_id &"_"& $attr_value_type,
+              "__new_id__": $attr_id
+              }
+      )};
+      
+      $entities := $; /* на вход ожидаем коллекцию сущностей с атрибутами */
+      
+      /* ********** Дедубликация повторяющихся атрибутов в сущностях ********** */
+      
+      /* Получаем плоский массив всех атрибутов всех сущностей */
+      $attrs_all := $entities.*.attrs.*[attr_type="value"].($merge([{"__entity_id__": %.%.__id__}, $]));
+      
+      /* Формиуем плоский массив всех атрибутов всех сущностей с инфой для дедубликации */
+      $attrs_all_dedup := $map($attrs_all, function($a_val) {(
+          $merge( [
+                  $get_attr_dedup_info($a_val.__id__, $a_val.__entity_id__, $a_val.value_type),
+                  $a_val
+                  ]
+          );
+      )})[];
+      
+      /* Список всех групп атрибутов, требующих дедубликации*/
+      $attrs2dedup_list := $attrs_all_dedup{__dedup_id__: __global_id__[] }.$spread()[$count(*)>1]~>$merge();
+      
+      /* Массив всех атрибутов с указанием действия по дедубликации */
+      $attrs2dedup := $each($attrs2dedup_list, function($v, $dedup_id) {(
+          $map($v, function($global_id, $i){(
+              $attr := $attrs_all_dedup[__global_id__=$global_id];
+              $i = 0
+              ? /* первый атрибут в группе оставляем и меняем ему имя */
+                  $merge([$attr, { "__action__": "rename"}])
+              : /* остальные атрибуты в одной группе помечаем к удалению */
+                  $merge([$attr, { "__action__": "remove"}])
+          )});
+      )})@$i.$append($a, $i);
+      
+      /* Перестраиваем коллекцию сущностей с учетом действий по дедубликации атрибутов */
+      $entities_affected := $attrs2dedup.__entity_id__~>$distinct()[];
+      $entities_updated := $each($entities, function($e_val, $e_key){(
+          $e_key in $entities_affected
+          ?   ( /* сущность подлежит дедубликации (ее атрибуты) */
+                  $attrs_updated := $map($e_val.attrs, function($a_val){(
+                      $attr2change := $attrs2dedup[__id__=$a_val.*.__id__];
+                      $exists($attr2change)
+                      ?   (/* дедуплицируем атрибут */
+                              $attr2change.__action__ = "rename"
+                              ?   (/* переименовываем атрибут если rename */
+                                      {
+                                          $attr2change.__new_id__: $merge([$a_val.*, {"__id__": $attr2change.__new_id__} ])
+                                      }      
+                              ) /* отбрасываем если не rename */
+                      )
+                      :   (/* копируем атрибут неизменным */
+                              $a_val
+                      )
+                  )});
+                  { $e_key: $merge([$e_val, { "attrs": $attrs_updated}])};
+          )
+          :   (/* сущность не подлежит дедубликации - просто копируем */
+                  { $e_key: $e_val }
+          )
+      )})~>$merge();
+      )
+
+  seaf.toolkit.ds.entities_raw:
+    # Автор: Бизяев Андрей
+    origin: seaf.toolkit.ds.entities_extracted_offs
+    description: Датасет формирует коллекцию сущностей с их атрибутами как есть
+    source: >
+      (
+      /* Функция удаляет концевую точку в строке */
+      $remove_last_point := function($str) {
+          $contains($str, /\.$/) ? $replace($str, /\.$/, "") : $str
+      };
+      
+      /* Функция формирует атрибут сущности типа значение */
+      $generate_value_attr := function($attr_id, $attr_title, $attr_value_type){(
+          $attr_id := $remove_last_point($attr_id);
+          [{$attr_id: {"__id__": $attr_id, "title": $attr_title, "attr_type": "value", "value_type": $attr_value_type}}]    
+      )};
+      
+      /* Функция формирует атрибут сущности типа сввязь */      
+      $generate_link_attr := function($attr_id, $attr_title, $attr_link_type, $attr_link_to){(
+          $attr_id := $remove_last_point($attr_id);
+          [{ $attr_id: { "__id__": $attr_id, "title": $attr_title, "attr_type": "link", "link_type": $attr_link_type, "link_to": $attr_link_to } }]
+      )};
+      
+      /* Функция сканирует входную схему сущности и выдает массив ее атрибутов */
+      $get_schema_attr := function($schema, $attr_id, $attr_parent_title) {(
+          $type($schema) = "object"
+          ?( /* на вход пришел json объект - считаем что это схема, описывающая 1 или несколько атрибутов */
+              /* выясняем название текущего атрибута */
+              $attr_title := $exists($schema.$schema.title) ? $schema.title : "";
+              $attr_title := $attr_title != "" ? $attr_title : $attr_parent_title;
+      
+              $att :=  [];  
+              /* разбираем секцию oneOf */
+              $att_tmp := $exists($schema.oneOf)
+                  ?(  
+                      /* проходим по каждому элементу oneOf массива */
+                      $map([$schema.oneOf], function($val, $i) {(
+                          $full_attr_id := $attr_id & "(var" & $string($i+1) & ")";
+                          $get_schema_attr($val, $full_attr_id, $schema.title);
+                      )});
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* разбираем секцию anyOf */
+              $att_tmp := $exists($schema.anyOf)
+                  ?(  
+                      /* проходим по каждому элементу anyOf массива */
+                      $map([$schema.anyOf], function($val, $i) {(
+                          $full_attr_id := $attr_id & "(var" & $string($i+1) & ")";
+                          $get_schema_attr($val, $full_attr_id, $schema.title);
+                      )});
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* разбираем секцию patternProperties */
+              $att_tmp := $exists($schema.patternProperties)
+                  ?(
+                      /* генерируем имена для keys - вместо неудобочитаемых regexp */
+                      $pp_keys := $keys($schema.patternProperties)#$i@$k.[{$k: $i+1}];
+                      /* обрабатываем каждый блок секции */
+                      $each($schema.patternProperties, function($val, $key){(
+                          $attr_id = ""
+                          ?/* элемент корневой (сама сущность или несколько подсущностей) */
+                              $count($pp_keys) = 1
+                              ?   $full_attr_id := ""
+                              :   $full_attr_id := $exists($val.title) and $val.title != "" and $val.title != null
+                                      ? "<" & $val.title & ">."
+                                      : "<subentity" & $lookup($pp_keys, $key)[0] & ">."
+      
+                          :/* элемент - атрибут сущности */
+                              $count($pp_keys) = 1
+                              ?   $full_attr_id := $exists($val.title) and $val.title != "" and $val.title != null
+                                      ? $remove_last_point($attr_id) & ".{" & $val.title & "}."
+                                      : $remove_last_point($attr_id) & ".{pattern}."
+                              : $full_attr_id := $exists($val.title) and $val.title != "" and $val.title != null
+                                      ? $remove_last_point($attr_id) & ".{" & $val.title & "}."
+                                      : $remove_last_point($attr_id) & ".{pattern" & $lookup($pp_keys, $key)[0] & "}.";
+      
+                          $get_schema_attr($val, $full_attr_id, $schema.title);
+                      )});
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* разбираем секцию properties */
+              $att_tmp := $exists($schema.properties)
+                  ?(
+                      $each($schema.properties, function($val, $key){(
+                          $full_attr_id := $string(($attr_id != "" ? $attr_id ) & $key& ".");
+                          $get_schema_attr($val, $full_attr_id, $schema.title);
+                      )});
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* атрибут типа "массив" */
+              $att_tmp := $schema.type = "array" or $exists($schema.items)
+                  ?(  
+                      $array_attr_id := $remove_last_point($attr_id) & "[].";
+                      $schema.items~>$exists()
+                      ?  $get_schema_attr($schema.items, $array_attr_id, $schema.title)
+                      :  $generate_value_attr($array_attr_id, $attr_title, "...");
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* атрибут - связь  */
+              $att_tmp := $exists($schema.__refrel__)
+                  ?(
+                      /* выясняем тип связи - 1:1 или 1:N */
+                      $contains($attr_id, "[]") ? $link_type := "1:N" : $link_type := "1:1";
+                      $generate_link_attr($attr_id, $attr_title, $link_type, $schema.__refrel__);
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* атрибут примитивного типа */
+              $att_tmp := $att = [] and ($schema.type = "string" or $schema.type = "number" or $schema.type = "integer" or $schema.type = "boolean" or $exists($schema.enum) or $exists($schema.pattern)) and $not($exists($schema.__refrel__))
+                  ?(  
+                      $attr_value_type := $exists($schema.enum)
+                          ? ($exists($schema.type) and $schema.type != "") ? "enum " & $schema.type : "enum"
+                          : $exists($schema.pattern)
+                              ? "pattern"
+                              : $schema.type;
+                      $generate_value_attr($attr_id, $attr_title, $attr_value_type);
+                  );
+              $att := $append($att, $att_tmp);
+      
+              /* все остальные попападают сюда */
+              $att_tmp := $att = [] and $not($exists($schema.type)) and $not($exists($schema.required)) and $attr_id != ""
+                  ?(
+                      $generate_value_attr($attr_id, $attr_title, "...");
+                  );
+              $att := $append($att, $att_tmp);
+              $att := $att~>$spread()
+          ):( /* на вход пришла не схема описания атрибута */
+              {}
+          )
+      )};
+      
+      $entities := $; /* на вход ожидаем коллекцию сущностей с раскрытыми секциями $ref */
+      $entities_with_attrs := $each($entities, function($val, $key) {(
+          { $key: { "__id__": $key, "title": $val.title, "description": $val.description, "attrs": $get_schema_attr($val.schema, "", "")} }
+      )})~>$merge();
+      )
+
+  seaf.toolkit.ds.entities_extracted_offs:
+    # Автор: Бизяев Андрей
+    origin: seaf.toolkit.ds.entities_extracted_refs
+    description: Датасет формирует коллекцию сущностей с раскрытыми блоками allOff
+    source: >
+      (
+      /* Функция раскрывает в схеме блоки allOf */
+      $extract_alloffs := function($schema) {(
+          $type($schema) = "object" 
+          ? ( /* на вход пришел объект */
+              $resolved_schema := $exists($schema.allOf) 
+              ? (
+                  $blocks2merge := $map($schema.allOf, function($val) { $extract_alloffs($val) });
+                  $mergedeep([$schema, $blocks2merge]);
+              ):(
+                  $schema
+              );
+              /* рекурсивно сканируем схему */
+              $each($resolved_schema, function($val, $key){
+                  $key != "allOf" ? { $key: $extract_alloffs($val) }
+              })~>$merge();
+          ):
+              $type($schema) = "array" 
+              ?( /* на вход пришел массив */
+                  [$map($schema, function($val) { $extract_alloffs($val) })]
+              ):( /* на вход пришел примитив */
+                  $schema
+              )
+      )};
+            
+      $~>$extract_alloffs()
+      )
+
+  seaf.toolkit.ds.entities_extracted_refs:
+    # Автор: Бизяев Андрей
+    description: Датасет формирует коллекцию сущностей с раскрытыми ссылками $ref и удаленными секциями $def
+    source: >
+      (
+      /* Функция принимает строку, состояюшую из сегментов (разделенных точками) и возвращает строку без последнего сегмента */
+      $remove_last_segment := function($str) {
+          $str~>$split(".")~>function($arr){($count($arr) > 1 ? $arr#$pos[$pos+1 < $count($arr)][] : $arr[])}~>$join(".")
+      };
+      
+      /* Функция раскрывает в схеме ссылки $ref */
+      $resolve_refs := function($schema, $defs) {(
+          $type($schema) = "object" 
+          ? ( /* на вход пришел объект */
+              /* ищем и разрешаем $ref */
+              $ref2resolve := $lookup($schema, "$ref");
+              $resolved_schema := $exists($ref2resolve)
+                  ? ($substring($ref2resolve, 0, 8) = "#/$defs/"
+                      ?(  /* $ref это определение схемы ($def) */
+                          $def_id := $substring($ref2resolve, 8);
+                          $def_body := $lookup($defs, $def_id);                   
+                          /* мерджим схему с дефом и удаляем $ref */
+                          $mergedeep([$schema, $def_body]) ~>|$|{},["$ref"]|
+                      ):(                 
+                          $substring($ref2resolve, 0, 8) = "#/$rels/"
+                              ?( /* $ref это ссылка на сущность ($rel) */
+                                  $rel_id := $substring($ref2resolve, 8);
+                                  $rel_body := $remove_last_segment($substringAfter($ref2resolve, "#/$rels/") );
+                                  /* заменяем $ref на сгенеренный __refrel__ */
+                                  $schema ~>|$|{"__refrel__": $rel_body},["$ref"]|
+                              ):( /* $ref это ссылка на что-то еще */
+                                  $schema ~>|$|{"__refrel__": "unsupported_link"},["$ref"]|
+                              );
+                      );
+                  ):( 
+                      $schema 
+                  );
+      
+              /* теперь рекурсивно сканируем полученную схему */
+              $each($resolved_schema, function($val, $key){
+                  { $key: $resolve_refs($val, $defs) }
+              })~>$merge()
+          ):
+              $type($schema) = "array" 
+              ?( /* на вход пришел массив */
+                  [$map($schema, function($val) { $resolve_refs($val, $defs) })]
+              ):( /* на вход пришел примитив */
+                  $schema
+              )
+      )};
+      
+      /* Функция удаляет указанные секции из json объекта во всей его глубине  */
+      $remove_keys_deep := function($obj, $key2remove) {(
+          $type($obj) = "object" 
+          ? /* на вход пришел объект - сканируем каждую пару key-value */
+              $each($obj, function($val, $key){
+                  $key != $key2remove ? {$key: $remove_keys_deep($val, $key2remove)}
+              })~>$merge()
+          :
+              $type($obj) = "array" 
+              ?( /* на вход пришел массив */
+                  [$map($obj, function($val) { $remove_keys_deep($val, $key2remove) })]
+              ):( /* на вход пришел примитив */
+                          $obj
+              )
+      )};
+      
+      /*  получаем список всех дефов из всех описаний jsonschema*/
+      $defs := $merge($.entities.*.schema."$defs");
+      /* раскрываем ref в самих дефах */
+      $resolved_defs := $resolve_refs($defs, $defs);
+      
+      /* обрабатываем коллекцию сущностей метамодели */
+      $.entities~>$sift(function($v, $k){ $exists($v.objects) })~>$remove_keys_deep("$defs")~>$remove_keys_deep("presentations")~>$resolve_refs($resolved_defs)
+      )
+
+  seaf.toolkit.ds.objects:
+    # Автор: Бизяев Андрей
+    origin:
+      entities: seaf.toolkit.ds.entities
+      data_lake: seaf.toolkit.ds.data_lake
+    description: Датасет формирует коллекцию всех объектов модели, заведенных в рамках метамодели ("левые" объекты, не привязанные ни к одной сущности, не попадают в список
+    source: >
+      (
+      /* Получаем список сущностей метамодели*/
+      $elist := entities.$keys();
+      
+      /* строим плоский список объектов (экземпляров сущностей) */
+      $objects_list := $map($elist, function($eid){(
+          
+          $objects := $lookup(data_lake, $eid);
+          $exists($objects) and $objects != null ? $each($objects, function($val, $key){(
+              { $key: {
+                  "__id__": $key,
+                  "__entity_id__": $eid,
+                  "__entity_title__": $lookup(entities, $eid).title,
+                  "body": $val
+                  }
+              }
+          )})~>$merge()
+      )})~>$merge();
+      
+      $objects_list;
+      )
+
+  seaf.toolkit.ds.objects_with_links:
+    # Автор: Бизяев Андрей
+    origin:
+      entities: seaf.toolkit.ds.entities
+      objects: seaf.toolkit.ds.objects
+      data_lake: seaf.toolkit.ds.data_lake
+    description: Датасет формирует коллекцию всех объектов модели,
+      выявляя для каждого объекта его связи с другими объектами модели
+    source: >
+      (
+      /* функция сканирует объект и выявляет все атрибуты-связи */
+      $get_links := function($obj, $parent_key) {(
+          $type($obj) = "object" 
+          ? ( /* на вход пришел json-объект - сканируем его */
+              $each($obj, function($val, $key){(
+                  $full_key := $parent_key = "" 
+                      ? $key
+                      : $parent_key & "." & $key;
+                  $get_links($val, $full_key)
+              )})~>$merge()
+          ):
+              $type($obj) = "array" 
+              ?( /* на вход пришел json-массив - сканируем его*/
+                  $map($obj, function($val, $i) {(
+                      $array_key := $parent_key & "[" & $i & "]";
+                      $get_links($val, $array_key);
+                  )})~>$merge()
+      
+              ):( /* на вход пришел json-примитив */
+                  /* проверяем - не ссылка ли это на объект */
+                  $exists($obj) and $exists($lookup(objects, $obj)) and $not($obj = null)
+                  ? /* это сслыка на объект */
+                      { $parent_key: {  
+                          "to": $obj
+                          }
+                      }
+              )
+      )};
+      
+      /* строим итоговую коллекцию объектов */
+      $each(objects, function ($val, $key) {
+          { $key: $merge([$val, {"links": $get_links($val.body, "")}]) }
+      })~>$merge();
+      )
+
+  seaf.toolkit.ds.objects_count:
+    # Автор: Бизяев Андрей
+    origin:
+      entities: seaf.toolkit.ds.entities
+      data_lake: seaf.toolkit.ds.data_lake
+    description: Датасет формирует статистику - сколько объектов разных сущностей присутствуют в модели
+    source: >
+      (
+      $data_lake := data_lake;
+      $entities := entities;
+      $el := $entities.$keys();
+      $stat := $map($el, function($eid) {(
+          $e := $entities.$lookup($eid);
+          $objects := $data_lake.$lookup($eid);
+          $exists($objects) and $objects != null 
+          ? { "entity": $eid,
+              "title": $e.title,
+              "obj_count": $count($keys($objects)),
+              "obj_size": $length($string($objects))
+            }
+          : { "entity": $eid,
+              "title": $e.title,
+              "obj_count": 0,
+              "obj_size": 0
+            }
+      )});
+      $total_obj_count := $stat.obj_count ~> $sum();
+      $total_obj_size := $stat.obj_size ~> $sum();
+      $stat := $append( $stat, 
+                              {   
+                                  "entity": "",
+                                  "title": "__TOTAL__",
+                                  "obj_count": $total_obj_count,
+                                  "obj_size": $total_obj_size
+                              }      
+                      );
+      $stat
+      )

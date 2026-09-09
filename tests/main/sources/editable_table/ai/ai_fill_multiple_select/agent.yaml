@@ -1,0 +1,39 @@
+editable_table.ai.ai_fill_multiple_select.agent.data:
+  default: DEFAULT TEXT
+  text: HELLO WORLD
+  solo_color: blue
+
+  colors:
+    - КрасНый
+    - blue
+    - asd
+
+  color: white
+  link: https://ya.ru
+
+docs:
+  editable_table.ai.ai_fill_multiple_select.agent:
+    type: ai-chat
+    location: TABLE / AI / Автозаполенение / Заполнение multiple-select / agent
+    scenarios:
+      agent:
+        history: false
+        title: agent
+        type: simple
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент. 
+          От пользователя ты получаешь запрос который может иметь одно из содежаний:
+           1. запрос содержит какой-то текст;
+           2. запрос содержит ТОЛЬКО пробельные символы или является пустой строкой;
+          
+          ВАЖНО! 
+          Если запрос содержит какой-то текст (вариант 1) ты должен вернуть "None".
+          Если запрос от пользователя пуст (вариант 2) ты должен вернуть контекст, полученный из базы знаний.
+
+        query: >
+          (
+            $prop := $params.prop ? $params.prop : "default";
+            $ctx := $."editable_table.ai.ai_fill_multiple_select.agent.data";
+            $lookup($ctx, $prop)
+          )

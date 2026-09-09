@@ -1,0 +1,66 @@
+entities:
+  seaf.company.services:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          data_flow:
+            title: Передача данных в рамках сервиса
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: data_flow
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 420
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      data_flow:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: data_object
+            text: Объект данных
+            link: data_object_link
+          - value: direction
+            text: Направление передачи
+          - value: description
+            text: Описание
+
+        origin:
+          objects: seaf.company.ds.services
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.data_flow;
+          $exists($data2present) and  $data2present != null
+          ? $map($data2present, function($val, $i) {(
+              $do := $seaf_fn_get_object_info($val.data_object, $all_objects);
+              {
+                "number": $i+1,
+                "data_object": $do.title,
+                "data_object_link": $do.link_to_card,
+                "direction": $val.direction,
+                "description": $val.description
+              }
+            )})[];
+          )

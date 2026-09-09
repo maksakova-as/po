@@ -1,0 +1,53 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        params:
+          type: object
+          properties:
+            domain:
+              title: Домен компании
+              type: string
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: description
+            text: Описание
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+          - value: agent_degree
+            text: Степень агентности
+            align: left
+
+        origin: seaf.company.ds.ai.agents
+        source: >
+          (
+          $objects := $exists($params.domain) 
+              ? 
+                ( 
+                $matcher := $eval("/^" & $params.domain & "\\./i");
+                $sift($, function($v, $k) {$k ~> $matcher})
+                )
+              : $;
+              
+          $objects.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "lifecycle_stage": $val.lifecycle_stage,
+              "agent_degree": $val.agent_degree,
+              "description": $val.description
+          }[];
+          )

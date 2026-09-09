@@ -1,0 +1,70 @@
+# В данном примере описано использование плагина
+# В документе template-export описываем формируемый excel файл с пустыми ячейками
+# После сохранения заполняем файл
+# В документе template-import указываем имя таблицы из которой забираем данные и JSONata выражение по корому их преобразуем под данные для таблицы и сохраняем
+# В документе result-table описываем таблицу для вывода с выгруженными данными
+
+docs:
+  template-import:
+    type: excel-import
+    location: Пример исползования/Импорт
+    yaml:
+      null_replace_string: "тест"
+    tables:
+      - name: tableForImport
+        output: >
+         ("ekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrg11111")
+
+#Динамически задается путь и имя#
+      #          (
+#            $name := table[0][1];
+#            $id := table[0][0];
+#
+#            $new_path := "result/" & $name & "_" & $id & ".yaml";
+#            $new_path
+#          )
+        source: >
+          (
+            $file := file ? file : {};
+            $merge([$file, $])
+          )
+
+  template-export:
+    type: excel-export
+    location: Пример исползования/Экспорт
+
+    file_name: >
+      ("ekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrgoekjfrbkesjlkjehrg1111")
+
+    options:
+      show-grid-lines: false
+      margin-left: 3.5
+      margin-top: 10.5
+      table:
+        headers:
+          height: 28.5
+
+    pages:
+      - name: Страница
+        components:
+          - type: table
+            name: tableForImport
+
+            source: >
+              (   
+                  $headers := [
+                      {"value": "ID"},
+                      {"value": "name"},
+                      {"value": "age"}
+                  ];
+              
+                  {   
+                      "headers": $headers,
+                      "body": [
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""],
+                        ["", "", ""]
+                      ]
+                  }
+              )

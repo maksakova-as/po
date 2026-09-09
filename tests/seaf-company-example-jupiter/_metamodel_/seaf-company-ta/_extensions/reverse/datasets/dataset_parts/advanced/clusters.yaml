@@ -1,0 +1,234 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.dmss_clusters` (dmss clusters) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.dmss_clusters:
+    description: Converts Cloud.ru Distributed Message Services into queue clusters.
+    origin:
+      data_lake: ($)
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $segment_ref := function($dc_name, $segment_name){
+          (
+            $dc_norm := $normalize($dc_name);
+            $seg_raw := $type($segment_name) = "string" ? $trim($segment_name) : "";
+            $dc_norm != "" and $seg_raw != ""
+              ? "reverse.segment." & $dc_norm & "." & $seg_raw
+              : null
+          )
+        };
+        $network_ref := function($subnet_id){
+          (
+            $norm := $normalize($subnet_id);
+            $norm != "" ? "reverse.network." & $norm : null
+          )
+        };
+        $to_list := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $dmss := data_lake."seaf.ta.reverse.cloud_ru.advanced.dmss".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $dmss.(
+          $record := value;
+          $tenant := $record.tenant;
+          $cluster_id := "reverse.cluster.dmss." & $normalize(key);
+          $az_values := $to_list($record.available_az);
+          $az_refs := $distinct(
+            $az_values.($az_ref($))[$ != null]
+          );
+          $dc_from_field := $dc_ref($record.DC);
+          $dc_from_az := $az_values.($dc_ref($))[$ != null];
+          $location_refs := $distinct([
+            $dc_from_field,
+            $dc_from_az[],
+            $az_refs[]
+          ][ $ != null ]);
+          $network_entry := $network_ref($record.subnet_id);
+          $network_refs := $network_entry != null ? [$network_entry] : [];
+          $primary_dc_label := $exists($az_values[0]) ? $az_values[0] : ($type($record.DC) = "string" ? $record.DC : null);
+          $segment_entry := $primary_dc_label != null ? $segment_ref($primary_dc_label, "INT-NET") : null;
+          $addresses := $to_list($record.address);
+          $security_groups := $to_list($record.security_groups);
+          $description_parts := [
+            $record.engine ? "Engine: " & $record.engine,
+            $record.engine_version ? "Engine Version: " & $record.engine_version,
+            $record.specification ? "Spec: " & $record.specification,
+            $record.status ? "Status: " & $record.status,
+            $record.port ? "Port: " & $record.port,
+            $record.management ? "Management: " & $record.management,
+            $record.storage_space ? "Storage Space: " & $record.storage_space,
+            $record.total_storage_space ? "Total Storage: " & $record.total_storage_space,
+            $record.used_storage_space ? "Used Storage: " & $record.used_storage_space,
+            $record.storage_spec_code ? "Storage Spec: " & $record.storage_spec_code,
+            $record.support_features ? "Features: " & $record.support_features,
+            $record.node_num ? "Nodes: " & $record.node_num,
+            $exists($record.disk_encrypted) ? "Disk Encrypted: " & ($record.disk_encrypted ? "Yes" : "No"),
+            $count($security_groups) > 0 ? "Security Groups: " & $join($security_groups, ", "),
+            $record.tenant ? "Tenant: " & $record.tenant
+          ];
+          $description := $description_parts != [] ? $join($description_parts, "\n") : null;
+          {
+            ($cluster_id): {
+              "__id__": $cluster_id,
+              "__entity_id__": "seaf.company.ta.services.compute_services",
+              "__entity_title__": "Compute Service (reverse import)",
+              "__company_id__": $tenant,
+              "__object_type__": "compute_service",
+              "__object_id__": $normalize(key),
+              "__link_to_card__": "/entities/seaf.company.ta.services.compute_services/card?id=" & $cluster_id,
+              "link": "/entities/seaf.company.ta.services.compute_services/card?id=" & $cluster_id,
+              "title": $record.name,
+              "description": $description,
+              "service_type": "Очереди сообщений (Cloud DMS)",
+              "software": $record.engine,
+              "availabilityzone": $az_refs,
+              "location": $location_refs,
+              "network_connection": $network_refs,
+              "segment": $segment_entry != null ? [$segment_entry] : [],
+              "addresses": $addresses,
+              "management_url": $record.management,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.dmss",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+  reverse2seaf2.ds.ta.reverse.rdss_clusters:
+    description: Converts Cloud.ru Relational Database Service instances into database clusters.
+    origin:
+      data_lake: ($)
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $network_ref := function($subnet_id){
+          (
+            $norm := $normalize($subnet_id);
+            $norm != "" ? "reverse.network." & $norm : null
+          )
+        };
+        $segment_ref := function($dc_name, $segment_name){
+          (
+            $dc_norm := $normalize($dc_name);
+            $seg_raw := $type($segment_name) = "string" ? $trim($segment_name) : "";
+            $dc_norm != "" and $seg_raw != ""
+              ? "reverse.segment." & $dc_norm & "." & $seg_raw
+              : null
+          )
+        };
+        $to_list := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $rdss := data_lake."seaf.ta.reverse.cloud_ru.advanced.rdss".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $rdss.(
+          $record := value;
+          $tenant := $record.tenant;
+          $cluster_id := "reverse.cluster.rdss." & $normalize(key);
+          $node_az := $to_list($record.nodes).(
+            $entry := $lookup($, "availability_zone");
+            $entry != null ? $entry : null
+          )[ $ != null ];
+          $az_values := $distinct(
+            $append($to_list($record.az), $node_az)
+          );
+          $az_refs := $distinct(
+            $az_values.($az_ref($))[$ != null]
+          );
+          $dc_from_az := $az_values.($dc_ref($))[$ != null];
+          $dc_from_field := $dc_ref($record.DC);
+          $location_refs := $distinct([
+            $dc_from_field,
+            $dc_from_az[],
+            $az_refs[]
+          ][ $ != null ]);
+          $network_entry := $network_ref($record.subnet_id);
+          $network_refs := $network_entry != null ? [$network_entry] : [];
+          $primary_dc_label := $exists($az_values[0]) ? $az_values[0] : ($type($record.DC) = "string" ? $record.DC : null);
+          $segment_entry := $primary_dc_label != null ? $segment_ref($primary_dc_label, "INT-NET") : null;
+          $description_parts := [
+            $record.datastore.type ? "Engine: " & $record.datastore.type,
+            $record.datastore.version ? "Version: " & $record.datastore.version,
+            $record.datastore.complete_version ? "Build: " & $record.datastore.complete_version,
+            $record.type ? "Topology: " & $record.type,
+            $record.status ? "Status: " & $record.status,
+            $record.flavor ? "Flavor: " & $record.flavor,
+            $record.volume.type ? "Volume Type: " & $record.volume.type,
+            $record.volume.size ? "Volume Size: " & $record.volume.size & " GB",
+            $record.backup_strategy.start_time ? "Backup Window: " & $record.backup_strategy.start_time,
+            $record.backup_strategy.keep_days ? "Backup Keep Days: " & $record.backup_strategy.keep_days,
+            $record.private_ips ? "Private IPs: " & $join($record.private_ips, ", "),
+            $record.public_ips ? "Public IPs: " & $join($record.public_ips, ", "),
+            $record.switch_strategy ? "Switch Strategy: " & $record.switch_strategy,
+            $record.tenant ? "Tenant: " & $record.tenant
+          ];
+          $description := $description_parts != [] ? $join($description_parts, "\n") : null;
+          {
+            ($cluster_id): {
+              "__id__": $cluster_id,
+              "__entity_id__": "seaf.company.ta.services.compute_services",
+              "__entity_title__": "Compute Service (reverse import)",
+              "__company_id__": $tenant,
+              "__object_type__": "compute_service",
+              "__object_id__": $normalize(key),
+              "__link_to_card__": "/entities/seaf.company.ta.services.compute_services/card?id=" & $cluster_id,
+              "link": "/entities/seaf.company.ta.services.compute_services/card?id=" & $cluster_id,
+              "title": $record.name,
+              "description": $description,
+              "service_type": "Реляционные БД (Cloud RDS)",
+              "software": $record.datastore.type,
+              "availabilityzone": $az_refs,
+              "location": $location_refs,
+              "network_connection": $network_refs,
+              "segment": $segment_entry != null ? [$segment_entry] : [],
+              "addresses": $to_list($record.private_ips),
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.rdss",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+

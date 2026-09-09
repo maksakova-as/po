@@ -1,0 +1,21 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $nats := $."seaf.ta.reverse.cloud_ru.advanced.nat_gateways".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $nats.(
+    $nat := value;
+    {
+      "component_id": "reverse.netcomp.nat." & $normalize($nat.id),
+      "network_connection": $nat.subnet_id,
+      "dc": $nat.DC
+    }
+  )
+)

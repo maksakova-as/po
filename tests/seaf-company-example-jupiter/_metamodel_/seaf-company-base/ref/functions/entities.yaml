@@ -1,0 +1,40 @@
+entities:
+  seaf.company.functions:
+    title: &entity_title Функции
+    description: &entity_description |
+      Прикладная функциональность, реализуемая системами.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.function.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      function:
+        route: "/"
+        title: Функция
+        symbol: fn
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры объектов
+              $ref: "#/$rels/seaf.company.functions.function"

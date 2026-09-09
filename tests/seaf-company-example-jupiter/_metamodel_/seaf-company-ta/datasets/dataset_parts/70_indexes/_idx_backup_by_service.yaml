@@ -1,0 +1,25 @@
+# Назначение: Индекс связей backup по обслуживаемому сервису.
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._idx.backup_by_service:
+    description: |
+      Индекс сервисов резервного копирования по backed_up_services.
+    origin:
+      backup: seaf.company.ds.ta.backup
+    source: >
+      (
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        (
+          backup.*.(
+            $b := $;
+            $to_list($b.backed_up_services).{
+              "service_id": $,
+              "row": {
+                "title": $b.title,
+                "link": "/entities/" & $b.__entity_id__ & "/card?id=" & $b.__id__,
+                "type": "Backup"
+              }
+            }
+          )
+        ){ service_id: row }
+      )

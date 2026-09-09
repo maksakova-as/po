@@ -1,0 +1,4 @@
+imports:
+  - adr/_root.yaml
+  - ka/_root.yaml
+  - patterns/_root.yaml

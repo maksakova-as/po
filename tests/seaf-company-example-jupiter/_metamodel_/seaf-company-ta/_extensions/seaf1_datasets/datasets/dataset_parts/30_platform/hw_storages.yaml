@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.hw_storages` (hw storages) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.hw_storages
+datasets:
+  seaf.company.ds.ta.hw_storages:
+    description: |
+      Коллекция аппаратных СХД
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.components.hw_storages") ? by_entities."seaf.company.ta.components.hw_storages" : {};
+        $list := data_lake."seaf.ta.components.hw_storage";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.components.hw_storages",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.components.hw_storages"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

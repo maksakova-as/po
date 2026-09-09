@@ -1,0 +1,17 @@
+# Назначение: Единый реестр аппаратных СХД.
+# Используется: auto_tests, widgets, presentations, ta, internal_docs.
+datasets:
+  seaf.company.ds.ta.hw_storages:
+    description: |
+      Коллекция аппаратных СХД
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.components.hw_storages";
+        "seaf2" in $sources_enabled
+          ? ($exists($seaf2_data) ? $seaf2_data : {})
+          : {}
+      )

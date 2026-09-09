@@ -1,0 +1,15 @@
+# Назначение: Реестр окружений эксплуатации.
+# Используется: auto_tests, internal_docs, presentations, docs, rules, ta.
+datasets:
+  seaf.company.ds.ta.environments:
+    description: |
+      ????????? (prod/dev/test)
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.services.environments";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

@@ -1,0 +1,25 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      deployment_view:
+        title: Диаграмма развертывания
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор системы
+              type: string
+          required:
+            - id
+
+        type: plantuml
+        template: templates/deployment_view.puml
+        origin:
+          topology: seaf.company.ds.app.systems_deployment_topology
+        source: >
+          (
+            $data := $lookup(topology, $params.id);
+            $exists($data)
+              ? { "topology": $data }
+              : { "topology": { "locations": [], "orphans": [] } }
+          )

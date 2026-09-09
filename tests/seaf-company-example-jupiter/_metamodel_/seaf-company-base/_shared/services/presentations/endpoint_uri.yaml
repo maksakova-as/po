@@ -1,0 +1,50 @@
+entities:
+  seaf.company.services:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          endpoint_uri:
+            title: Точки подключения (endpoints)
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: endpoint_uri
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 230
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      endpoint_uri:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: endpoint
+            text: Endpoint
+
+        origin:
+          objects: seaf.company.ds.services
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          $obj2present.endpoint_uri#$i.{
+                                  "number": $i+1,
+                                  "endpoint": $
+                                   }[];
+          )

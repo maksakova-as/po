@@ -1,0 +1,246 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.servers` (servers) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.servers:
+    description: |
+      Maps VMware On-Prem VMs and ESXi hosts into SEAF2 servers.
+    origin:
+      data_lake: ($)
+      reverse_networks: reverse2seaf2.ds.ta.reverse.vmware.networks
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($string($text)), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $normalize_vdc := function($id){
+          $id ? $replace($string($id), /^vdc\./, "vdcs.") : $id
+        };
+        $to_list := function($value){
+          $type($value) = "array" ? $value : ($exists($value) ? [$value] : [])
+        };
+        $reverse_cfg := data_lake."seaf.ta.reverse.general";
+        $reverse_entities := $reverse_cfg.config.entities
+          ? $reverse_cfg.config.entities
+          : ($reverse_cfg.entities ? $reverse_cfg.entities : {});
+        $kadzo_services := data_lake."kadzo.v2023.tech_services";
+        $monitoring_classes := ["Средства мониторинга", "Системы логирования"];
+        $backup_classes := ["Системы резервного/архивного копирования"];
+        $resolve_kadzo_service := function($ref){
+          (
+            /* Use $lookup for dynamic keys with dots/hyphens. */
+            $svc := $lookup($kadzo_services, $ref);
+            $svc ? (
+              $class := $type($svc.class) = "array" ? $svc.class[0] : $svc.class;
+              $class := $trim($string($class));
+              $is_monitoring := $count($monitoring_classes[$ = $class]) > 0;
+              $is_backup := $count($backup_classes[$ = $class]) > 0;
+              $is_monitoring ? "kadzo.monitoring." & $ref
+                : (
+                    $is_backup ? "kadzo.backup." & $ref
+                      : "kadzo.compute." & $ref
+                  )
+            ) : null
+          )
+        };
+        $networks := $exists(reverse_networks)
+          ? reverse_networks
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.networks".source);
+        $vdcs := data_lake."seaf.ta.reverse.vmwareonprem.vdcs";
+        $vdc_to_dc := $vdcs ? $vdcs.$spread().(
+          $vdc_id := $keys()[0];
+          $dc_id := $.*[0].dc;
+          $dc_norm := $dc_id ? $normalize($dc_id) : null;
+          $dc_ref := $dc_norm != null ? "seaf1." & $dc_norm : null;
+          {
+            ($vdc_id): $dc_ref
+          }
+        ) ~> $merge() : {};
+        $network_ref := function($id){
+          (
+            $norm := $normalize($id);
+            $norm != "" ? "reverse.network.vmwareonprem." & $norm : null
+          )
+        };
+        $net_ref_by_title := function($name){
+          (
+            $key := $networks ? $networks.$spread().(
+              $nkey := $keys()[0];
+              $nobj := $.*[0];
+              $nobj.title = $name ? $nkey : null
+            )[ $ != null ][0] : null;
+            $key
+              ? ($contains($string($key), "reverse.network.vmwareonprem.") ? $key : $network_ref($key))
+              : null
+          )
+        };
+        $vm_entries := data_lake."seaf.ta.components.server";
+        $vm_records := $vm_entries ? $vm_entries.$spread().(
+          $key := $keys()[0];
+          $obj := $.*[0];
+          $reverse := $obj.reverse;
+          $reverse != null and $reverse.reverse_type = "VMwareOnprem"
+            ? (
+                $rid := "reverse.server.vmwareonprem." & $normalize($key);
+                $vdc_id := $normalize_vdc($reverse.vdc);
+                $cluster_id := $vdc_id != null
+                  ? "reverse.cluster_virtualization.vmwareonprem." & $normalize($vdc_id)
+                  : "reverse.cluster_virtualization.vmwareonprem.unknown";
+                $dc_ref := $vdc_id != null ? $lookup($vdc_to_dc, $vdc_id) : null;
+                $subnets := $to_list($obj.subnets).(
+                  $network_ref($)
+                )[ $ != null ];
+                $subnets_list := $type($subnets) = "array"
+                  ? $subnets
+                  : (
+                      $subnets != null ? [$subnets] : []
+                    );
+                $entity_key := $split($key, ".")[0];
+                $entity_obj := $lookup($reverse_entities, $entity_key);
+                $entity_cfg := $entity_obj
+                  ? (
+                      $entity_obj.vmwareonprem.tags
+                        ? $entity_obj.vmwareonprem.tags
+                        : ($entity_obj.tags ? $entity_obj.tags : null)
+                    )
+                  : null;
+                $tech_tags := $entity_cfg.tech_params ? $entity_cfg.tech_params : [];
+                $tech_tags := $to_list($tech_tags)[$type($) = "string"];
+                $prefix_tag := $entity_key & ".tech_params";
+                $tech_tags := $count($tech_tags[$ = $prefix_tag]) > 0 ? $tech_tags : $append($tech_tags, $prefix_tag);
+                $tag_list := $to_list($obj.tags);
+                $tag_list := $count($tag_list) = 0 ? $to_list($reverse.tags) : $tag_list;
+                $tag_objects := $tag_list[$type($) = "object"];
+                $tag_strings := $tag_list[$type($) = "string"];
+                $tag_from_strings := $tag_strings.(
+                  $key := $replace($string($), /:.*/, "");
+                  $key := $replace($key, /^\s+|\s+$/, "");
+                  $val := $replace($string($), /^[^:]*:\s*/, "");
+                  $val := $replace($val, /^\s+|\s+$/, "");
+                  /* Keep all parsed tags; filtering to tech tags happens later. */
+                  $val != "" ? { ($key): $val } : {}
+                );
+                /* Flatten before merge to avoid nested arrays. */
+                $tag_map := $merge([$tag_objects, $tag_from_strings][]);
+                $tag_map := $type($tag_map) = "object" ? $tag_map : {};
+                $tech_tags := $count($tech_tags) > 0
+                  ? $distinct($append($tech_tags, $keys($tag_map)[$contains($, $prefix_tag)]))
+                  : $keys($tag_map)[$match($, /\.tech_params(-\d+)?$/)];
+                $tech_tags := $to_list($tech_tags)[$type($) = "string"];
+                /* Extract tech tag values. Important: flatten one level, otherwise $split() later sees arrays. */
+                $tech_values := $tech_tags.(
+                  $val := $lookup($tag_map, $);
+                  $type($val) = "array"
+                    ? $val
+                    : (
+                        $exists($val) ? [$val] : []
+                      )
+                )[];
+                /* Support multi-values like "a|b|c". */
+                $tech_values := $tech_values[$type($) = "string"].($trim($string($)))[$ != ""];
+                $tech_values := $tech_values.($split($, "|"))[];
+                $tech_values := $tech_values[$type($) = "string"].($trim($string($)))[$ != ""];
+                /* Split refs into tech-services and app-systems (KA DZO). */
+                $sys_refs := $distinct($tech_values[$contains($, ".systems.")]);
+                $svc_refs := $tech_values[$not($contains($, ".systems."))];
+
+                $resolved_services := $to_list($svc_refs.(
+                  $resolve_kadzo_service($)
+                )[$type($) = "string" and $ != ""]);
+                $service_links := $distinct($append($resolved_services, [$cluster_id]));
+                $unresolved_refs := $svc_refs[$resolve_kadzo_service($) = null];
+                {
+                  ($rid): $merge([
+                    {
+                      "__id__": $rid,
+                      "__entity_id__": "seaf.company.ta.components.servers",
+                      "__entity_title__": "Server (vmware reverse import)",
+                      "__link_to_card__": "/entities/seaf.company.ta.components.servers/card?id=" & $rid,
+                      "link": "/entities/seaf.company.ta.components.servers/card?id=" & $rid,
+                      "title": $obj.title,
+                      "description": $obj.description,
+                      "type": $obj.type ? $obj.type : "Виртуальный",
+                      "fqdn": $obj.fqdn ? $obj.fqdn : $obj.title,
+                      "vendor": $obj.vendor,
+                      "model": $obj.model,
+                      "os": $obj.os,
+                      "cpu": $obj.cpu,
+                      "ram": $obj.ram,
+                      "disks": $obj.disks,
+                      "nic_qty": $obj.nic_qty,
+                      "addresses": $obj.reverse.addresses ? $obj.reverse.addresses : [],
+                      "location": $dc_ref != null ? [$dc_ref] : [],
+                      "availabilityzone": [],
+                      "subnets": $subnets_list,
+                      "virtualization": $cluster_id,
+                      "is_part_of": $service_links,
+                      "app_systems": $sys_refs,
+                      "resource_id": $obj.id,
+                      "source_key": $key,
+                      "reverse_source": "seaf.ta.components.server",
+                      "metrics": {
+                        "reverse_tags": $tag_map,
+                        "tech_tags": $tech_tags,
+                        "tech_values": $tech_values,
+                        "app_systems": $sys_refs,
+                        "service_refs": $svc_refs,
+                        "resolved_services": $service_links
+                      },
+                      "is_reverse": true
+                    }
+                  ])
+                }
+              )
+            : {}
+        ) ~> $merge();
+        $hosts := data_lake."seaf.ta.reverse.vmwareonprem.hosts";
+        $host_records := $hosts ? $hosts.$spread().(
+          $key := $keys()[0];
+          $obj := $.*[0];
+          $rid := "reverse.server.vmwareonprem.host." & $normalize($key);
+          $vdc_id := $normalize_vdc($obj.vdc);
+          $cluster_id := $vdc_id != null
+            ? "reverse.cluster_virtualization.vmwareonprem." & $normalize($vdc_id)
+            : "reverse.cluster_virtualization.vmwareonprem.unknown";
+          $dc_ref := $vdc_id != null ? $lookup($vdc_to_dc, $vdc_id) : null;
+          $pnics := $obj.network.pnics ? $obj.network.pnics : [];
+          $nic_qty := $type($pnics) = "array" ? $count($pnics) : $count($pnics.*);
+          $pg_names := $obj.network_config.portgroups ? $obj.network_config.portgroups.$spread().($.*[0].name) : [];
+          $host_subnets := $pg_names.($net_ref_by_title($))[ $ != null ];
+          {
+            ($rid): {
+              "__id__": $rid,
+              "__entity_id__": "seaf.company.ta.components.servers",
+              "__entity_title__": "Server (vmware reverse import)",
+              "__link_to_card__": "/entities/seaf.company.ta.components.servers/card?id=" & $rid,
+              "link": "/entities/seaf.company.ta.components.servers/card?id=" & $rid,
+              "title": $obj.title,
+              "description": $obj.description,
+              "type": "Физический",
+              "fqdn": $obj.title,
+              "vendor": $obj.product.name,
+              "model": $obj.product.fullname != "" ? $obj.product.fullname : $obj.product.version,
+              "os": {
+                "type": $obj.product.name,
+                "bit": $obj.product.version
+              },
+              "cpu": {
+                "cores": 0,
+                "frequency": null
+              },
+              "ram": 0,
+              "disks": [],
+              "nic_qty": $nic_qty,
+              "location": $dc_ref != null ? [$dc_ref] : [],
+              "availabilityzone": [],
+              "subnets": $host_subnets,
+              "is_part_of": [$cluster_id],
+              "resource_id": $obj.id,
+              "source_key": $key,
+              "reverse_source": "seaf.ta.reverse.vmwareonprem.hosts",
+              "is_reverse": true
+            }
+          }
+        ) ~> $merge();
+        $merge([$vm_records, $host_records])
+      )
+

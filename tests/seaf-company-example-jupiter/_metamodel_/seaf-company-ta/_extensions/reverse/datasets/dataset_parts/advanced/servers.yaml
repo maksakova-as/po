@@ -1,0 +1,142 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.servers` (servers) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.servers:
+    description: |
+      Creates object records for servers from `seaf.ta.reverse.servers_list` to merge them into `seaf.company.ta.components.servers`.
+    origin:
+      servers_list: seaf.ta.reverse.servers_list
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $cluster_ref := function($tenant_value, $type_value){
+          (
+            $tenant_norm := $normalize($tenant_value);
+            $type_norm := $normalize($type_value);
+            $parts := [
+              $tenant_norm != "" ? $tenant_norm : null,
+              $type_norm != "" ? $type_norm : null
+            ][ $ != null ];
+            $parts != [] ? "reverse.cluster_virtualization." & $join($parts, ".") : null
+          )
+        };
+        $servers := $exists(servers_list)
+          ? servers_list
+          : $eval(datasets."seaf.ta.reverse.servers_list".source);
+        $to_array := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : (
+                  $value != null ? [$value] : []
+                )
+          )
+        };
+        $extract_subnet_ids := function($block){
+          (
+            $type($block) = "object"
+              ? $block.$spread().*.id
+              : (
+                  $type($block) = "array"
+                    ? $block.$spread().(
+                        $entry := $;
+                        $type($entry) = "object"
+                          ? $entry.$spread().*.id
+                          : (
+                              $lookup($entry, "id")
+                            )
+                      )
+                    : []
+                )
+          )
+        };
+        $to_network_ids := function($ids){
+          $distinct(
+            $ids.(
+              $norm := $normalize($);
+              $norm != "" ? "reverse.network." & $norm : null
+            )[ $ != null ]
+          )
+        };
+        $servers.(
+          $key := "reverse.server." & id;
+          $az_value := az ? $trim(az) : "";
+          $dc_value := dc ? $trim(dc) : "";
+          $dc_location := $dc_ref($dc_value);
+          $az_location := $dc_ref($az_value);
+          $az_link := $az_ref($az_value);
+          $location_refs := $distinct([
+            $dc_location,
+            $az_location,
+            $az_link
+          ][ $ != null ]);
+          $az_ref_value := $az_link;
+          $subnet_block := $lookup($, "subnet_array");
+          $subnet_ids_raw := $extract_subnet_ids($subnet_block);
+          $network_refs := $to_array(
+            $to_network_ids(
+              $subnet_ids_raw[$exists($) and $ != ""]
+            )
+          );
+          $virtualization_ref := (
+            $lowercase($string(type)) = "vm"
+              ? $cluster_ref(tenant, type)
+              : null
+          );
+          $card_link := "/entities/seaf.company.ta.components.servers/card?id=" & $key;
+          {
+            ($key): {
+              "__id__": $key,
+              "__entity_id__": "seaf.company.ta.components.servers",
+              "__entity_title__": "Server (reverse import)",
+              "__company_id__": tenant,
+              "__link_to_card__": $card_link,
+              "link": $card_link,
+              "title": name,
+              "status": status,
+              "description": image,
+              "type": type,
+              "fqdn": name,
+              "vendor": iaas_provider,
+              "model": null,
+              "os": {
+                "type": os_type,
+                "bit": os_bit
+              },
+              "cpu": {
+                "cores": cpu_qty,
+                "frequency": null
+              },
+              "ram": ram,
+              "disks": disks,
+              "nic_qty": nic_qty,
+              "addresses": addresses_array ? addresses_array : [],
+              "location": $location_refs,
+              "availabilityzone": $az_ref_value != null ? [$az_ref_value] : [],
+              "subnets": $network_refs,
+              "virtualization": $virtualization_ref,
+              "is_part_of": $virtualization_ref != null ? [$virtualization_ref] : [],
+              "tags": tags ? tags : [],
+              "resource_id": id,
+              "source_key": id,
+              "reverse_source": "seaf.ta.reverse.servers_list",
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+

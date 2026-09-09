@@ -1,0 +1,84 @@
+functions:
+  props_to_summary:
+    params:
+      - alias: object_id
+        type: string
+        title: Идентификатор объекта
+        required: true
+      - alias: objects
+        type: object
+        title: Набор объектов
+        required: true
+      - alias: props
+        type: object
+        title: Свойства объекта, выводимые на карточку
+        required: true
+      - alias: ctx
+        type: object
+        title: Контекст выполнения функции
+        required: true
+      - alias: entities_refs
+        type: object
+        title: Ссылки на объекты
+        required: true
+      - alias: subproperty
+        type: string
+        title: Ключ, содержащий свойства, которые нужно вывести
+    result:
+      type: array
+    code: >
+      (
+          $object_id := object_id;
+          $objects := objects;
+          $props := props;
+          $ctx := ctx;
+          $objects_links := entities_refs;
+            
+          $linkTo := function($v){(
+            $exists($v.**."$ref") ? (
+                $refs := $v.**."$ref";
+                $refs.( $lookup($objects_links, $split($, "/")[-1]) );
+            );
+          )};
+      
+         [$lookup($objects, $object_id).(
+              $current := $exists($$.subproperty) ? $lookup($, $$.subproperty) : $;
+              /* $log($current, "current");
+              $log($$.subproperty, "subproperty");*/
+              $props ~> $each(?, function($v, $k) {(
+                  /*$log($k, "prop");*/
+                  $ref := $linkTo($v);
+            
+                  $value := $lookup($current, $k);
+                  $value ?
+                    $data := [$value.(
+                        $link_id := $;
+                        $exists($ref) 
+                          ?
+                            (
+                              $obj_ref := $ref.(
+                                  $ref_objects := $lookup($ctx, $);
+                                  $exists($lookup($ref_objects, $link_id)) ? 
+                                      {
+                                          "ref": $,
+                                          "ref_objects": $ref_objects
+                                      }
+                              );
+                              {
+                                "content" :  $lookup($obj_ref.ref_objects, $).( $exists($.title) ? $.title : $link_id),
+                                "link": "(/entities/" & $obj_ref.ref & "/card?id=" & $ & ")"      
+                              }
+                            )
+                          :
+                            {
+                              "content" : $
+                            }
+                    )];
+      
+                  {
+                    "title": $v.title,
+                    "data": $data
+                  };
+              )})
+          )]
+      )

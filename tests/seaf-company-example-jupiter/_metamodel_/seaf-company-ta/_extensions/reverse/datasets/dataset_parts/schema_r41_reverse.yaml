@@ -1,0 +1,181 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.schema_r41_reverse` (schema r41 reverse) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  seaf.company.ds.ta.schema_r41_reverse:
+    description: |
+      Schema R41 data source for reverse-only datasets (reverse2seaf2).
+    source: |
+      (
+        $configs := $."seaf.configs";
+        $ta_config := (
+          $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $cfg1 := $configs."seaf.company.ta";
+          $cfg2 := $configs.seaf.company.ta;
+          $cfg3 := $cfg_root."seaf.company.ta";
+          $cfg4 := $cfg_root.seaf.company.ta;
+          $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+        );
+        $profiles := $ta_config.data_sources.profiles ? $ta_config.data_sources.profiles : {};
+        $active_profile := $ta_config.data_sources.profile ? $ta_config.data_sources.profile : null;
+        $profile_cfg := (
+          $active_profile != null and $exists($lookup($profiles, $active_profile))
+            ? $lookup($profiles, $active_profile)
+            : {}
+        );
+        $enabled := $profile_cfg.enabled
+          ? $profile_cfg.enabled
+          : ($ta_config.data_sources.enabled ? $ta_config.data_sources.enabled : []);
+        "reverse" in $enabled
+          ? (
+              $as_object := function($value){
+                $type($value) = "object" ? $value : {}
+              };
+              $ctx_base := $merge([
+                $,
+                {
+                  "data_lake": $,
+                  "datasets": datasets
+                }
+              ]);
+
+              $reverse_dc_regions := $eval(datasets."reverse2seaf2.ds.ta.reverse.dc_regions".source, $ctx_base);
+              $reverse_dc_az := $eval(datasets."reverse2seaf2.ds.ta.reverse.dc_az".source, $ctx_base);
+              $reverse_dcs_cloud := $eval(datasets."reverse2seaf2.ds.ta.reverse.dcs".source, $ctx_base);
+              $reverse_dcs_vmware := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.dcs".source, $ctx_base);
+              $reverse_dcs := $merge([$reverse_dcs_cloud, $reverse_dcs_vmware]);
+
+              $reverse_segments_cloud := $eval(datasets."reverse2seaf2.ds.ta.reverse.network_segments".source, $ctx_base);
+              $reverse_segments_vmware := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.network_segments".source, $ctx_base);
+              $reverse_segments := $merge([$reverse_segments_cloud, $reverse_segments_vmware]);
+
+              $reverse_networks_cloud := $eval(datasets."reverse2seaf2.ds.ta.reverse.networks".source, $ctx_base);
+              $reverse_networks_vmware := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.networks".source, $ctx_base);
+              $reverse_networks := $merge([$reverse_networks_cloud, $reverse_networks_vmware]);
+
+              $reverse_elbs := $eval(datasets."reverse2seaf2.ds.ta.reverse.elbs".source, $ctx_base);
+
+              $reverse_dmss := $eval(datasets."reverse2seaf2.ds.ta.reverse.dmss_clusters".source, $ctx_base);
+              $reverse_rdss := $eval(datasets."reverse2seaf2.ds.ta.reverse.rdss_clusters".source, $ctx_base);
+              $reverse_clusters := $merge([$reverse_dmss, $reverse_rdss]);
+
+              $ctx_with_servers := $merge([
+                $ctx_base,
+                {
+                  "reverse_servers": $eval(datasets."reverse2seaf2.ds.ta.reverse.servers".source, $ctx_base)
+                }
+              ]);
+              $reverse_cluster_cloud := $eval(datasets."reverse2seaf2.ds.ta.reverse.cluster_virtualizations".source, $ctx_with_servers);
+              $reverse_cluster_vmware := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.cluster_virtualizations".source, $ctx_base);
+              $reverse_cluster_virtualizations := $merge([$reverse_cluster_cloud, $reverse_cluster_vmware]);
+
+              $reverse_servers_cloud := $eval(datasets."reverse2seaf2.ds.ta.reverse.servers".source, $ctx_base);
+              $reverse_servers_vmware := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.servers".source, $ctx_base);
+              $reverse_servers := $merge([$reverse_servers_cloud, $reverse_servers_vmware]);
+
+              $ctx_storage := $merge([
+                $ctx_base,
+                {
+                  "reverse_servers": $reverse_servers_cloud,
+                  "reverse_dcs": $reverse_dcs_cloud
+                }
+              ]);
+              $reverse_storages := $eval(datasets."reverse2seaf2.ds.ta.reverse.storages".source, $ctx_storage);
+              $reverse_backups := $eval(datasets."reverse2seaf2.ds.ta.reverse.backups".source, $ctx_storage);
+
+              $reverse_monitoring := $eval(datasets."reverse2seaf2.ds.ta.reverse.monitoring".source, $ctx_base);
+              $reverse_k8s := $eval(datasets."reverse2seaf2.ds.ta.reverse.k8s".source, $ctx_base);
+
+              $ctx_netcomps := $merge([
+                $ctx_base,
+                {
+                  "reverse_netcomps": $eval(datasets."reverse2seaf2.ds.ta.reverse.network_components".source, $ctx_base),
+                  "reverse_vpn": $eval(datasets."reverse2seaf2.ds.ta.reverse.vpn_gateways".source, $ctx_base),
+                  "reverse_nat": $eval(datasets."reverse2seaf2.ds.ta.reverse.nat_gateways".source, $ctx_base),
+                  "reverse_networks": $reverse_networks_cloud
+                }
+              ]);
+              $reverse_logical_links := $eval(datasets."reverse2seaf2.ds.ta.reverse.logical_links".source, $ctx_netcomps);
+
+              $reverse_net_base := $eval(datasets."reverse2seaf2.ds.ta.reverse.network_components".source, $ctx_base);
+              $reverse_nat := $eval(datasets."reverse2seaf2.ds.ta.reverse.nat_gateways".source, $ctx_base);
+              $reverse_vpn := $eval(datasets."reverse2seaf2.ds.ta.reverse.vpn_gateways".source, $ctx_base);
+              $reverse_elb_net := $eval(datasets."reverse2seaf2.ds.ta.reverse.elb_network_components".source, $ctx_base);
+              $reverse_vmware_net := $eval(datasets."reverse2seaf2.ds.ta.reverse.vmware.network_components".source, $ctx_base);
+              $reverse_netcomps := $merge([$reverse_net_base, $reverse_nat, $reverse_vpn, $reverse_elb_net, $reverse_vmware_net]);
+
+              $payload := {
+                "seaf.ta.services.dc_region": $as_object($reverse_dc_regions),
+                "seaf.ta.services.dc_az": $as_object($reverse_dc_az),
+                "seaf.ta.services.dc": $as_object($reverse_dcs),
+                "seaf.ta.services.office": {},
+                "seaf.ta.services.network_segment": $as_object($reverse_segments),
+                "seaf.ta.services.network": $as_object($reverse_networks),
+                "seaf.ta.services.network_links": {},
+                "seaf.ta.services.compute_service": $merge([$as_object($reverse_elbs), $as_object($reverse_clusters)]),
+                "seaf.ta.services.cluster_virtualization": $as_object($reverse_cluster_virtualizations),
+                "seaf.ta.components.server": $as_object($reverse_servers),
+                "seaf.ta.components.user_device": {},
+                "seaf.ta.services.storage": $as_object($reverse_storages),
+                "seaf.ta.services.backup": $as_object($reverse_backups),
+                "seaf.ta.services.monitoring": $as_object($reverse_monitoring),
+                "seaf.ta.services.k8s": $as_object($reverse_k8s),
+                "seaf.ta.services.kb": {},
+                "seaf.ta.components.network": $as_object($reverse_netcomps),
+                "seaf.ta.services.logical_link": $as_object($reverse_logical_links),
+                "seaf.ta.components.hw_storage": {},
+                "seaf.ta.services.software": {}
+              };
+              $required := [
+                "seaf.ta.services.dc_region",
+                "seaf.ta.services.dc_az",
+                "seaf.ta.services.dc",
+                "seaf.ta.services.office",
+                "seaf.ta.services.network_segment",
+                "seaf.ta.services.network",
+                "seaf.ta.services.network_links",
+                "seaf.ta.services.logical_link",
+                "seaf.ta.services.kb",
+                "seaf.ta.components.hw_storage",
+                "seaf.ta.components.server",
+                "seaf.ta.components.user_device",
+                "seaf.ta.components.network",
+                "seaf.ta.services.cluster_virtualization",
+                "seaf.ta.services.compute_service",
+                "seaf.ta.services.storage",
+                "seaf.ta.services.backup",
+                "seaf.ta.services.monitoring",
+                "seaf.ta.services.k8s",
+                "seaf.ta.services.software"
+              ];
+              $result := $merge(
+                $required@$key.{
+                  ($key): ($exists($lookup($payload, $key)) ? $lookup($payload, $key) : {})
+                }
+              );
+              $aliases := {
+                "seaf.company.ta.services.dc_regions": ($exists($lookup($result, "seaf.ta.services.dc_region")) ? $lookup($result, "seaf.ta.services.dc_region") : {}),
+                "seaf.company.ta.services.dc_azs": ($exists($lookup($result, "seaf.ta.services.dc_az")) ? $lookup($result, "seaf.ta.services.dc_az") : {}),
+                "seaf.company.ta.services.dcs": ($exists($lookup($result, "seaf.ta.services.dc")) ? $lookup($result, "seaf.ta.services.dc") : {}),
+                "seaf.company.ta.services.dc_offices": ($exists($lookup($result, "seaf.ta.services.office")) ? $lookup($result, "seaf.ta.services.office") : {}),
+                "seaf.company.ta.services.network_segments": ($exists($lookup($result, "seaf.ta.services.network_segment")) ? $lookup($result, "seaf.ta.services.network_segment") : {}),
+                "seaf.company.ta.services.networks": ($exists($lookup($result, "seaf.ta.services.network")) ? $lookup($result, "seaf.ta.services.network") : {}),
+                "seaf.company.ta.services.network_links": ($exists($lookup($result, "seaf.ta.services.network_links")) ? $lookup($result, "seaf.ta.services.network_links") : {}),
+                "seaf.company.ta.services.logical_links": ($exists($lookup($result, "seaf.ta.services.logical_link")) ? $lookup($result, "seaf.ta.services.logical_link") : {}),
+                "seaf.company.ta.services.kbs": ($exists($lookup($result, "seaf.ta.services.kb")) ? $lookup($result, "seaf.ta.services.kb") : {}),
+                "seaf.company.ta.components.hw_storages": ($exists($lookup($result, "seaf.ta.components.hw_storage")) ? $lookup($result, "seaf.ta.components.hw_storage") : {}),
+                "seaf.company.ta.components.servers": ($exists($lookup($result, "seaf.ta.components.server")) ? $lookup($result, "seaf.ta.components.server") : {}),
+                "seaf.company.ta.components.user_devices": ($exists($lookup($result, "seaf.ta.components.user_device")) ? $lookup($result, "seaf.ta.components.user_device") : {}),
+                "seaf.company.ta.components.networks": ($exists($lookup($result, "seaf.ta.components.network")) ? $lookup($result, "seaf.ta.components.network") : {}),
+                "seaf.company.ta.services.cluster_virtualizations": ($exists($lookup($result, "seaf.ta.services.cluster_virtualization")) ? $lookup($result, "seaf.ta.services.cluster_virtualization") : {}),
+                "seaf.company.ta.services.compute_services": ($exists($lookup($result, "seaf.ta.services.compute_service")) ? $lookup($result, "seaf.ta.services.compute_service") : {}),
+                "seaf.company.ta.services.storages": ($exists($lookup($result, "seaf.ta.services.storage")) ? $lookup($result, "seaf.ta.services.storage") : {}),
+                "seaf.company.ta.services.backups": ($exists($lookup($result, "seaf.ta.services.backup")) ? $lookup($result, "seaf.ta.services.backup") : {}),
+                "seaf.company.ta.services.monitorings": ($exists($lookup($result, "seaf.ta.services.monitoring")) ? $lookup($result, "seaf.ta.services.monitoring") : {}),
+                "seaf.company.ta.services.k8s": ($exists($lookup($result, "seaf.ta.services.k8s")) ? $lookup($result, "seaf.ta.services.k8s") : {}),
+                "seaf.company.ta.services.softwares": ($exists($lookup($result, "seaf.ta.services.software")) ? $lookup($result, "seaf.ta.services.software") : {})
+              };
+              $merge([$result, $aliases])
+            )
+          : {}
+      )
+

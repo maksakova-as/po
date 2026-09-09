@@ -1,0 +1,99 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.elbs` (elbs) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.elbs:
+    description: |
+      Собирает балансировщики нагрузки из `seaf.ta.reverse.cloud_ru.advanced.elbs` и публикует их как `seaf.company.ta.services.compute_services` с привязкой к подсети и датацентру.
+    origin:
+      data_lake: ($)
+      reverse_networks: reverse2seaf2.ds.ta.reverse.networks
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $subnet_ref := function($subnet_id){
+          (
+            $norm := $normalize($subnet_id);
+            $norm != "" ? "reverse.network." & $norm : null
+          )
+        };
+        $networks := $exists(reverse_networks)
+          ? reverse_networks
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.networks".source);
+        $dc_az_ref := function($az){
+          (
+            $val := $type($az) = "string" ? $trim($az) : "";
+            $val != "" ? "reverse.dc_az." & $val : null
+          )
+        };
+        $elbs := data_lake."seaf.ta.reverse.cloud_ru.advanced.elbs".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $elbs.(
+          $record := value;
+          $raw_id := $lookup($record, "id");
+          $id_part := $raw_id != null and $raw_id != "" ? $raw_id : key;
+          $component_id := "reverse.comp.elb." & $normalize($id_part);
+          $tenant := $lookup($record, "tenant");
+          $dc := $lookup($record, "DC");
+          $subnet_connection := $subnet_ref($lookup($record, "subnet_id"));
+          $network_entry := $subnet_connection != null and $exists($lookup($networks, $subnet_connection))
+            ? $lookup($networks, $subnet_connection)
+            : null;
+          $network_location := $network_entry != null ? $network_entry.location : [];
+          $network_az := $network_entry != null ? $network_entry.availabilityzone : [];
+          $listener_names := $exists($lookup($record, "listeners")) ? $lookup($record, "listeners").name : [];
+          $pool_names := $exists($lookup($record, "pools")) ? $lookup($record, "pools").name : [];
+          $az_candidates := [
+            $lookup($record, "availability_zone"),
+            $lookup($record, "az")
+          ];
+          $az_refs := $count($network_az) > 0
+            ? $network_az
+            : (
+                $az_candidates.(
+                  $dc_az_ref($)
+                )[$ != null] ~> $distinct
+              );
+          $description_parts := [
+            $lookup($record, "description"),
+            $lookup($record, "address") != null and $lookup($record, "address") != "" ? "Internal IP: " & $lookup($record, "address") : "",
+            $lookup($record, "operating_status") != null and $lookup($record, "operating_status") != "" ? "Operating Status: " & $lookup($record, "operating_status") : "",
+            $lookup($record, "provisioning_status") != null and $lookup($record, "provisioning_status") != "" ? "Provisioning Status: " & $lookup($record, "provisioning_status") : "",
+            $count($listener_names) > 0 ? "Listeners: " & $join($listener_names, ", ") : "",
+            $count($pool_names) > 0 ? "Pools: " & $join($pool_names, ", ") : "",
+            $lookup($record, "tenant") != null and $lookup($record, "tenant") != "" ? "Tenant: " & $lookup($record, "tenant") : "",
+            $count($network_location) > 0 ? "DC: " & $join($network_location, ", ") : ($dc != null and $dc != "" ? "DC: " & $dc : "")
+          ][ $ != "" ];
+          $description := $description_parts != [] ? $join($description_parts, "\n") : "";
+          {
+            ($component_id): {
+              "__id__": $component_id,
+              "__entity_id__": "seaf.company.ta.services.compute_services",
+              "__entity_title__": "Compute Service (reverse import)",
+              "__company_id__": $tenant,
+              "__link_to_card__": "/entities/seaf.company.ta.services.compute_services/card?id=" & $component_id,
+              "title": $lookup($record, "name"),
+              "description": $description,
+              "external_id": $lookup($record, "id"),
+              "service_type": "Cloud Load Balancer",
+              "availabilityzone": $az_refs,
+              "network_connection": $subnet_connection != null ? [$subnet_connection] : [],
+              "location": $count($network_location) > 0
+                ? $network_location
+                : (
+                    $dc != null and $dc != ""
+                      ? ["reverse.dc." & $normalize($dc)]
+                      : []
+                  ),
+              "address": $lookup($record, "address"),
+              "source_key": key,
+              "resource_id": $lookup($record, "id"),
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.elbs"
+            }
+          }
+        )[] ~> $merge()
+      )
+

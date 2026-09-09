@@ -1,0 +1,401 @@
+{
+  "components": {
+    "title": "Компонент прикладной архитектуры",
+    "description": "Прикладные компоненты являются составными частями прикладного сервиса",
+    "schema": {
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z0-9][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "title": "Описание компонента",
+              "type": "string"
+            },
+            "type": {
+              "title": "Тип компонента",
+              "type": "string",
+              "default": "component",
+              "enum": [
+                "component",
+                "service"
+              ]
+            },
+            "requirements": {
+              "title": "Требования",
+              "type": "array",
+              "items": {
+                "__refrel__": "seaf.change.requirements"
+              }
+            },
+            "aspects": {
+              "title": "Функциональность",
+              "type": "array",
+              "items": {
+                "__refrel__": "aspects"
+              }
+            },
+            "title": {
+              "title": "Название компонента",
+              "type": "string"
+            },
+            "entity": {
+              "title": "Представление компонента",
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "entity"
+          ],
+          "oneOf": [
+            {
+              "properties": {
+                "sber": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "is_component_of": {
+                      "title": "Указание прикладного сервиса, в рамках которого проектируется или уже создан компонент",
+                      "__refrel__": "components"
+                    },
+                    "component_type": {
+                      "title": "Тип прикладного компонента",
+                      "type": "string",
+                      "enum": [
+                        "Реляционная СУБД",
+                        "NOSQL СУБД",
+                        "Иная СУБД",
+                        "Распределенный (Distributed) Кэш",
+                        "Сервер Приложений",
+                        "Web Сервер",
+                        "Микросервис",
+                        "Функция/Serverless",
+                        "Консольное приложение",
+                        "Скрипт",
+                        "Фронт (веб приложение)",
+                        "Фронт (мобильное приложение)",
+                        "Фронт (десктоп приложение)",
+                        "Шлюз",
+                        "Балансировщик",
+                        "Интеграционный компонент",
+                        "ETL",
+                        "Файловый ресурс",
+                        "Иное"
+                      ]
+                    },
+                    "scalability": {
+                      "title": "Масштабируемость",
+                      "enum": [
+                        "Нет",
+                        "Вертикальная",
+                        "Горизонтальная",
+                        "Вертикальная и горизонтальная"
+                      ]
+                    },
+                    "provider": {
+                      "title": "Разработчик",
+                      "type": "string"
+                    },
+                    "provider_type": {
+                      "title": "Тип разработчика компонента",
+                      "type": "string",
+                      "enum": [
+                        "Собственная разработка",
+                        "Локальный разработчик",
+                        "Внешний(Иностранный)",
+                        "Open Source Community"
+                      ]
+                    },
+                    "stores_confidential_data": {
+                      "title": "Компонент хранит конфиденциальные данные?",
+                      "type": "boolean"
+                    },
+                    "cloud_readiness": {
+                      "title": "Уровень облачной зрелости",
+                      "type": "string",
+                      "enum": [
+                        "Монолит на нестандартном аппаратном обеспечении (No Cloud-2)",
+                        "Монолит на стандартном аппаратном обеспечении (No Cloud-1)",
+                        "Монолит на виртуализированном аппаратном обеспечении (Cloud Ready 1)",
+                        "Компоненты в контейнерах на виртуализированном аппаратном обеспечении (Cloud ready 2)",
+                        "Компоненты в развёрнутом на виртуализированном аппаратном обеспечении оркестраторе контейнеров (Cloud ready 3)",
+                        "Компоненты в частном облаке с управляемым облачным поставщиком программным обеспечением среды исполнения контейнеров (Cloud Native 4)",
+                        "Компоненты в гибридном публичном облаке/наборе облаков с управляемыми облачными поставщиками инфраструктурными сервисами (Cloud Native 5)",
+                        "Бессерверные (serverless) облачные приложения  в публичном облаке/наборе облаков (Cloud Native 6) ]"
+                      ]
+                    },
+                    "licenses_ids": {
+                      "title": "Идентификаторы объектов-лицензий для компонента",
+                      "type": "array",
+                      "minItems": 0,
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "included_in_regulator_registry": {
+                      "title": "Компонент включен в реестр регулятора?",
+                      "type": "boolean"
+                    },
+                    "located_in_DMZ": {
+                      "title": "Компонент размещен в DMZ?",
+                      "type": "boolean"
+                    },
+                    "access_from_external_networks": {
+                      "title": "Есть доступ к ресурсам данного компонента из внешних сетей ?",
+                      "type": "boolean"
+                    },
+                    "escrow": {
+                      "title": "Автоматизированная система включена в договор эскроу с вендором?",
+                      "description": "Поставщик ПО (вендор) делает условное депонирование (эскроу) кода, тестов, скриптов сборки, библиотек и т.д.\n",
+                      "type": "boolean"
+                    },
+                    "performance": {
+                      "title": "Производительность",
+                      "type": "string"
+                    },
+                    "changes": {
+                      "title": "Описание изменений",
+                      "type": "string"
+                    },
+                    "comments": {
+                      "title": "Комментарии, риски, проблемы",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "component_type",
+                    "scalability",
+                    "stores_confidential_data",
+                    "provider",
+                    "provider_type",
+                    "is_component_of"
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Описание прикладного компонента"
+            },
+            {
+              "properties": {
+                "sber": {
+                  "additionalProperties": false,
+                  "title": "Комментарии, риски, проблемы",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "title": "Уникальный идентификатор компонента",
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "live_stage": {
+                      "title": "Этап жизненного цикла",
+                      "enum": [
+                        "Эскиз",
+                        "В разработке / приобретение",
+                        "Внедрение / Не введена в эксплуатацию",
+                        "Опытная эксплуатация",
+                        "Промышленная эксплуатация",
+                        "Архивная"
+                      ]
+                    },
+                    "live_stage_target": {
+                      "title": "Этап жизненного цикла на горизонт планирования",
+                      "enum": [
+                        "Эскиз",
+                        "В разработке / приобретение",
+                        "Внедрение / Не введена в эксплуатацию",
+                        "Опытная эксплуатация",
+                        "Промышленная эксплуатация",
+                        "Архивная"
+                      ]
+                    },
+                    "target_status": {
+                      "title": "Целевой статус (решение принято)",
+                      "enum": [
+                        "Целевая",
+                        "Не целевая"
+                      ]
+                    },
+                    "change_type": {
+                      "title": "Тип изменений",
+                      "enum": [
+                        "Планируется",
+                        "Разрабатывается",
+                        "Модифицируется",
+                        "Используется",
+                        "Выводится из эксплуатации"
+                      ]
+                    },
+                    "changes": {
+                      "title": "Описание изменений",
+                      "type": "string"
+                    },
+                    "location": {
+                      "title": "Размещение",
+                      "enum": [
+                        "Внутренняя",
+                        "Внешняя"
+                      ]
+                    },
+                    "ownership": {
+                      "title": "Степень владения",
+                      "enum": [
+                        "Владеем исходным кодом",
+                        "Владеем экземпляром",
+                        "SaaS",
+                        "Система партнера"
+                      ]
+                    },
+                    "performance": {
+                      "title": "Производительность",
+                      "type": "string"
+                    },
+                    "rto": {
+                      "title": "RTO (мин)",
+                      "type": "integer"
+                    },
+                    "rpo": {
+                      "title": "RPO (мин)",
+                      "type": "integer"
+                    },
+                    "sla": {
+                      "title": "SLA (%)",
+                      "type": "number"
+                    },
+                    "class": {
+                      "title": "Класс",
+                      "enum": [
+                        "BPM (Business Process Management)",
+                        "CRM-аналитический",
+                        "CRM-операционный",
+                        "ECM (Документооборот)",
+                        "RPA (Robotic process automation)",
+                        "Workforce Management",
+                        "Аналитика данных",
+                        "Бизнес-планирование",
+                        "Биллинг",
+                        "Бухгалтерия и финансы",
+                        "Бюджетирование и контроль",
+                        "Взаимоотношения с поставщиками",
+                        "Гео-информационные системы",
+                        "Клиентский профиль (Customer Information File)",
+                        "Контакт-центр",
+                        "Корпоративная база знаний",
+                        "Корпоративная отчетность",
+                        "Корпоративный портал",
+                        "Маркетинг",
+                        "Маркетплейс компании",
+                        "Мессенджеры",
+                        "Нормативная документация",
+                        "Обмен данными с контрагентами",
+                        "Получение сведений о юрлицах",
+                        "Продуктовая фабрика (основная деятельность)",
+                        "Продуктовый каталог",
+                        "Регуляторная отчетность",
+                        "Сайт компании",
+                        "Системы принятия решений",
+                        "Скоринг и рейтинг клиентов",
+                        "Совместная работа (collaboration)",
+                        "Управление активами",
+                        "Управление внутрихозяйственной деятельностью",
+                        "Управление задачами и проектами",
+                        "Управление обучением",
+                        "Управление персоналом",
+                        "Учет судебных дел",
+                        "Финансовый мониторинг и AML",
+                        "CMS (Content Management System)",
+                        "E-mail",
+                        "Service Desk",
+                        "Видеосвязь",
+                        "Мониторинг",
+                        "Рассылка SMS/Push",
+                        "Системы генерации документов",
+                        "Телефония",
+                        "Иное"
+                      ]
+                    },
+                    "role_model": {
+                      "title": "Ролевая модель автоматизированной системы",
+                      "type": "string",
+                      "enum": [
+                        "Централизованная",
+                        "Нецентрализованная",
+                        "Отсутствует"
+                      ]
+                    },
+                    "criticality": {
+                      "title": "Уровень критичности",
+                      "enum": [
+                        "Mission Critical",
+                        "Business Critical",
+                        "Business Operational",
+                        "Office Productivity"
+                      ]
+                    },
+                    "comments": {
+                      "title": "Комментарии, риски, проблемы",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "criticality"
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "service_type": {
+                          "type": "string",
+                          "enum": [
+                            "Система"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "service_type"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "service_type": {
+                          "type": "string",
+                          "enum": [
+                            "Функциональная подсистема"
+                          ]
+                        },
+                        "parent": {
+                          "title": "Родительская система",
+                          "__refrel__": "components"
+                        }
+                      },
+                      "required": [
+                        "service_type",
+                        "parent"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "title": "Описание автоматизированной системы (АС) / функциональной подсистемы (ФП)"
+            }
+          ]
+        }
+      },
+      "type": "object",
+      "additionalProperties": false
+    },
+    "objects": {
+      "component": {
+        "route": "/",
+        "title": "Арх. компонент",
+        "symbol": "(\n  /* Обрабатываем входящие параметры */\n  $manifest := $;\n  $component := $params.subject.$spread()[0].*;\n  $defConfig := $manifest.entities.contexts.config;\n\n  /* Высота строки аспекта */\n  $rowHeight := 14;\n  /* Отступы */\n  $padding := 8;\n  /* Отступы */\n  $headerOffset := 12;\n  /* Ширину символа */\n  $fontWidth := 7;\n  /* Высота символа */\n  $fontHeight := 12;\n\n  /* Определяем заголовок */\n  $header := $component.title;\n\n  /* Определяем количество аспектов для вычисления высоты символа */\n  $aspectCount := $count($component.aspects);\n\n  /* Формируем массив аспектов */\n  $aspects := $component.aspects.(\n    $aspect := $lookup($manifest.aspects, $);\n    {\n      \"id\" : $,\n      \"title\": $aspect.title ? $aspect.title : $ \n    }\n  );\n\n  /* Определяем максимальную длину текста для вычисления ширины символа */\n  $maxTitle := $max([$max($aspects.($length(title))), $length($header)]);\n\n  /* Вычисляем размеры символа */\n  $width := $maxTitle ? $maxTitle * $fontWidth + $padding * 2 : 64; /* Умножаем на ширину символа */   \n  $height := ($aspectCount + 1) * $rowHeight + $padding * 2 + $headerOffset; /* Умножаем на высоту строки */\n\n  /* Генерируем символ */\n  '<svg fill=\"#000000\" width=\"' & $width & 'px\" height=\"' & $height & 'px\" viewBox=\"0 0 ' & $width & ' ' & $height & '\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">' \n        & '<g>'\n            /* Создаем контейнер */\n            & '<rect width=\"' & $width & 'px\" height=\"' & $height & 'px\" fill=\\\"#eee\\\" stroke=\\\"#222\\\" rx=\"3\" />'\n            /* Создаем заголовок */\n            & '<text x=\"50%\" y=\"12\" style=\"font-size:' & $fontHeight & '\" fill=\"green\" text-anchor=\"middle\" dominant-baseline=\"middle\" >' & $header & '</text>'\n            /* Заполняем аспектами */\n            & $join($map($aspects, function($v, $i) {(\n                '<a href=\\\"/architect/aspects/' & $v.id & '\\\" >'\n                & '<text x=\"6\" y=\"' & ($i * $rowHeight + $padding + $rowHeight + $headerOffset) & '\" style=\"font-size:' & $fontHeight & '\" fill=\"blue\">' & $v.title & '</text>'\n                & '</a>'\n            )}))\n        & '</g>'\n  & '</svg>';\n)\n"
+      }
+    }
+  }
+}

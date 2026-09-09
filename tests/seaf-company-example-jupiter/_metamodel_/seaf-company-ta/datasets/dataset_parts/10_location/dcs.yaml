@@ -1,0 +1,94 @@
+# Назначение: Сбор, дедупликация и нормализация ЦОДов.
+# Используется: internal_docs, app, docs, auto_tests, widgets, presentations и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.dcs:
+    description: |
+      Коллекция ЦОДов (Datacenter) компании
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      reverse_core_cache: seaf.company.ds.ta._cache.reverse_core
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.dcs";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.dc";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.dcs",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.dcs/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "address": $obj.address,
+                    "tier": $obj.tier,
+                    "vendor": $obj.vendor,
+                    "availabilityzone": $obj.availabilityzone ? ["seaf1." & $obj.availabilityzone] : [],
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $reverse_cloud := reverse_core_cache.dcs_cloud ? reverse_core_cache.dcs_cloud : {};
+              $reverse_vmware := reverse_core_cache.dcs_vmware ? reverse_core_cache.dcs_vmware : {};
+              $merge([$reverse_cloud, $reverse_vmware])
+            )
+          : {};
+
+        $dedupe_key := function($obj){
+          $exists($obj.legacy_id) ? $string($obj.legacy_id) : (
+            $exists($obj.source_key) ? $string($obj.source_key) : (
+              $exists($obj.external_id) ? $string($obj.external_id) : $string($obj.__id__)
+            )
+          )
+        };
+        $seaf2_keys := $seaf2_data ? $seaf2_data.*.($dedupe_key($)) : [];
+        $seaf1_keys := $seaf1_data ? $seaf1_data.*.($dedupe_key($)) : [];
+        $seaf1_filtered := $seaf1_data
+          ? (
+              $seaf1_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $k in $seaf2_keys ? {} : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+        $reverse_filtered := $reverse_data
+          ? (
+              $dedupe_block := $distinct($append($seaf2_keys, $seaf1_keys));
+              $reverse_data.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $k := $dedupe_key($obj);
+                $k in $dedupe_block ? {} : { $id: $obj }
+              ) ~> $merge()
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_filtered : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_filtered : {}
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

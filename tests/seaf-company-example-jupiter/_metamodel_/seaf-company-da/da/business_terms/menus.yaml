@@ -1,0 +1,19 @@
+entities:
+  seaf.company.da.business_terms:
+
+    menu: >
+      (
+          $entity_id := "seaf.company.da.business_terms";
+          $domain_id := "seaf.company.da";
+          $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+          $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id) + 100;
+          $menu := $seaf_fn_generate_menu_item("Бизнес-термины", $root_menu);
+          [
+          $exists($.$lookup($entity_id)) 
+          ?   {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order
+              }
+          ]  
+      )

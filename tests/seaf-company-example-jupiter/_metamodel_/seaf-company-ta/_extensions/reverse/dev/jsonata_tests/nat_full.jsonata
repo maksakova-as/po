@@ -1,0 +1,56 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $network_ref := function($subnet_id){
+    (
+      $norm := $normalize($subnet_id);
+      $norm != "" ? "reverse.network." & $norm : null
+    )
+  };
+  $dc_ref := function($dc){
+    (
+      $norm := $normalize($dc);
+      $norm != "" ? "reverse.dc." & $norm : null
+    )
+  };
+  $nats := $."seaf.ta.reverse.cloud_ru.advanced.nat_gateways".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $nats.(
+    $nat := value;
+    $source_key := key;
+    $nat_id := $nat.id;
+    $component_id := "reverse.netcomp.nat." & $normalize($nat_id);
+    {
+      ($component_id): {
+        "__id__": $component_id,
+        "__entity_id__": "seaf.company.ta.components.networks",
+        "__entity_title__": "NAT Gateway (reverse import)",
+        "__company_id__": $nat.tenant,
+        "title": $nat.name,
+        "description": $join([
+          $nat.description,
+          $nat.address != null and $nat.address != "" ? "Internal IP: " & $nat.address : "",
+          $nat.status != null and $nat.status != "" ? "Status: " & $nat.status : "",
+          $nat.tenant != null and $nat.tenant != "" ? "Tenant: " & $nat.tenant : ""
+        ][ $ != "" ], "\n"),
+        "external_id": $nat_id,
+        "model": "Cloud NAT Gateway",
+        "realization_type": "Managed",
+        "type": "NAT",
+        "network_connection": $network_ref($nat.subnet_id) != null ? [$network_ref($nat.subnet_id)] : [],
+        "segment": $dc_ref($nat.DC) != null ? "reverse.segment." & $normalize($nat.DC) & ".INT-NET" : null,
+        "location": $dc_ref($nat.DC) != null ? [$dc_ref($nat.DC)] : [],
+        "source_key": $source_key,
+        "resource_id": $nat_id,
+        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.nat_gateways"
+      }
+    }
+  )[] ~> $merge()
+)

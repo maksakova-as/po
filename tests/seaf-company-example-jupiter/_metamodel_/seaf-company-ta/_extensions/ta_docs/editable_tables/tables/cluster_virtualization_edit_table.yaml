@@ -1,0 +1,183 @@
+docs:
+  seaf.company.ta.docs.cluster_virtualizations.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Платформа/Кластеры виртуализации/Изменение кластеров виртуализации
+    description: Редактирование конфигурации кластеров виртуализации из architecture/ta/cluster_virtualization.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      virtualizations: seaf.company.ds.ta.cluster_virtualizations
+      azs: seaf.company.ds.ta.dc_azs
+      dcs: seaf.company.ds.ta.dcs
+      networks: seaf.company.ds.ta.networks
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 240px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: description
+        text: Описание
+        width: 320px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: hypervisor
+        text: Гипервизор
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: availabilityzone
+        text: Зоны доступности
+        width: 250px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: location
+        text: Локации
+        width: 250px
+        type: multiple-select
+        options: >
+          (
+            $locations := $exists(dcs) ? dcs : {};
+            $map($keys($locations), function($loc_id){(
+              $loc := $lookup($locations, $loc_id);
+              {
+                "value": $loc_id,
+                "text": $loc.title ? $loc.title : $loc_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: network_connection
+        text: Сети
+        width: 270px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+
+      - value: oversubscription_rate
+        text: Оверсабскрипшен
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: drs_support
+        text: DRS
+        width: 110px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+      - value: sdrs_support
+        text: SDRS
+        width: 110px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/cluster_virtualization.yaml
+
+    source: >
+      (
+        $virt := $exists(virtualizations) ? virtualizations : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($virt), function($virt_id){(
+          $item := $lookup($virt, $virt_id);
+          {
+            $virt_id: {
+              "id": $virt_id,
+              "title": $item.title,
+              "description": $item.description,
+              "hypervisor": $item.hypervisor,
+              "availabilityzone": $to_array($item.availabilityzone),
+              "location": $to_array($item.location),
+              "network_connection": $to_array($item.network_connection),
+              "oversubscription_rate": $item.oversubscription_rate,
+              "drs_support": $item.drs_support,
+              "sdrs_support": $item.sdrs_support
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($virt_id){(
+          $row := $lookup($table, $virt_id);
+          {
+            $virt_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "hypervisor": $row.hypervisor,
+              "availabilityzone": $to_array($row.availabilityzone),
+              "location": $to_array($row.location),
+              "network_connection": $to_array($row.network_connection),
+              "oversubscription_rate": $row.oversubscription_rate,
+              "drs_support": $row.drs_support,
+              "sdrs_support": $row.sdrs_support
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.cluster_virtualizations": $rows
+        }
+      )

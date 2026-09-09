@@ -1,0 +1,12 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - header.yaml
+  - summary.yaml
+  - comments.yaml
+  - business_terms.yaml
+  - attributes.yaml
+  - diagram.yaml
+  - logical_links.yaml
+  - physical_tables.yaml
+  - all_attr_list.yaml

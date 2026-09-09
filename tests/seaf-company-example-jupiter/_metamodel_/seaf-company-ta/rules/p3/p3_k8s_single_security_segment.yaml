@@ -1,0 +1,100 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_single_security_segment:
+      uid: SEAF-TA-P3-K8S-ONE-SEG
+      title: "[TACCS_1-P10-25-04] Все сети кластера одного типа сегмента (zone)"
+      description: |
+        Проверяет, что все сети из `network_connection` для каждого `seaf.company.ta.services.k8s` относятся
+        к одному и тому же типу сегмента, определяемому полем `zone` в `seaf.company.ta.services.network_segment`.
+        Допускается, что для разных ЦОДов сегменты разные (разные ключи), но значение `zone` должно совпадать
+        (например, везде `INT-NET`, либо везде `DMZ`).
+        Требование (цитата):
+        Каждый кластер вычислительных систем должен размещаться только в одной зоне безопасности
+      correction: |
+        Приведите `network_connection` к набору сетей одного сегмента безопасности.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_single_security_segment";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+          $cfg_root2 := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $company_ids := $keys($cfg_root2.company ? $cfg_root2.company : ($configs.company ? $configs.company : {}));
+          $has_company_filter := $count($company_ids) > 0;
+          $is_local := function($obj, $key){
+            $has_company_filter
+              ? (
+                  ($exists($obj.__company_id__) and $obj.__company_id__ in $company_ids)
+                  or ($substringBefore($key, ".") in $company_ids)
+                )
+              : (
+                  $not($exists($obj.source)) or $obj.source = "seaf2"
+                )
+          };
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $code := "TACSA_4-P3-28-04";
+                  $k8s_ds := $.datasets."seaf.company.ds.ta.k8s";
+                  $k8s_map := $eval($k8s_ds.source, { "objects": $, "data_lake": $ });
+                  $net_ds := $.datasets."seaf.company.ds.ta.networks";
+                  $net_map := $eval($net_ds.source, { "objects": $, "data_lake": $ });
+                  $seg_ds := $.datasets."seaf.company.ds.ta.network_segments";
+                  $seg_map := $eval($seg_ds.source, { "objects": $, "data_lake": $ });
+
+                  $each($k8s_map, function($k, $k_key){
+                    (
+                      $not($is_local($k, $k_key)) ? [] : (
+                        $nets := $k.network_connection;
+                        ($exists($nets) and $count($nets)>0) ? (
+                          /* Проверяем "zone" сегментов, а не сами segment-id */
+                          $allZonesList := $reduce(
+                            $map($nets, function($id){
+                              (
+                                $n := $lookup($net_map, $id);
+                                $segIds := ($exists($n) and $exists($n.segment)) ? $n.segment : [];
+                                $segArr := ($type($segIds) = 'array') ? $segIds : ($exists($segIds) and $segIds!="" ? [$segIds] : []);
+                                (
+                                  $zonesRaw := $map($segArr, function($sid){
+                                    (
+                                      $s := $lookup($seg_map, $sid);
+                                      $exists($s.zone) ? $s.zone : ()
+                                    )
+                                  });
+                                  $filter($zonesRaw, function($z){ $exists($z) and $z != "" })
+                                )
+                              )
+                            }),
+                            function($acc, $cur){ $acc ~> $append($cur) },
+                            []
+                          );
+                          $allZones := $distinct($allZonesList);
+                          ($count($allZones) > 1) ? {
+                            "uid": "seaf.validation.ta.p3.k8s_single_security_segment.mixed." & $k_key,
+                            "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_single_security_segment.mixed." & $k_key,
+                            "title": "K8s '" & $k.title & "' подключен к разным сегментам сети",
+                            "correction": "ID: " & $k_key & ". " & ("Кластер должен находиться в одном сегменте безопасности"),
+                            "description": "Обнаружены разные зоны сегментов: " & $join($allZones, ", ")
+                          } : ()
+                        ) : ()
+                      )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

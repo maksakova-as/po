@@ -1,0 +1,151 @@
+functions:
+  widgets_on_card:
+    params:
+      - alias: presentation
+        type: object
+        title: Представление, кля которого строится разбивка на виджеты
+        required: true
+      - alias: param_name
+        type: string
+        title: Название переменной в пути, принимающей идентификатор сущности
+        minLength: 1
+        required: true
+      - alias: object_id
+        type: string
+        title: Идентификатор объекта
+        minLength: 1
+        required: true
+    result:
+      type: object
+    code: >
+      (
+        /* Получаем идентификатор компонента для карточки */
+        $obj := object_id;
+        $name := param_name;
+
+        /* Получаем виджеты, которые нужно отобразить */
+        $widgets := presentation.widgets;
+        $wleft := $widgets.*[align="<"]^(order);
+        $wright := $widgets.*[align=">"]^(order);
+        $wcenter := $widgets.*[$not(align=">" or align="<")]^(order);
+
+        /* Функция генерации  профиля виджета для секции разметки */
+        $makeWidget := function($widgets) {(
+          [$widgets.{
+              "title": title,
+              "icon": icon,
+              "style": style ? style : {},
+              "src": "@entity/" & entity & "/" & presentation & "?" & $name & "=" & $obj
+          }];
+        )};
+
+        $rows := $append(
+            [
+              {
+                "type": "columns",
+                "items": [
+                  {
+                    "type": "rows",
+                    "width": "60%",
+                    /* Строим список виджетов левой секции */
+                    "items": $makeWidget($wleft)
+                  },
+                  {
+                    "type": "rows",
+                    "width": "40%",
+                    /* Строим список виджетов правой секции */
+                    "items": $makeWidget($wright)
+                  }
+                ]
+              }
+            ],
+            /* Добавляем центральные виджеты */
+            $makeWidget($wcenter)
+          );
+        $rows := $exists(presentation.header) ? $append($makeWidget(presentation.header), $rows) : $rows;
+        /* Строим разметку страницы */
+        {
+          "type": "rows",
+          "items": $rows
+        }
+      )
+
+  widgets_on_card_predicate:
+    params:
+      - alias: presentation
+        type: object
+        title: Представление, кля которого строится разбивка на виджеты
+        required: true
+      - alias: param_name
+        type: string
+        title: Название переменной в пути, принимающей идентификатор сущности
+        minLength: 1
+        required: true
+      - alias: object_id
+        type: string
+        title: Идентификатор объекта
+        minLength: 1
+        required: true
+#      - alias: full_object
+#        type: object
+#        title: Полный объект, описывающий сущность
+#        required: true
+#      - alias: predicate_context
+#        type: object
+#        title: Контекст предиката
+    result:
+      type: object
+    code: >
+      (
+        /* Получаем идентификатор компонента для карточки */
+        $obj := object_id;
+        $name := param_name;
+
+        /* Получаем виджеты, которые нужно отобразить */
+        $widgets := $sift(presentation.widgets, function($v, $k) {$not($exists($v.predicate)) or $eval($v.predicate, $obj) = true});
+        $wleft := $widgets.*[align="<"]^(order);
+        $wright := $widgets.*[align=">"]^(order);
+        $wcenter := $widgets.*[$not(align=">" or align="<")]^(order);
+
+        /* Функция генерации  профиля виджета для секции разметки */
+        $makeWidget := function($widgets) {(
+          [$widgets.{
+              "title": title,
+              "icon": icon,
+              "style": style ? style : {},
+              "src": "@entity/" & entity & "/" & presentation & "?" & $name & "=" & $obj
+          }];
+        )};
+
+        /* Строим разметку страницы */
+
+        $rows := $append(
+            [
+              {
+                "type": "columns",
+                "items": [
+                  {
+                    "type": "rows",
+                    "width": "60%",
+                    /* Строим список виджетов левой секции */
+                    "items": $makeWidget($wleft)
+                  },
+                  {
+                    "type": "rows",
+                    "width": "40%",
+                    /* Строим список виджетов правой секции */
+                    "items": $makeWidget($wright)
+                  }
+                ]
+              }
+            ],
+            /* Добавляем центральные виджеты */
+            $makeWidget($wcenter)
+          );
+        $rows := $exists(presentation.header) ? $append($makeWidget(presentation.header), $rows) : $rows;
+        /* Строим разметку страницы */
+        {
+          "type": "rows",
+          "items": $rows
+        }
+      )

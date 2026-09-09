@@ -1,0 +1,21 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $vpns := $."seaf.ta.reverse.cloud_ru.advanced.vpn_gateways".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $vpns.(
+    $vpn := value;
+    {
+      "component_id": "reverse.netcomp.vpn." & $normalize($vpn.id),
+      "network_connection": $vpn.subnet_id,
+      "dc": $vpn.DC
+    }
+  )
+)

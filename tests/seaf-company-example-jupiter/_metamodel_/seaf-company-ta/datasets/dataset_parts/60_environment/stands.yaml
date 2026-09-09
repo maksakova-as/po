@@ -1,0 +1,15 @@
+# Назначение: Реестр стендов внутри окружений.
+# Используется: internal_docs, auto_tests, ta, docs, presentations, widgets и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.stands:
+    description: |
+      ?????? ?????????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.services.stands";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

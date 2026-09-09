@@ -1,0 +1,68 @@
+docs:
+  freeze-rows-example:
+    location: Тестирование заморозки строк и столбцов/Пример 1 (только строки)
+    type: editable-table
+    show_data_error: true
+    new_row_allowed: true
+    selection: true
+    row_remove_allowed: true
+    excel_export_filter: true
+    update_index_file: root.yaml
+
+    yaml:
+      null_replace_string: ""
+
+    origin:
+      table_data: freeze_rows.yaml
+
+    freeze:
+      rows: 3
+      columns: 0
+
+    page_size: 100
+    headers:
+      - value: ID
+        width: 100px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_rows.yaml
+
+      - value: name
+        width: 300px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_rows.yaml
+
+      - value: age
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_rows.yaml
+
+      - value: city
+        width: 250px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_rows.yaml
+
+      - value: link
+        type: link
+        width: 250px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_rows.yaml
+
+    source: >
+      (
+        {"body": table_data}
+      )

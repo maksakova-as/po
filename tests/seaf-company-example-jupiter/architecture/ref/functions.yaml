@@ -1,0 +1,109 @@
+seaf.company.functions:
+#  Бизнес-прикдадная функциональность
+  jupiter.function.business:
+    title: Функциональность для бизнеса
+    description: >
+      Прикладная функциональность для применения в различных областях бизнес-деятельности
+
+  jupiter.function.news_management:
+    title: Ведение новостей
+    description: Функциональность по ведению новостей
+    is_part_of: jupiter.function.business
+
+  jupiter.function.channels:
+    title: Каналы
+    description: Функциональность каналов
+    is_part_of: jupiter.function.business
+
+  jupiter.function.mobile_devices:
+    title: Мобильные устройства
+    description: Функциональность кананалов в мобильных устройствах
+    is_part_of: jupiter.function.channels
+
+  jupiter.function.mobile_lk:
+    title: Мобильный ЛК
+    description: Функциональность мобильного личного кабинета
+    is_part_of: jupiter.function.mobile_devices
+
+  jupiter.function.news_publish:
+    title: Публикация новостей
+    description: Функциональность публикации новостей
+    is_part_of: jupiter.function.news_management
+
+  jupiter.function.ai_news_summary:
+    title: ИИ-агент Сводка новостей
+    description: ИИ-агент по созданию сводок новостей
+    is_part_of: jupiter.function.news_management
+
+  jupiter.function.lk_news_editor:
+    title: Кабинет редактора новостей
+    description: Функциональность личного кабинета редактора новостей
+    is_part_of: jupiter.function.news_management
+
+  jupiter.function.news_feed:
+    title: Лента новостей
+    description: Функциональность формирования ленты новостей
+    is_part_of: jupiter.function.news_management
+
+  jupiter.function.shipping:
+    title: Доставка
+    description: Функциональность по оформлению и исполнению заказа на доставку груза, товара, заказа
+    is_part_of: jupiter.function.business
+
+  jupiter.function.shipping_person:
+    title: Доставка для ФЛ
+    description: Функциональность по оформлению и исполнению заказа на доставку груза, товара, заказа для ФЛ
+    is_part_of: jupiter.function.shipping
+
+  jupiter.function.production:
+    title: Автоматизация производства
+    description: Функциональность для автоматизации производства
+    is_part_of: jupiter.function.business
+
+  jupiter.function.lk_production_expert:
+    title: Кабинет технолога производства
+    description: Функциональность личного кабинета технолога производства
+    is_part_of: jupiter.function.production
+
+  jupiter.function.clothing_production_control:
+    title: Управление производством одежды
+    description: Функциональность управления производством одежды
+    is_part_of: jupiter.function.production
+
+#  КБ функциональность
+  jupiter.function.cybersec:
+    title: Функциональность КБ
+    description: >
+      Функциональность для применения в области кибербезопасности
+
+  jupiter.function.antivirus:
+    title: Антивирусная защита
+    is_part_of: jupiter.function.cybersec
+
+  jupiter.function.esign:
+    title: ЭЦП
+    is_part_of: jupiter.function.cybersec
+
+#  ИТ функциональность
+  jupiter.function.it:
+    title: ИТ функциональность
+    description: >
+      Функциональность для применения в области ИТ
+
+  jupiter.function.integration_management:
+    title: Управление интеграциями
+    description: >
+      Функциональность в области управления интеграционными потоками между системами и компонентами
+    is_part_of: jupiter.function.it
+
+  jupiter.function.messaging_transport:
+    title: Транспорт сообщений
+    description: >
+      Функциональность, обеспечивающая доставку сообщений от одной системы к другой
+    is_part_of: jupiter.function.integration_management
+
+  jupiter.function.messaging_gateway:
+    title: Шлюз сообщений
+    description: >
+      Функциональность, обеспечивающая проверку и фильтрацию сообщений
+    is_part_of: jupiter.function.integration_management

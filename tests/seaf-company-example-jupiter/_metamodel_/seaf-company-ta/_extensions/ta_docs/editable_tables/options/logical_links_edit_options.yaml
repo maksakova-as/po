@@ -1,0 +1,25 @@
+datasets:
+  seaf.company.ds.ta.logical_link_options.objects:
+    description: "Опции для выбора объектов в таблице редактирования логических связей"
+    origin:
+      objects: seaf.company.ds.ta.all_objects
+    source: >
+      (
+        $objs := $exists(objects) ? objects : {};
+        $map($keys($objs), function($obj_id){(
+          $obj := $lookup($objs, $obj_id);
+          {
+            "value": $obj_id,
+            "text": $obj.title ? $obj.title : $obj_id
+          }
+        )})
+      )
+  seaf.company.ds.ta.logical_link_options.stands:
+    description: "Опции для выбора стендов в таблице редактирования логических связей"
+    origin:
+      stand_options: seaf.company.ds.ta.stand_options
+    source: >
+      (
+        $opts := $exists(stand_options) ? stand_options : [];
+        $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+      )

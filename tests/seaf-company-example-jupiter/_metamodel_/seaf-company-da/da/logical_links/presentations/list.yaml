@@ -1,0 +1,65 @@
+entities:
+  seaf.company.da.logical_links:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: object_link
+          - value: type
+            text: Тип
+            align: left
+          - value: entity_a
+            text: Сущность A
+            link: entity_a_link
+            align: left
+          - value: multiplicity_a
+            text: Множ. A
+            link: multiplicity_a_link
+            align: left
+          - value: entity_b
+            text: Сущность B
+            link: entity_b_link
+            align: left
+          - value: multiplicity_b
+            text: Множ. B
+            link: multiplicity_b_link
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin:
+          objects: seaf.company.ds.da.logical_links
+          all_objects: seaf.ds.objects
+
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $data2present := $objects;
+          $each($data2present, function($val, $key) {(
+              $ea := $seaf_fn_get_object_info($val.entity_a, $all_objects);
+              $eb := $seaf_fn_get_object_info($val.entity_b, $all_objects);
+              {
+                  "id": $val.__id__,
+                  "object_link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "type": $val.type,
+                  "entity_a": $ea.title,
+                  "entity_a_link": $ea.link_to_card,
+                  "multiplicity_a": $val.multiplicity_a,
+                  "entity_b": $eb.title,
+                  "entity_b_link": $eb.link_to_card,
+                  "multiplicity_b": $val.multiplicity_b,
+                  "lifecycle_stage": $val.lifecycle_stage,
+                  "description": $val.description
+              }
+          )})[];
+          )

@@ -1,0 +1,62 @@
+entities:
+  seaf.company.da.aggregats:
+    title: &entity_title Агрегаты
+    description: &entity_description >
+      Универсальная сущность для выделения поддоменов.
+      Сущность агрегат позволяет ссылаться сама на себя, 
+      таким образом реализуется любой уровень вложенности и строится иерархия вложенных агрегатов.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.aggr.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      aggregat:
+        route: "/"
+        title: Агрегат
+        symbol: "aggr"
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры объектов
+              $ref: "#/$rels/seaf.company.da.aggregats.aggregat"
+
+            type:
+              title: Уровень аггрегации
+              description: Используется для задания древовидной структуры объектов
+              enum:
+                - Проект
+                - Пакет
+                - Предметная область
+                - Домен
+                - Под-домен
+                - Модель
+                - Файл
+
+            owner:
+              title: Проектировщик (ФИО)
+              description: ФИО проектировщика/архитектора данных предметной области
+              type: string
+
+            unit:
+              title: Владелец (Функциональный блок)
+              description: ФИО владелеца данных или название функционального блока
+              type: string

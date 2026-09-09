@@ -1,0 +1,34 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.softwares: seaf.company.ds.kadzo.softwares
+
+  seaf.company.ds.kadzo.softwares:
+    title: Программное обеспечение КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.technologies
+      objects: seaf.ds.objects
+
+# Принятые допущения:
+#    - берем технологии с типом "программное средство"
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects := objects;
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          $t_arr := $exists($val.type) and $val.type != null ? [$val.type] : [];
+          /* формируем объект КАДЗО */
+          "Программное средство" in $t_arr 
+          ? (
+              { $key: {
+                  "title": $val.title,
+                  "vendor": $val.vendor.title
+              }}
+            )
+      )})[] ~> $merge();
+      $obj_out
+      )

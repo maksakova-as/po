@@ -1,0 +1,54 @@
+entities:
+  seaf.company.ai.agents:
+    presentations:
+#      card:
+#        widgets:
+#          ai_struct_schema:
+#            title: Структура агента
+#            presentation: struct_schema
+#            order: 10
+#            style:
+#              margin: 4px
+#              padding: 0px
+#              border: true
+
+      struct_schema:
+        type: plantuml
+        template: struct_schema.puml
+        origin:
+          objects: seaf.company.ds.ai.agents
+          models: seaf.company.ds.ai.models
+        source: >
+          (
+              $object := $lookup(objects, $params.id);
+              {
+                  "title": $object.title,
+                  "models" : $type($object.models) = "array" ? $map($object.models, function($m, $i){(
+                              $model := $lookup($$.models, $m.model);
+                              $exists($model) ? {
+                                                  "title": $lookup($$.models, $m.model).title,
+                                                  "id": $m.model, "description": $m.description
+                                                }
+                                              :
+                                              { "title": $m.model, "id": $i, "description": $m.description }
+                            )}),
+                  "tools" : $type($object.tools) = "array" ? $map($object.tools, function($t, $i){(
+                              {"title": $t.title, "id":$i, "description": $t.description}
+                            )}),
+                  "memory": $type($object.memory) = "array" ? $map($object.memory, function($mem, $i){(
+                              {"title": $mem.title, "id":$i, "description": $mem.description}
+                            )}),
+                  "flows": $type($object.control_flows) = "array" ? $map($object.control_flows, function($f, $i){(
+                              {"title": $f.title, "id":$i, "description": $f.description}
+                            )}),
+                  "feedback": $type($object.feedbacks) = "array" ? $map($object.feedbacks, function($f, $i){(
+                              {"title": $f.title, "id":$i, "description": $f.description}
+                            )}),
+                  "guardrails": $type($object.guardrails) = "array" ? $map($object.guardrails, function($f, $i){(
+                              {"title": $f.title, "id":$i, "description": $f.description}
+                            )}),
+                  "input_interfaces": $type($object.input_interfaces) = "array" ? $map($object.input_interfaces, function($f, $i){(
+                              {"title": $f.title, "id":$i, "description": $f.description}
+                            )})
+              }
+          )

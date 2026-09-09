@@ -1,0 +1,66 @@
+entities:
+  seaf.company.technologies:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          references:
+            title: Материалы по технологии
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: references
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 400
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      references:
+        params:
+          type: object
+          properties:
+            id:
+              title: ID
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: title
+            text: Материал
+          - value: url
+            text: Ссылка
+            link: path_to_object
+          - value: type
+            text: Тип
+          - value: description
+            text: Описание
+
+        origin:
+          objects: seaf.company.ds.technologies
+        source: >
+          (
+          $objects := objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.references;
+          $exists($data2present) and $data2present != null
+          ? $map($data2present, function($val, $i) {(
+              {
+                "number": $i+1,
+                "title": $val.title,
+                "url": $val.url,
+                "path_to_object": $val.url,
+                "type": $val.type,
+                "description": $val.description
+              }
+            )})[];
+          )

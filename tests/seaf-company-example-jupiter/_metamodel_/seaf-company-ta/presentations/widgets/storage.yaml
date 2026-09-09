@@ -1,0 +1,301 @@
+imports: []
+
+entities:
+  seaf.company.ta.services.storages:
+
+    presentations:
+      card:
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: storage_details
+            align: "v"
+            order: 10
+          location_tree:
+            title: Локация / сети
+            presentation: storage_location_tree
+            align: "v"
+            order: 20
+          apps:
+            title: Приложения/компоненты
+            presentation: storage_apps
+            align: "v"
+            order: 30
+
+      storage_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          storages: seaf.company.ds.ta.storages
+          networks: seaf.company.ds.ta.networks
+          hw: seaf.company.ds.ta.hw_storages
+          softwares: seaf.company.ds.ta.software
+        source: >
+          (
+            $storage := $lookup(storages, $params.id);
+            $networks := networks;
+            $hw := hw;
+            $softwares := softwares;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $software_ids := $exists($storage.softwares) ? $to_list($storage.softwares) : $to_list($storage.software);
+            $software_titles := $software_ids.(
+              $sw_title := $lookup($softwares, $).title;
+              $sw_title ? $sw_title : $
+            ) ~> $join(", ");
+            $network_rows := $exists($storage.network_connection)
+              ? $storage.network_connection[].(
+                  $net := $lookup($networks, $);
+                  {
+                    "field": "Сеть",
+                    "value": $net.title,
+                    "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null
+                  }
+                )
+              : [];
+            $hw_rows := $exists($storage.hw_storage_connected)
+              ? $storage.hw_storage_connected[].(
+                  $hw_item := $lookup($hw, $);
+                  {
+                    "field": "Аппаратная СХД",
+                    "value": $hw_item.title,
+                    "link": $exists($hw_item) ? "/entities/" & $hw_item.__entity_id__ & "/card?id=" & $hw_item.__id__ : null
+                  }
+                )
+              : [];
+            $rows := [
+              {"field": "ID", "value": $storage.__id__},
+              {"field": "Название", "value": $storage.title},
+              {"field": "Описание", "value": $storage.description},
+              {"field": "Тип", "value": $storage.type},
+              {"field": "ПО", "value": $software_titles},
+              {"field": "Объём, ТБ", "value": $storage.volume},
+              {"field": "Тип дисков", "value": $storage.disk_type},
+              {"field": "Протоколы", "value": $storage.protocols},
+              {"field": "Erasure Coding", "value": $storage.erasure_coding},
+              {"field": "SLA", "value": $storage.sla},
+              {"field": "Внешний ID", "value": $storage.external_id}
+            ];
+            $exists($storage) ? $rows ~> $append($network_rows) ~> $append($hw_rows) : []
+          )
+
+      storage_location_tree:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          storages: seaf.company.ds.ta.storages
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $clean_title := function($t){ $replace($replace($replace($t, "(", ""), ")", ""), "\"", "'") };
+            $storages := storages;
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $storage := $lookup($storages, $params.id);
+            $has_obj := $exists($storage.__id__);
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $storage_node_id := $has_obj ? $replace($storage.__id__,/[^A-Za-z0-9_]/,"_") : "";
+            $obj_node :=
+              $has_obj
+                ? "rectangle \"Storage: " & $clean_title($storage.title) & "\" as storage_" & $storage_node_id & " #d1c4e9\n"
+                : "";
+            $loc_nodes :=
+              $has_obj and $exists($storage.location)
+                ? $storage.location[].(
+                    $loc := $resolve_location($);
+                    $exists($loc.__id__)
+                      ? "node \"Локация: [[/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ & " " & $clean_title($loc.title) & "]]\" as loc_" & $replace($loc.__id__,/[^A-Za-z0-9_]/,"_") & " #bbdefb\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $net_nodes :=
+              $has_obj and $exists($storage.network_connection)
+                ? $storage.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $exists($net.__id__)
+                      ? "node \"Сеть: " & $clean_title($net.title) & "\" as net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $seg_nodes :=
+              $has_obj and $exists($storage.network_connection)
+                ? $storage.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "node \"Сегмент: " & $clean_title($seg.title) & "\" as seg_" & $replace($seg.__id__,/[^A-Za-z0-9_]/,"_") & " #ffecb3\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_loc_net :=
+              $has_obj and $exists($storage.location) and $exists($storage.network_connection)
+                ? $storage.location[].(
+                    $loc := $resolve_location($);
+                    $loc_id := $replace($loc.__id__,/[^A-Za-z0-9_]/,"_");
+                    $storage.network_connection[].(
+                      $net := $lookup($networks, $);
+                      $exists($net.__id__)
+                        ? "loc_" & $loc_id & " --> net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_net_seg :=
+              $has_obj and $exists($storage.network_connection)
+                ? $storage.network_connection[].(
+                    $net := $lookup($networks, $);
+                    $net_id := $replace($net.__id__,/[^A-Za-z0-9_]/,"_");
+                    $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+                    $seg_ids.(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "net_" & $net_id & " --> seg_" & $replace($seg.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $distinct() ~> $join("")
+                : "";
+            $edges_obj :=
+              $has_obj
+                ? (
+                    $exists($storage.location)
+                      ? $storage.location[].(
+                          $loc := $resolve_location($);
+                          $exists($loc.__id__)
+                            ? "loc_" & $replace($loc.__id__,/[^A-Za-z0-9_]/,"_") & " --> storage_" & $storage_node_id & "\n"
+                            : ""
+                        ) ~> $join("")
+                      : ""
+                  ) &
+                  (
+                    $exists($storage.network_connection)
+                      ? $storage.network_connection[].(
+                          $net := $lookup($networks, $);
+                          $exists($net.__id__)
+                            ? "net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " --> storage_" & $storage_node_id & "\n"
+                            : ""
+                        ) ~> $join("")
+                      : ""
+                  )
+                : "";
+            $diagram :=
+              $has_obj
+                ? (
+                    "@startuml\n" &
+                    "left to right direction\n" &
+                    "skinparam nodesep 60\n" &
+                    "skinparam ranksep 60\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam rectangle {\n" &
+                    "  BackgroundColor #f2f4f7\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    $loc_nodes & $seg_nodes & $net_nodes & $obj_node & $edges_loc_net & $edges_net_seg & $edges_obj &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Хранилище не найдено\" as no_obj\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      storage_apps:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Объект
+            link: link
+          - value: id
+            text: ID
+          - value: role
+            text: Роль
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+            $storage_id := $params.id;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $objects.*@$obj.(
+              $roles := [];
+              $roles := $contains($to_list($obj.storage), $storage_id) ? $roles ~> $append("Storage") : $roles;
+              $roles := $contains($to_list($obj.sw_storage_connected), $storage_id) ? $roles ~> $append("SDS") : $roles;
+              $roles := $contains($to_list($obj.hw_storage), $storage_id) ? $roles ~> $append("HW Storage") : $roles;
+              $roles := $contains($to_list($obj.backup), $storage_id) ? $roles ~> $append("Backup") : $roles;
+              $roles := $contains($to_list($obj.monitoring), $storage_id) ? $roles ~> $append("Monitoring") : $roles;
+              $exists($roles[0])
+                ? {
+                    "title": $exists($obj.title) ? $obj.title : $obj.__id__,
+                    "link": $exists($obj.__entity_id__) ? "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__ : null,
+                    "id": $obj.__id__,
+                    "role": $roles ~> $distinct() ~> $join(", ")
+                  }
+                : null
+            ) ~> $filter(function($v){ $exists($v) })
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

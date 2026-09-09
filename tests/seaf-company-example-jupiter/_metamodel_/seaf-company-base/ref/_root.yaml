@@ -1,0 +1,5 @@
+imports:
+  - configs.yaml
+  - functions/_root.yaml
+  - categories/_root.yaml
+  - technologies/_root.yaml

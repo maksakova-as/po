@@ -1,0 +1,41 @@
+seaf.company.ba.products:
+  jupiter.product.digital_content:
+    title: Цифровой контент
+    lifecycle_stage: Используется и развивается
+
+  jupiter.product.news:
+    title: Новости
+    lifecycle_stage: Используется и развивается
+    is_part_of: jupiter.product.digital_content
+    distributed_via:
+      - jupiter.channel.website
+    target_clients:
+      - jupiter.client.mature_person
+      - jupiter.client.young_person
+
+  jupiter.product.knowledge:
+    title: Знания
+    lifecycle_stage: Используется и развивается
+    is_part_of: jupiter.product.digital_content
+    distributed_via:
+      - jupiter.channel.website
+      - jupiter.channel.shopping_centre
+    target_clients:
+      - jupiter.client.mature_person
+      - jupiter.client.employee
+      - jupiter.client.young_person
+
+  jupiter.product.marketing_goods:
+    title: Маркетинговые товары
+    lifecycle_stage: Тестируется
+
+  jupiter.product.merch:
+    title: Мерч
+    lifecycle_stage: Создается
+    is_part_of: jupiter.product.marketing_goods
+    distributed_via:
+      - jupiter.channel.shopping_centre
+      - jupiter.channel.company_office
+    target_clients:
+      - jupiter.client.employee
+      - jupiter.client.young_person

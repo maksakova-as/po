@@ -1,0 +1,34 @@
+entities:
+  seaf.company.ai.agents:
+    presentations:
+      app_context_agent_schema:
+        type: plantuml
+        template: arch_schema.puml
+        origin:
+          objects: seaf.company.ds.ai.agents
+          models: seaf.company.ds.ai.models
+          kadzo: kadzo.v2023.tobe
+          schema: kadzo.v2023.arch_schema.tobe
+        source: >
+          (
+              $agent := $lookup(objects, $params.id);
+              $models_list := $map($agent.models.model, function($f) {(
+                  $lookup($$.models, $f).realized_in
+              )});
+              $list := [$models_list, $agent.tools.realized_in, $agent.memory.realized_in, $agent.control_flows.realized_in, $agent.feedback.realized_in, $agent.guardrails.realized_in] ~> $distinct;
+              
+              $systems := $map($list, function($f, $i){(
+                              {$f : $lookup($$.kadzo."kadzo.v2023.systems", $f) }
+                            )})[] ~> $merge;
+          
+              $integrations := $sift(kadzo."kadzo.v2023.integrations", function ($v, $k){$v.source in $systems.$keys() and $v.consumer in $systems.$keys()});
+          
+              $result := $fn_schema_context($systems, kadzo ~> | $ | {"kadzo.v2023.integrations" : $integrations}, ($integrations ~> $keys() ~> $count() = 0 ? ["kadzo.v2023.integrations"]) |);          
+
+              $fn_schema_apply_notation($result,
+                                  schema,
+                                  {},
+                                  "Целевой контекст агента " & $agent.title,
+                                  {"elk": true}
+                            );
+          )

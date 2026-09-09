@@ -1,0 +1,252 @@
+docs:
+  docs.ta.entity.k8s.properties_table:
+    title: "Kubernetes service — свойства и связи"
+    type: markdown
+    source: docs.ta.entity.k8s.properties_table.md
+    location: /SEAF/Документация/Техническая архитектура/Метамодель/Kubernetes сервис/Свойства
+    origin: docs.ta.metamodel.properties
+    source: >
+      (
+        $rows := $[entity_id = "seaf.ta.services.k8s" or entity_id = "seaf.ta.services.entity" ];
+        $entity_name := $rows[entity_id = "seaf.ta.services.k8s"][0].entity_title ? $rows[entity_id = "seaf.ta.services.k8s"][0].entity_title : "Kubernetes service";
+        $scope_names := {
+          "core": "Общие параметры",
+          "entity": "Экземпляр сервиса",
+          "schema": "Глобальные свойства",
+          "base": "Базовый блок",
+          "physical": "Физические параметры",
+          "virtual": "Виртуальные параметры",
+          "dzo": "ДЗО расширения"
+        };
+        $scope_summary := $distinct($rows.scope).(
+          "| " &
+          ($lookup($scope_names, $) ? $lookup($scope_names, $) : $) &
+          " | " &
+          $count($rows[scope = $]) &
+          " |"
+        ) ~> $join("\n");
+        $group_keys := $distinct($rows.(definition & "::" & entity_id));
+        $groups := $group_keys.(
+          $parts := $split($, "::");
+          $group_id := $parts[0];
+          $group_entity := $parts[1];
+          $group_rows := $rows[definition = $group_id and entity_id = $group_entity];
+          $group_name := $group_rows[0].definition_title ? $group_rows[0].definition_title : $group_id;
+          $entity_badge := $group_entity = "seaf.ta.services.entity" ? " *(базовая сущность)*" : "";
+          "### " & $group_name & $entity_badge & "\n" &
+          $group_rows.(
+            $scope_badge :=
+              scope = "dzo" ? " `[DZO]`"
+              : (
+                  scope = "base" ? " `[Base]`"
+                  : (
+                      scope = "physical" ? " `[Physical]`"
+                      : (
+                          scope = "virtual" ? " `[Virtual]`"
+                          : ""
+                        )
+                    )
+                );
+            $required_label := required ? " *(обязательно)*" : " *(опционально)*";
+            $enum_block := enum ? ("  \\n    Enum: " & enum) : "";
+            $links_block := $exists(links[0])
+              ? ("  \\n    Связи: " & links.("[[" & link & " " & title & "]]") ~> $join(", ") )
+              : "";
+            "- **" & property & "** — " &
+            (title ? title : "Без названия") &
+            (description ? ". " & description : "") &
+            " _(тип: " & (type ? type : "n/a") & " )_" &
+            $required_label & $scope_badge &
+            $enum_block & $links_block
+          ) ~> $join("\n")
+        ) ~> $join("\n\n");
+        "<div data-testid=\"docs-ta-entity-k8s-properties\" style=\"display:none\"></div>\n" &
+        "# " & $entity_name & ": свойства\n\n" &
+        "> Данные собираются динамически из seaf.ta.*\n\n" &
+        "> DOC_ID: docs.ta.entity.k8s.properties_table\n\n" &
+        "| Категория | Свойств |\n| --- | --- |\n" & $scope_summary & "\n\n" &
+        $groups
+      )
+
+  docs.ta.entity.k8s.diagram_doc:
+    title: "Kubernetes service — диаграмма-связи"
+    location: /SEAF/Документация/Техническая архитектура/Метамодель/Kubernetes сервис/Диаграмма
+    type: plantuml
+    template: templates/doc_star_diagram.puml
+    origin: docs.ta.metamodel.properties
+    source: >
+      (
+        $rows := $[entity_id = "seaf.ta.services.k8s" or entity_id = "seaf.ta.services.entity" ];
+        $entity_name := $rows[entity_id = "seaf.ta.services.k8s"][0].entity_title ? $rows[entity_id = "seaf.ta.services.k8s"][0].entity_title : "Kubernetes service";
+        $color_by_scope := function($scope){
+          $scope = "dzo" ? "#F97316"
+            : (
+                $scope = "base" ? "#2563EB"
+                : (
+                    $scope = "physical" ? "#0F766E"
+                    : (
+                        $scope = "virtual" ? "#7C3AED" : "#0F172A"
+                      )
+                  )
+              )
+        };
+        $edge_rows := $distinct($rows.(definition & "::" & entity_id & "::" & property));
+        {
+          "diagram":
+            "@startuml\n" &
+            "skinparam backgroundColor #ffffff\n" &
+            "skinparam ArrowColor #0f172a\n" &
+            "skinparam NodeFontColor #111827\n" &
+            "skinparam linetype ortho\n" &
+            "node \"" & $entity_name & "\" as center\n" &
+            (
+              $edge_rows.(
+                $parts := $split($, "::");
+                $def_key := $parts[0];
+                $entity_key := $parts[1];
+                $prop_key := $parts[2];
+                $row := $rows[definition = $def_key and entity_id = $entity_key and property = $prop_key][0];
+                $color := $color_by_scope($row.scope);
+                $label := $row.property & ($row.type ? " [" & $row.type & "]" : "");
+                $desc := $row.title ? "\\n" & $row.title : "";
+                $links := $exists($row.links[0]) ? ("\\n" & $row.links.("[[" & link & " " & title & "]]") ~> $join("\\n")) : "";
+                $badge :=
+                  $row.scope = "dzo" ? " «DZO»"
+                  : (
+                      $row.scope = "base" ? " «Base»"
+                      : (
+                          $row.scope = "physical" ? " «Physical»"
+                          : (
+                              $row.scope = "virtual" ? " «Virtual»" : ""
+                            )
+                        )
+                    );
+                "center -[" & $color & "]-> \"" & $label & $badge & $desc & $links & "\""
+              ) ~> $join("\n")
+            ) &
+            "\n@enduml"
+        }
+      )
+
+  docs.ta.entity.server.properties_table:
+    title: "Component 'Server' — свойства и связи"
+    location: /SEAF/Документация/Техническая архитектура/Компоненты/Сервер/Свойства
+    type: markdown
+    origin: docs.ta.metamodel.properties
+    source: >
+      (
+        $rows := $[entity_id = "seaf.ta.components.servers" ];
+        $entity_name := $rows[0].entity_title ? $rows[0].entity_title : "Компонент: сервер";
+        $scope_names := {
+          "core": "Общие параметры",
+          "entity": "Экземпляр",
+          "schema": "Глобальные",
+          "base": "Базовый слой",
+          "physical": "Физический профиль",
+          "virtual": "Виртуальный профиль",
+          "dzo": "ДЗО контроль"
+        };
+        $scope_summary := $distinct($rows.scope).(
+          "| " &
+          ($lookup($scope_names, $) ? $lookup($scope_names, $) : $) &
+          " | " &
+          $count($rows[scope = $]) &
+          " |"
+        ) ~> $join("\n");
+        $group_keys := $distinct($rows.definition);
+        $groups := $group_keys.(
+          $group_rows := $rows[definition = $];
+          $group_name := $group_rows[0].definition_title ? $group_rows[0].definition_title : $;
+          "### " & $group_name & "\n" &
+          $group_rows.(
+            $scope_badge :=
+              scope = "dzo" ? " `[DZO]`"
+              : (
+                  scope = "base" ? " `[Base]`"
+                  : (
+                      scope = "physical" ? " `[Physical]`"
+                      : (
+                          scope = "virtual" ? " `[Virtual]`"
+                          : ""
+                        )
+                    )
+                );
+            $required_label := required ? " *(обязательно)*" : " *(опционально)*";
+            $enum_block := enum ? ("  \\n    Enum: " & enum) : "";
+            $links_block := $exists(links[0])
+              ? ("  \\n    Связи: " & links.("[[" & link & " " & title & "]]") ~> $join(", ") )
+              : "";
+            "- **" & property & "** — " &
+            (title ? title : "Без названия") &
+            (description ? ". " & description : "") &
+            " _(тип: " & (type ? type : "n/a") & " )_" &
+            $required_label & $scope_badge &
+            $enum_block & $links_block
+          ) ~> $join("\n")
+        ) ~> $join("\n\n");
+        "<div data-testid=\"docs-ta-entity-server-properties\" style=\"display:none\"></div>\n" &
+        "# " & $entity_name & ": свойства\n\n" &
+        "> Слои: база, физика, виртуализация и ДЗО требования собираются автоматически\n\n" &
+        "> DOC_ID: docs.ta.entity.server.properties_table\n\n" &
+        "| Категория | Свойств |\n| --- | --- |\n" & $scope_summary & "\n\n" &
+        $groups
+      )
+
+  docs.ta.entity.server.diagram_doc:
+    title: "Component 'Server' — диаграмма-связи"
+    location: /SEAF/Документация/Техническая архитектура/Компоненты/Сервер/Диаграмма
+    type: plantuml
+    template: templates/doc_star_diagram.puml
+    origin: docs.ta.metamodel.properties
+    source: >
+      (
+        $rows := $[entity_id = "seaf.ta.components.servers" ];
+        $entity_name := $rows[0].entity_title ? $rows[0].entity_title : "Компонент: сервер";
+        $color_by_scope := function($scope){
+          $scope = "dzo" ? "#F97316"
+            : (
+                $scope = "base" ? "#2563EB"
+                : (
+                    $scope = "physical" ? "#0F766E"
+                    : (
+                        $scope = "virtual" ? "#7C3AED" : "#0F172A"
+                      )
+                  )
+              )
+        };
+        $edge_rows := $distinct($rows.(definition & "::" & property));
+        {
+          "diagram":
+            "@startuml\n" &
+            "skinparam backgroundColor #ffffff\n" &
+            "skinparam ArrowColor #0f172a\n" &
+            "skinparam NodeFontColor #111827\n" &
+            "skinparam linetype ortho\n" &
+            "node \"" & $entity_name & "\" as center\n" &
+            (
+              $edge_rows.(
+                $parts := $split($, "::");
+                $def_key := $parts[0];
+                $prop_key := $parts[1];
+                $row := $rows[definition = $def_key and property = $prop_key][0];
+                $color := $color_by_scope($row.scope);
+                $label := $row.property & ($row.type ? " [" & $row.type & "]" : "");
+                $desc := $row.title ? "\\n" & $row.title : "";
+                $links := $exists($row.links[0]) ? ("\\n" & $row.links.("[[" & link & " " & title & "]]") ~> $join("\\n")) : "";
+                $badge :=
+                  $row.scope = "dzo" ? " «DZO»"
+                  : (
+                      $row.scope = "base" ? " «Base»"
+                      : (
+                          $row.scope = "physical" ? " «Physical»"
+                          : (
+                              $row.scope = "virtual" ? " «Virtual»" : ""
+                            )
+                        )
+                    );
+                "center -[" & $color & "]-> \"" & $label & $badge & $desc & $links & "\""
+              ) ~> $join("\n")
+            ) &
+            "\n@enduml"
+        }
+      )

@@ -1,0 +1,411 @@
+seaf.company.ai.models:
+
+  sber.ai_model.gigachat_lite:
+    title: GigaChat Lite
+    description: >
+      Быстрая и легкая модель для простых повседневных задач.
+      Работа с моделью через GigaChat API
+    purposes:
+      - fast_interactive_responses
+      - lightweight_generations
+    vendor: Сбер СалютДевайсы
+    version: 2.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - LITRES_CORPUS
+      - WIKIPEDIA_RU
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.01.01
+    realized_in: sber.systems.gigachat
+
+  sber.ai_model.gigachat_pro:
+    title: GigaChat Pro
+    description: >
+      Усовершенствованная модель для ресурсоемких задач, обеспечивающая максимальную эффективность
+      в обработке данных, креативности и соблюдении инструкций.
+      Работа с моделью через GigaChat API
+    purposes:
+      - advanced_dialogues
+      - multi-domain_task_performance
+    vendor: Сбер СалютДевайсы
+    version: 2.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - Q&A_CORPUS
+      - CODE_SNIPPET_COLLECTION
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.03.15
+    realized_in: sber.systems.gigachat
+
+  sber.ai_model.gigachat_max:
+    title: GigaChat Max
+    description: >
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+      Работа с моделью через GigaChat API
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер СалютДевайсы
+    version: 2.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+    realized_in: sber.systems.gigachat
+
+  sber.ai_model.gigachat_embeddings:
+    title: GigaChat Embeddings
+    description: >
+      Модель предназначена для формирования высококачественных представлений текста в виде численных векторов
+      (эмбеддингов), используемых для расчёта сходства документов и анализа семантической близости.
+      Работа с моделью через GigaChat API
+    purposes:
+      - text_vector_representation
+      - similarity_calculation
+    vendor: Сбер СалютДевайсы
+    version: 1.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - TEXT_SIMILARITY_CORPUS
+      - DOCUMENT_COLLECTION
+    hyperparameters:
+      context_window_tokens: 512
+    created_at: 2023.04.01
+    realized_in: sber.systems.gigachat
+
+  sber.ai_model.gigachat_embeddings_gigar:
+    title: GigaChat EmbeddingsGigaR
+    description: >
+      Усовершенствованная версия предыдущей модели с увеличенными ресурсами обработки больших объемов данных и 
+      повышенной точностью вычисления семантического соответствия.
+      Работа с моделью через GigaChat API
+    purposes:
+      - advanced_embedding_generation
+      - large-scale_semantic_analysis
+    vendor: Сбер СалютДевайсы
+    version: 1.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - BIG_WEB_CORPUS
+      - SCIENTIFIC_PAPERS
+    hyperparameters:
+      context_window_tokens: 4096
+    created_at: 2023.05.15
+    realized_in: sber.systems.gigachat
+
+  sber.ai_model.gigachat_lite_private_cloud:
+    title: GigaChat Lite в частном облаке
+    description: >
+      Быстрая и легкая модель для простых повседневных задач.
+      Развернута в частном облаке
+    purposes:
+      - fast_interactive_responses
+      - lightweight_generations
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - LITRES_CORPUS
+      - WIKIPEDIA_RU
+    hyperparameters:
+      context_window_tokens: 128000
+
+  sber.ai_model.gigachat_pro_private_cloud:
+    title: GigaChat Pro в частном облаке
+    description: >
+      Усовершенствованная модель для ресурсоемких задач, обеспечивающая максимальную эффективность
+      в обработке данных, креативности и соблюдении инструкций.
+      Развернута в частном облаке
+    purposes:
+      - advanced_dialogues
+      - multi-domain_task_performance
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - Q&A_CORPUS
+      - CODE_SNIPPET_COLLECTION
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.03.15
+
+  sber.ai_model.gigachat_max_private_cloud:
+    title: GigaChat Max в частном облаке
+    description: >
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+      Развернута в частном облаке
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+
+  sber.ai_model.gigachat_embeddings_private_cloud:
+    title: GigaChat Embeddings в частном облаке
+    description: >
+      Модель предназначена для формирования высококачественных представлений текста в виде численных векторов
+      (эмбеддингов), используемых для расчёта сходства документов и анализа семантической близости.
+      Развернута в частном облаке
+    purposes:
+      - text_vector_representation
+      - similarity_calculation
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - TEXT_SIMILARITY_CORPUS
+      - DOCUMENT_COLLECTION
+    hyperparameters:
+      context_window_tokens: 512
+    created_at: 2023.04.01
+
+  sber.ai_model.gigachat_embeddings_gigar_private_cloud:
+    title: GigaChat EmbeddingsGigaR в частном облаке
+    description: >
+      Усовершенствованная версия предыдущей модели с увеличенными ресурсами обработки больших объемов данных и 
+      повышенной точностью вычисления семантического соответствия.
+      Развернута в частном облаке
+    purposes:
+      - advanced_embedding_generation
+      - large-scale_semantic_analysis
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - BIG_WEB_CORPUS
+      - SCIENTIFIC_PAPERS
+    hyperparameters:
+      context_window_tokens: 4096
+    created_at: 2023.05.15
+
+  sber.ai_model.gigachat_lite_on_prem:
+    title: GigaChat Lite локальная
+    description: >
+      Быстрая и легкая модель для простых повседневных задач.
+      Развернута в периметре компании
+    purposes:
+      - fast_interactive_responses
+      - lightweight_generations
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - LITRES_CORPUS
+      - WIKIPEDIA_RU
+    hyperparameters:
+      context_window_tokens: 128000
+
+  sber.ai_model.gigachat_pro_on_prem:
+    title: GigaChat Pro локальная
+    description: >
+      Усовершенствованная модель для ресурсоемких задач, обеспечивающая максимальную эффективность
+      в обработке данных, креативности и соблюдении инструкций.
+      Развернута в периметре компании
+    purposes:
+      - advanced_dialogues
+      - multi-domain_task_performance
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - Q&A_CORPUS
+      - CODE_SNIPPET_COLLECTION
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.03.15
+
+  sber.ai_model.gigachat_max_on_prem:
+    title: GigaChat Max локальная
+    description: >
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+      Развернута в периметре компании
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+
+  sber.ai_model.gigachat_embeddings_on_prem:
+    title: GigaChat Embeddings локальная
+    description: >
+      Модель предназначена для формирования высококачественных представлений текста в виде численных векторов
+      (эмбеддингов), используемых для расчёта сходства документов и анализа семантической близости.
+      Развернута в периметре компании
+    purposes:
+      - text_vector_representation
+      - similarity_calculation
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - TEXT_SIMILARITY_CORPUS
+      - DOCUMENT_COLLECTION
+    hyperparameters:
+      context_window_tokens: 512
+    created_at: 2023.04.01
+
+  sber.ai_model.gigachat_embeddings_gigar_on_prem:
+    title: GigaChat EmbeddingsGigaR локальная
+    description: >
+      Усовершенствованная версия предыдущей модели с увеличенными ресурсами обработки больших объемов данных и 
+      повышенной точностью вычисления семантического соответствия.
+      Развернута в периметре компании
+    purposes:
+      - advanced_embedding_generation
+      - large-scale_semantic_analysis
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - BIG_WEB_CORPUS
+      - SCIENTIFIC_PAPERS
+    hyperparameters:
+      context_window_tokens: 4096
+    created_at: 2023.05.15
+
+  sber.ai_model.gigachat_max_cloud_ru:
+    title: GigaChat Max на Cloud.ru Foundation models
+    description: >
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер Cloud.ru
+    version: 2.0
+    delivery_type: Public SaaS
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+
+#  yandex.ai_model.yandex_gpt:
+#    title: YandexGPT
+#    purposes:
+#      - natural language understanding
+#      - text generation
+#      - question answering
+#      - code assistant
+#    vendor: Yandex
+#    version: 2.5
+#    delivery_type: Public SaaS
+#    architecture: transformer
+#    training_datasets:
+#      - Russian language corpus
+#      - Web text datasets
+#    hyperparameters:
+#      num_layers: 24
+#      hidden_size: 1024
+#    updated_at: 2025.08.01
+#
+#  openai.ai_model.gpt_3_5:
+#    title: GPT-3.5
+#    purposes:
+#      - text generation
+#      - conversation
+#      - translation
+#      - summarization
+#    vendor: OpenAI
+#    version: 3.5
+#    delivery_type: Public SaaS
+#    architecture: transformer
+#    training_datasets:
+#      - large-scale internet text corpora (books, articles, websites)
+#    hyperparameters:
+#      parameters_billion: 175
+#      context_window_tokens: 16385
+#    updated_at: 2025.03.01
+#
+#  openai.ai_model.gpt_4:
+#    title: GPT-4
+#    purposes:
+#      - advanced natural language understanding
+#      - text and image input analysis
+#      - complex reasoning
+#      - code generation
+#    vendor: OpenAI
+#    version: 4.0
+#    delivery_type: Public SaaS
+#    architecture: transformer
+#    training_datasets:
+#      - large-scale internet text and image datasets
+#    hyperparameters:
+#      parameters_billion: 1000
+#      context_window_tokens: 128000
+#    updated_at: 2025.07.10
+#
+#  deepseek.ai_model.general_llm:
+#    title: Deepseek General LLM
+#    purposes:
+#      - general language understanding
+#      - conversational AI
+#      - recommendation systems
+#    vendor: Deepseek
+#    version: 2.1
+#    delivery_type: Public SaaS
+#    architecture: transformer
+#    training_datasets:
+#      - multilingual corpora
+#      - code repositories
+#    hyperparameters:
+#      num_layers: 26
+#      hidden_size: 2048
+#    updated_at: 2025.06.28
+#
+#  alibaba.ai_model.qwen_llm:
+#    title: Qwen LLM
+#    purposes:
+#      - general purpose large language model
+#      - text generation
+#      - dialogue systems
+#    vendor: Alibaba
+#    version: 1.5
+#    delivery_type: Public SaaS
+#    architecture: transformer
+#    training_datasets:
+#      - multilingual internet text corpus
+#    hyperparameters:
+#      num_layers: 24
+#      hidden_size: 2048
+#    updated_at: 2025.07.15
+

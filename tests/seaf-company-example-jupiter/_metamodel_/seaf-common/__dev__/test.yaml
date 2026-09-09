@@ -1,0 +1,19 @@
+contexts:
+  test:
+    title: Test
+    location: Test
+
+aspects:
+  test:
+    title: Test
+    location: Test
+
+components:
+  test:
+    title: Test
+    location: Test
+
+docs:
+  test:
+    title: Test
+    location: Test

@@ -1,0 +1,35 @@
+# Назначение: Подготовка датасета `kadzo.ds.ta.network_components` (network components) в контуре kadzo.
+# Используется: ta/dataset_parts/* и объединенные TA-таблицы через reverse2seaf2.ds.ta.kadzo.*.
+datasets:
+  kadzo.ds.ta.network_components:
+    source: >
+      (
+        $services := data_lake."kadzo.v2023.tech_services";
+        $target_classes := ["Шлюзы, Балансировщики, Proxy"];
+        
+        $services.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          
+          $is_target := $obj.class in $target_classes;
+          
+          $is_target ? {
+            "kadzo.netcomp." & $id : {
+              "__id__": "kadzo.netcomp." & $id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "Сетевое устройство",
+              "title": $obj.title,
+              "description": $obj.description,
+              "app_components": $obj.provides ? $obj.provides : [],
+              "type": "Программно-определяемый",
+              "role": "Межсетевой экран",
+              "vendor": "Unknown",
+              "model": "Virtual Appliance",
+              "location": [],
+              "network_connection": [],
+              "source": "kadzo",
+              "legacy_id": $id
+            }
+          } : {}
+        ) ~> $merge()
+      )

@@ -1,0 +1,53 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.ai.models:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          model_params:
+            title: Параметры модели
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: model_params
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      model_params:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.ai.models
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $obj2present := $lookup(objects, $params.id);
+          $all_objects := all_objects;
+          [
+              { "field_name": "Поставщик", "field_content": { "value": $obj2present.vendor} },
+              { "field_name": "Версия", "field_content": { "value": $obj2present.version } },
+              { "field_name": "Вариант поставки", "field_content": { "value": $obj2present.delivery_type } },
+              { "field_name": "Модель создана", "field_content": { "value": $obj2present.created_at } },
+              { "field_name": "Модель обновлена", "field_content": { "value": $obj2present.updated_at } },
+              { "field_name": "Цели применения", "field_content": { "value": ($obj2present.purposes ~> $join("\n") ) } },
+              { "field_name": "Архитектура", "field_content": { "value": $obj2present.architecture } },
+              { "field_name": "Обучена на данных", "field_content": { "value": $obj2present.training_datasets ~> $join("\n") } },
+              { "field_name": "Гиперпараметры", "field_content": { "value": $obj2present.hyperparameters.$each(function($v, $k){ $k & ": " & $v })~>$join("\n")  } }
+          ];
+          )

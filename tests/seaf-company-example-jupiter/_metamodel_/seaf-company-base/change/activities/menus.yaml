@@ -1,0 +1,18 @@
+entities:
+  seaf.company.change.activities:
+    menu: >
+      (
+          $entity_id := "seaf.company.change.activities";
+          $domain_id := "seaf.company.change";
+          $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+          $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id) + 200;
+          $menu := $seaf_fn_generate_menu_item("Портфель инициатив", $root_menu);
+          [
+          $exists($.$lookup($entity_id)) 
+          ?   {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order
+              }
+          ]  
+      )

@@ -1,0 +1,169 @@
+seaf.company.systems:
+  jupiter.app_system.ecm_news:
+    title: АС ECM Новости
+    class: Продуктовая фабрика (основная деятельность)
+    description: Система реализует базовую функциональность работы с новостями и знаниями
+    categories:
+      - jupiter.fo.news_production
+      - jupiter.sys_group.internal_dc
+      - jupiter.fo.gen_ai
+    criticality_level: Business Operational
+    lifecycle_stage: Промышленная эксплуатация
+    external_itsm_id: 123456
+    location: Внутренняя
+    ownership: Владеем экземпляром
+    stakeholders:
+      - role: Владелец от бизнеса
+        name: Иванов Иван
+        position: Директор по развитию
+        department: Департамент новостей
+        description: Определяет цели развития приложения
+      - role: Архитектор
+        name: Петров Петр
+        department: ДИТ
+    integrations:
+       i001:
+         title: Сводка новостей
+         description: Запрос сводки новостей у стороннего сервиса
+         lifecycle_stage: Опытная эксплуатация
+         service: jupiter.srv.ai_news_summary
+         data_exchange_grounds: Договор №1 от 25.11.2025
+         protection_methods:
+           - ГОСТ 1024
+           - ГОСТ 2048
+         comments:
+           - Комментарий 1 к интеграции И001
+           - Комментарий 2 к интеграции И001
+    target_status: Нецелевая
+    uses_technologies:
+      - technology: jupiter.technology.java
+        description: Основной функционал приложения написан на java
+      - technology: jupiter.technology.xyz_lang
+        description: Экспериментальное использование нового ЯП
+      - technology: jupiter.technology.xyz_compiler
+        description: Тестируем новый компилятор xyz
+    performance: номинальная производительность 150 TPS
+    rpo: 2
+    rto: 8
+    sla: 98.00
+    realizes_functions:
+      - function: jupiter.function.news_publish
+        target_status: Целевая
+        service: jupiter.srv.news_publish
+        description: Реализация функции по инновационному подходу
+        lifecycle_stage: Опытная эксплуатация
+      - function: jupiter.function.news_management
+        target_status: Целевая
+        service: jupiter.srv.news_feed
+        description: Классический CRUD по ведению новостей
+        lifecycle_stage: Промышленная эксплуатация
+      - function: jupiter.function.shipping
+        target_status: Нецелевая
+        description: Доставка новостей в печатном виде
+        lifecycle_stage: Отменена
+    scalability: Горизонтальная
+    monitoring:
+      - Grafana`
+      - Impulse
+    high_availability:
+      type: Да
+      capacity_management: Полное
+      capacity_reservation_type: Active
+    disaster_recovery:
+      type: Да
+      capacity_reservation_type: Active
+      capacity_management: Полное
+    backup:
+      placement: Offsite
+      backup_placement: Отсутствует
+    comments:
+      - Комментарий по системе АС ECM Новости
+      - Еще один комментарий
+
+
+  jupiter.app_system.news_summary:
+    title: Внешняя АС ИИ Агенты создания новостей
+    description: Внешние сервисы по ИИ созданию новостей
+    class: ИИ-агент
+    location: Внешняя
+    realizes_functions:
+      - function: jupiter.function.ai_news_summary
+        service: jupiter.srv.ai_news_summary
+        lifecycle_stage: Промышленная эксплуатация
+        target_status: Нецелевая
+        description: Используется пока не будет реализован собственный ИИ-агент
+    lifecycle_stage: Промышленная эксплуатация
+    criticality_level: Business Operational
+    categories:
+      - jupiter.sys_group.external_partners
+      - jupiter.fo.news_production
+    stakeholders:
+      - role: Архитектор
+        name: Иванов Дмитрий
+
+# Сервисы системы
+seaf.company.services:
+  jupiter.srv.news_publish:
+    title: API Публикация новостей
+    description: Сервис публикации новостей
+    lifecycle_stage: Используется
+    integration_type: Очереди
+    communication_mode: async
+    trigger_type: По запросу (pull)
+    protection_methods:
+      - mTLS 4.0
+      - Шифрование ГОСТ
+    supporting_services:
+      - service: jupiter.srv.msg_via_kafka
+        type: Интеграционный транспорт
+        description: Работаем через основную Кафку компании
+      - service: jupiter.srv.gateway_vorona17
+        type: Шлюз
+        description: Защита трафика на границе сетевого периметра
+    endpoint_uri:
+      - kafka.q.company
+    data_flow:
+      - data_object: jupiter.le.model
+        direction: Вход
+        description: Входная информация для старта сервиса
+      - data_object: jupiter.le.color
+        direction: Выход
+        description: Результирующие данные работы сервиса
+
+    performance: 10 TPS
+    rpo: 8
+    rto: 24
+    sla: 99%
+    integration_technologies:
+      - HTTPS
+      - Kafka protocol
+    specs:
+      - confl.jupiter.ru/spec-3342
+      - confl.jupiter.ru/spec-4456
+    comments:
+      - Комментарий 1 о сервисе публикации новостей
+      - Комментарий 2 о сервисе публикации новостей
+      - Комментарий 3 о сервисе публикации новостей
+
+  jupiter.srv.news_feed:
+    title: UI Лента новостей
+    description: Сервис формирования ленты новостей
+    integration_type: UI
+    data_flow:
+      - data_object: jupiter.le.size
+        direction: Выход
+
+    lifecycle_stage: Используется
+
+  jupiter.srv.ai_news_summary:
+    title: API ИИ-агента создателя сводки новостей
+    description: AI агент по созданию сводок новостей
+    lifecycle_stage: Используется
+    supporting_services:
+      - service: jupiter.srv.gateway_vorona11
+        type: Шлюз
+    endpoint_uri:
+      - api.news_summary.ru/abcd
+    data_flow:
+      - data_object: jupiter.le.model
+        direction: Выход

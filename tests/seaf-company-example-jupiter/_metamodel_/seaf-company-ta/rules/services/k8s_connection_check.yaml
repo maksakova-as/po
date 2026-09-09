@@ -1,0 +1,76 @@
+rules:
+  validators:
+    seaf.validation.ta.services.k8s_connection_check:
+      uid: SEAF-TA-K8S-CONN-001
+      title: Проверка корректности связи Кластера Kubernetes с сетями
+      description: |
+        Проверяет, что у каждого Кластера Kubernetes (seaf.company.ta.services.k8s)
+        указано поле `network_connection`, оно не пустое и каждый его элемент
+        ссылается на реально существующую сеть.
+      correction: |
+        Убедитесь, что для каждого объекта типа `seaf.company.ta.services.k8s` указано
+        непустое поле `network_connection` и что каждая указанная сеть
+        определена в `seaf.company.ta.services.networks`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.services.k8s_connection_check";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.k8s";
+                  $entities := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $net_ds := $.datasets."seaf.company.ds.ta.networks";
+                  $networks := $eval($net_ds.source, { "objects": $, "data_lake": $ });
+                  $net_keys := $keys($networks);
+                  $each($entities, function($entity, $entity_key) {
+                    (
+                      $primary := $entity.network_connection ? $entity.network_connection : [];
+                      $mgmt := $entity.management_networks ? $entity.management_networks : [];
+                      $nets := $distinct($append($primary, $mgmt));
+                      ($count($nets) = 0) ? {
+                        "uid": "seaf.validation.ta.k8s_connection_check.missing." & $entity_key,
+                        "title": "Кластер Kubernetes '" & $entity.title & "' не заполнен по network_connection",
+                        "correction": "ID: " & $entity_key & ". " & ("Заполните сети в поле `network_connection`."),
+                        "description": "Сущность '" & $entity.title & "' (UID: " & $entity_key & ") не содержит ссылок на сети."
+                      } : (
+                        $invalid := $filter($nets, function($c){ $not($c in $net_keys) });
+                        ($count($invalid) > 0) ? {
+                          "uid": "seaf.validation.ta.k8s_connection_check.notfound." & $entity_key,
+                          "title": "Кластер Kubernetes '" & $entity.title & "' содержит ссылку на несуществующую сеть.",
+                          "correction": "ID: " & $entity_key & ". " & ("Проверьте все сети в `network_connection` и `management_networks`."),
+                          "description": "Недействительные сети: " & $join($map($invalid, function($n){ $string($n) }), ", ")
+                        } : []
+                      )
+                    )
+                  }) ~> $reduce(function($curr, $acc){
+                    (
+                      $seq :=
+                        ($type($curr) = "array") ? $curr :
+                        ($type($curr) = "object") ? [$curr] :
+                        [];
+                      $seq ~> $reduce(function($value, $inner){
+                        $inner ~> $append($value)
+                      }, $acc)
+                    )
+                  }, [])
+                )
+              ])
+            )
+            : []
+        )

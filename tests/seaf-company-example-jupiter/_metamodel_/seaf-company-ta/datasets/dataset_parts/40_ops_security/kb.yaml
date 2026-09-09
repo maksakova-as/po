@@ -1,0 +1,15 @@
+# Назначение: Единый реестр сервисов кибербезопасности.
+# Используется: ta, auto_tests, presentations, internal_docs, widgets, rules и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.kb:
+    description: |
+      ??????? ?????????????????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.services.kbs";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

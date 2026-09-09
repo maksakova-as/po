@@ -1,0 +1,47 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.processes: seaf.company.ds.kadzo.processes
+
+  seaf.company.ds.kadzo.processes:
+    title: Процессы КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.ba.processes
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+
+    # Принятые допущения:
+    #    - системы выясняем косвенно - через ит-сервисы
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          /* Ищем все системы через сервисы, привязанные к данному процессу */
+          $systems_arr := (
+              $arr := $map($val.uses_it_services, function ($srv){(
+                  [$objects_links.$lookup($srv)[link_attr="realizes_functions.service" and link_dir="reverse"].linked_id]
+              )})[];
+              /* превращаем массив массивов в плоский массив */
+              $arr := $arr@$i.$append($a, $i)[];
+              $distinct($arr)
+          );
+          $products_arr := [$val.produces];
+          /* формируем объект КАДЗО */
+          { $key: {
+              "title": $val.title,
+              "description": $val.description,
+              "comments": $val.comments,
+              "products": $products_arr != [] ? $products_arr,
+              "systems": $systems_arr != [] ? $systems_arr
+      /*        "integrations": TODO связь процесса с интеграциями */
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

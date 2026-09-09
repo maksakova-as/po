@@ -1,0 +1,152 @@
+entities:
+  seaf.toolkit.mm_viewer.erds:
+    title: ER диаграммы метамодели
+    menu: >
+      (
+          [$."seaf.toolkit.mm_viewer.erds".$spread()[*.location].(
+              {
+                  "link": "/entities/seaf.toolkit.mm_viewer.erds/view?id=" & $keys()[0], 
+                  "location": *.location,
+                  "order": *.order
+      
+              }
+         )]
+      )
+    schema:
+      type: object
+      patternProperties:
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$":
+          type: object
+          properties:
+            title:
+              title: Название
+              type: string
+
+            location:
+              title: Пункт меню
+              type: string
+
+            entities:
+              title: Фильтр сущностей для отображения
+              type: array
+              items:
+                title: Фильтр сущ
+                type: string
+
+            show_subentities:
+              title: Показывать подсущности
+              description: >
+                Если true, то сущности, имеющие наследников, показываются как несколько сущностей. 
+                В противном случае (false) такие сущности показываются как обычные сущности.
+                Если не задано, то учитывается как false
+              type: boolean
+
+            entity_patterns_formats:
+              title: Форматы цвета и стиля для сущностей
+              description: Задается массив форматов для различных паттернов имен сущностей. Используется первое найденное сопадение с паттерном
+              type: array
+              items:
+                title: Массив форматов
+                type: object
+                additionalProperties: false
+                properties:
+                  pattern:
+                    title: Паттерн имени сущности
+                    type: string
+                  object_format:
+                    title: plantuml формат цвета\стиля для объекта
+                    type: string
+                  link_format:
+                    title: plantuml формат цвета\стиля для исходящей стрелки объекта
+                    type: string
+                required:
+                  - pattern
+                  - object_format
+
+
+          required:
+            - title
+            - entities
+      additionalProperties: false
+
+    presentations:
+      view:
+        title: Карта метамодели
+        type: plantuml
+        template: templates/erd_template.puml
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        origin:
+          entities: seaf.toolkit.ds.entities
+          entities_with_subentities: seaf.toolkit.ds.entities_with_subentities
+          data_lake: ($)
+
+        source: >
+          (                    
+          /*  ищем объект-контекст по параметрам которого будем строить схему */          
+          $presentation_context := $lookup(data_lake."seaf.toolkit.mm_viewer.erds", $params.id);
+          $patterns := $presentation_context.entities;
+          $entity_patterns_formats := $presentation_context.entity_patterns_formats;
+          
+          $entities := $presentation_context.show_subentities = true
+              ? entities_with_subentities
+              : entities;
+          
+          /* Функция находит строку формата (цвет\стиль) для заданного объекта */
+          $get_object_format := function($ent_id) {(
+              $e_format := [$map($entity_patterns_formats, function($f){(
+                  $wcard($ent_id, $f.pattern) ? $f.object_format
+              )})];
+              /* возвращаем первое совпадение */
+              $e_format[0];
+          )};
+          
+          /* Функция находит строку формата (цвет\стиль) для стрелки заданного объекта */
+          $get_link_format := function($ent_id) {(
+             $e_format := [$map($entity_patterns_formats, function($f){(
+                  $wcard($ent_id, $f.pattern) ? $f.link_format
+              )})];
+              /* возвращаем первое совпадение */
+              $e_format[0];
+          )};
+          
+          $entities_to_show := $patterns~>$map(
+              function($p) { $sift($entities, function($v, $k) { $wcard($k, $p) }) }
+          )~>$merge();
+          
+          /*  Формируем объект для визуализации */          
+          {
+              "entities": (        
+                  $entities_to_show.*~>$map(function($e){          
+                      {
+                          "__id__": $e.__id__,
+                          "title": $e.title,
+                          "description": $e.description,
+                          "object_format": $get_object_format($e.__id__),
+                          "props": $e.attrs.*[attr_type="value"]
+                      }
+                  })
+              ),
+              "links": ( 
+                  $arr_raw := $entities_to_show.*~>$map(function($e){
+                      $e.attrs.*[attr_type="link"][].
+                          {   
+                              "__id__": __id__,
+                              "from": $e.__id__,
+                              "to": link_to,
+                              "link_type": link_type,
+                              "title": title,
+                              "link_format": $get_link_format($e.__id__),
+                              "description": description
+                          }          
+                  });
+                  /* превращаем массив массивов в плоский массив */
+                  $arr_raw@$i.$append($a, $i)
+              )          
+          }
+          )

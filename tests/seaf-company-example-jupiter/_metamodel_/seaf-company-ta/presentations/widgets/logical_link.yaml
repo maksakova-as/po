@@ -1,0 +1,148 @@
+imports: []
+
+entities:
+  seaf.company.ta.services.logical_links:
+
+    presentations:
+      logical_link_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          links: seaf.company.ds.ta.logical_links
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $link := $lookup(links, $params.id);
+            $resolve := function($id) {
+               $exists($lookup(objects, $id)) ? $lookup(objects, $id).title : $id
+            };
+            $resolve_link := function($id) {
+               $exists($lookup(objects, $id)) ? "/entities/" & $lookup(objects, $id).__entity_id__ & "/card?id=" & $id : null
+            };
+            
+            $exists($link)
+              ? [
+                  {"field": "ID", "value": $link.__id__},
+                  {"field": "Название", "value": $link.title},
+                  {"field": "Источник", "value": $resolve($link.source), "link": $resolve_link($link.source)},
+                  {"field": "Приёмник", "value": ($type($link.target) = "array" ? $link.target : [$link.target]).($resolve($)) ~> $join(", ")},
+                  {"field": "Направление", "value": $link.direction}
+                ]
+              : []
+          )
+
+      logical_link_topology:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          links: seaf.company.ds.ta.logical_links
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $link := $lookup(links, $params.id);
+            $has_link := $exists($link.__id__);
+            $targets := $exists($link.target) ? ($type($link.target) = "array" ? $link.target : [$link.target]) : [];
+            $dir_raw :=
+              $exists($link.direction)
+                ? ($type($link.direction) = "array" ? ($link.direction[0] ? $link.direction[0] : "") : $link.direction)
+                : "";
+            $dir := $lowercase($string($dir_raw));
+            $arrow :=
+              (
+                $dir = "<->" or $dir = "<=>" or $dir = "<==>" or $dir = "двунаправленная" or $dir = "bi" or $dir = "bi-dir"
+              )
+              ? "<->"
+              : (
+                  ($dir = "<-" or $dir = "<--")
+                  ? "<--"
+                  : "-->"
+                );
+            $base := "@startuml\n" &
+              "left to right direction\n" &
+              "skinparam nodesep 80\n" &
+              "skinparam ranksep 80\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "\n";
+            $src_obj := $exists($link.source) ? $lookup(objects, $link.source) : {};
+            $src_id := $exists($src_obj.__id__) ? $src_obj.__id__ : $link.source;
+            $src_entity := $exists($src_obj.__entity_id__) ? $src_obj.__entity_id__ : "";
+            $src_title := $exists($src_obj.title) ? $replace($src_obj.title, "\"", "'") : $replace($string($src_id), "\"", "'");
+            $src_id_clean := $replace($string($src_id), /[^A-Za-z0-9_]/, "_");
+            $source_node :=
+              $has_link
+                ? "node \"Источник: [[/entities/" & $src_entity & "/card?id=" & $src_id & " " & $src_title & "]]\" as src_" & $src_id_clean & " #c8e6c9\n"
+                : "";
+            $target_nodes :=
+              $has_link and $exists($targets) and $targets != []
+                ? $targets.(
+                    $obj := $lookup(objects, $);
+                    $tid := $exists($obj.__id__) ? $obj.__id__ : $;
+                    $tent := $exists($obj.__entity_id__) ? $obj.__entity_id__ : "";
+                    $ttitle := $exists($obj.title) ? $replace($obj.title, "\"", "'") : $replace($string($tid), "\"", "'");
+                    $tid_clean := $replace($string($tid), /[^A-Za-z0-9_]/, "_");
+                    "node \"Приёмник: [[/entities/" & $tent & "/card?id=" & $tid & " " & $ttitle & "]]\" as tgt_" & $tid_clean & " #ffecb3\n"
+                    & "src_" & $src_id_clean & " " & $arrow & " tgt_" & $tid_clean & "\n"
+                  ) ~> $join("")
+                : "";
+            {
+              "diagram":
+                $has_link
+                  ? $base & $source_node & $target_nodes & "@enduml"
+                  : "@startuml\nnote \"Связь не найдена\" as no_link\n@enduml"
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

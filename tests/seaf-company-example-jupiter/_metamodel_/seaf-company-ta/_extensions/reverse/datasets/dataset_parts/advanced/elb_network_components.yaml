@@ -1,0 +1,54 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.elb_network_components` (elb network components) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.elb_network_components:
+    description: Converts Cloud.ru ELBs into network components (Load Balancers).
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $elbs := data_lake."seaf.ta.reverse.cloud_ru.advanced.elbs".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $elbs.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $comp_id := "reverse.netcomp.elb." & $normalize($raw_id);
+          $az_val := $record.availability_zone ? $record.availability_zone : ($record.az ? $record.az : null);
+          $az_refs := $az_val ? [$az_ref($az_val)] : [];
+          $card := "/entities/seaf.company.ta.components.networks/card?id=" & $comp_id;
+          {
+            ($comp_id): {
+              "__id__": $comp_id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "Load Balancer (reverse import)",
+              "__company_id__": $record.tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : ("ELB " & $raw_id),
+              "description": $join([
+                $record.description ? $record.description : "",
+                $record.address ? "Address: " & $record.address : "",
+                $record.operating_status ? "Status: " & $record.operating_status : ""
+              ][ $ != "" ], "\n"),
+              "type": "Load Balancer",
+              "availabilityzone": $az_refs,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.elbs",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+

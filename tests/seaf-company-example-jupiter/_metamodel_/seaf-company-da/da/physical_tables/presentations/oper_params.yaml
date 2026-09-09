@@ -1,0 +1,51 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.da.physical_tables:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          oper_params:
+            title: Операционные параметры
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: oper_params
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      oper_params:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.da.physical_tables
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $objects := objects;
+          $all_objects := all_objects;
+          $obj2present := $lookup($objects, $params.id);
+          [
+              { "field_name": "База данных", "field_content": { "value": $obj2present.database} },
+              { "field_name": "Схема", "field_content": { "value": $obj2present.schema_name} },
+              { "field_name": "Локационные атрибуты", "field_content": { "value": $obj2present.loc_attr ~> $join(", ") } },
+              { "field_name": "Кол-во строк", "field_content": { "value": $obj2present.rows_count } },
+              { "field_name": "Кол-во столбцов", "field_content": { "value": $obj2present.cols_count } }
+          ];
+          )

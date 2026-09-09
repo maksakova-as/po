@@ -1,0 +1,108 @@
+entities:
+  seaf.company.ai.models:
+    title: &entity_title ИИ Модели
+    description: &entity_description >
+      Структура, которая может обрабатывать и анализировать данные, переданные ей в запросе (промпте) и формировать ответ. 
+      Модель обладающая следующими свойствами:
+      \n- Понимание контекста 
+      \n- Способность к рассуждению и планированию
+      \n- Формирование осмысленного ответа на любой запрос
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.ai_model.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      ai_model:
+        route: "/"
+        title: ИИ Модель
+        symbol: "ai_model"
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.company.def.ai.stakeholders"
+            - $ref: "#/$defs/seaf.company.def.ai.realized_in"
+            - $ref: "#/$defs/seaf.company.def.ai.delivery_type"
+
+          properties:
+
+            purposes:
+              title: Цели применения
+              description: > 
+                Список целей применения модели, объясняющих для чего нужна модель (например, vector embeddings,
+                recommendation systems)
+              type: array
+              items:
+                type: string
+              minItems: 0
+              uniqueItems: true
+
+            vendor:
+              title: Поставщик
+              description: Компания - поставщик сервиса \ экземпляра модели
+              type: string
+
+            version:
+              title: Версия
+              description: Версия модели
+              type: [string, number]
+
+            architecture:
+              title: Архитектура
+              description: Архитектура модели. Выбирайте из списка или введите свой вариант
+              anyOf:
+                - type: string
+                  enum:
+                    - transformer
+                    - cnn
+                    - rnn
+                    - lstm
+                - type: string
+                  minLength: 1
+
+            training_datasets:
+              title: Обучающие данные
+              description: Наборы данных, использованных для тренировки модели
+              type: array
+              items:
+                type: string
+              minItems: 1
+
+            hyperparameters:
+              type: object
+              description: Гиперпараметры модели
+              additionalProperties:
+                type: [number, string, boolean]
+
+            created_at:
+              title: Создана
+              description: Дата создания модели
+              $ref: "#/$defs/seaf.def.type.date"
+
+            updated_at:
+              title: Обновлена
+              description: Дата последнего обновления модели
+              $ref: "#/$defs/seaf.def.type.date"
+
+          required:
+            - purposes
+            - vendor
+            - delivery_type
+

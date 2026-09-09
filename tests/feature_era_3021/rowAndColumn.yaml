@@ -1,0 +1,98 @@
+docs:
+  freeze-both-example:
+    location: Тестирование заморозки строк и столбцов/Пример 3 (строки и столбцы)
+    type: editable-table
+    show_data_error: true
+    new_row_allowed: true
+    selection: true
+    row_remove_allowed: true
+    excel_export_filter: true
+    update_index_file: root.yaml
+
+    yaml:
+      null_replace_string: ""
+
+    origin:
+      table_data: freeze_both.yaml
+    freeze:
+      rows: 3
+      columns: 2
+
+    page_size: 100
+    headers:
+      - value: ID
+        width: 100px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: name
+        width: 300px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: age
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: city
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: department
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: position
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: salary
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: experience
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+      - value: phone
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_both.yaml
+
+    source: >
+      (
+        {"body": table_data}
+      )

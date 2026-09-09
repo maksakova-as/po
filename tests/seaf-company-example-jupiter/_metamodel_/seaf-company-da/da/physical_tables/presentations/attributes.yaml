@@ -1,0 +1,80 @@
+entities:
+  seaf.company.da.physical_tables:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          attributes:
+            title: Атрибуты
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: attributes
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      attributes:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: attr
+            text: Атрибут
+            link: attr_link
+          - value: title
+            text: Название
+            link: attr_link
+          - value: description
+            text: Описание
+          - value: type
+            text: Тип данных
+          - value: linked_table
+            text: Связ.таблица
+            link: linked_table_link
+          - value: pdn_flag
+            text: ПДн
+          - value: cde_flag
+            text: КритДн
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+        origin:
+          objects: seaf.company.ds.da.physical_tables
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj := $objects.$lookup($id);
+          $data2present := $obj.attributes;
+          $each($data2present, function($val, $key) {(
+              $lt := $exists($val.linked_table) ? $seaf_fn_get_object_info($val.linked_table, $all_objects);
+              $attr_link := "/entities/" & $obj.__entity_id__ & "/attr_card?id=" & $obj.__id__ & "&attr_id=" & $key;
+              {
+                "attr": $key,
+                "attr_link": $attr_link,
+                "title": $val.title,
+                "description": $val.description,
+                "type": $val.type,
+                "linked_table": $lt.title,
+                "linked_table_link": $lt.link_to_card,
+                "pdn_flag": $val.pdn_flag ? "ДА" : "НЕТ",
+                "cde_flag": $val.cde_flag ? "ДА" : "НЕТ",
+                "lifecycle_stage": $val.lifecycle_stage
+              }
+          )})[];
+          )

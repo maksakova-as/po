@@ -1,0 +1,232 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.storages` (storages) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.storages:
+    description: |
+      Converts `seaf.ta.reverse.cloud_ru.advanced.vaults` into storage services enriched with DC/AZ and linked network connections.
+    origin:
+      data_lake: ($)
+      reverse_dcs: reverse2seaf2.ds.ta.reverse.dcs
+      reverse_servers: reverse2seaf2.ds.ta.reverse.servers
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""  
+        };
+        $to_number := function($value){
+          (
+            $exists($value) and $number($value) = $number($value)
+              ? $number($value)
+              : 0
+          )
+        };
+        $dcs := $exists(reverse_dcs)
+          ? reverse_dcs
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.dcs".source);
+        $servers := $exists(reverse_servers)
+          ? reverse_servers
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.servers".source);
+        $server_index := $servers.*.(
+          $rid := resource_id;
+          $rid != null
+            ? { ($rid): $ }
+            : {}
+        ) ~> $merge();
+        $resolve_vault_location := function($dc_value){
+          (
+            $norm := $normalize($dc_value);
+            $dc_ref := $norm != "" ? "reverse.dc." & $norm : null;
+            $dc_entry := $dc_ref != null ? $lookup($dcs, $dc_ref) : {};
+            {
+              "dc": $dc_ref,
+              "az": $exists($dc_entry.availabilityzone) ? $dc_entry.availabilityzone : []
+            }
+          )
+        };
+        $vaults := data_lake."seaf.ta.reverse.cloud_ru.advanced.vaults".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vaults.(
+          $vault := value;
+          $vault_key := key;
+          $resources := $type($vault.resources) = "array" ? $vault.resources : [];
+          $vault_loc := $resolve_vault_location($vault.DC);
+          $server_locations := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.location) ? $srv.location : []
+          )[] ~> $distinct();
+          $server_az := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.availabilityzone) ? $srv.availabilityzone : []
+          )[] ~> $distinct();
+          $vault_az := $type($vault_loc.az) = "array" ? $vault_loc.az : [];
+          $network_refs := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.subnets) ? $srv.subnets : []
+          )[] ~> $distinct();
+          $description_parts := (
+            [
+              $type($vault.description) = "string" ? $vault.description : "",
+              $vault.tenant ? "Tenant: " & $vault.tenant : ""
+            ]
+          )[ $ != "" ];
+          $location_refs := $distinct(
+            [
+              $vault_loc.dc,
+              $server_locations[]
+            ][ $ != null ]
+          );
+          $az_refs := $distinct(
+            [
+              $vault_az[],
+              $server_az[]
+            ][ $ != null ]
+          );
+          $total_size_bytes := $sum(
+            $resources.( $to_number(backup_size) )
+          );
+          $total_size_gb := $total_size_bytes / (1024 * 1024 * 1024);
+          {
+            ($vault_key): {
+              "__id__": $vault_key,
+              "__entity_id__": "seaf.company.ta.services.storages",
+              "__entity_title__": "Storage (reverse import)",
+              "__company_id__": $vault.tenant,
+              "__link_to_card__": "/entities/seaf.company.ta.services.storages/card?id=" & $vault_key,
+              "title": $vault.name,
+              "description": $description_parts != [] ? $join($description_parts, "\n") : null,
+              "external_id": $vault.id,
+              "type": "Cloud Backup Vault",
+              "software": "Cloud Backup Service",
+              "size": $round($total_size_gb, 3),
+              "availabilityzone": $az_refs,
+              "location": $location_refs,
+              "network_connection": $network_refs,
+              "sla": null,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vaults"
+            }
+          }
+        )[] ~> $merge()
+      )
+  reverse2seaf2.ds.ta.reverse.backups:
+    description: |
+      Creates backup entities per vault resource, linking them to storages.
+    origin:
+      data_lake: ($)
+      reverse_dcs: reverse2seaf2.ds.ta.reverse.dcs
+      reverse_servers: reverse2seaf2.ds.ta.reverse.servers
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""  
+        };
+        $to_number := function($value){
+          (
+            $exists($value) and $number($value) = $number($value)
+              ? $number($value)
+              : 0
+          )
+        };
+        $dcs := $exists(reverse_dcs)
+          ? reverse_dcs
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.dcs".source);
+        $servers := $exists(reverse_servers)
+          ? reverse_servers
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.servers".source);
+        $server_index := $servers.*.(
+          $rid := resource_id;
+          $rid != null
+            ? { ($rid): $ }
+            : {}
+        ) ~> $merge();
+        $resolve_vault_location := function($dc_value){
+          (
+            $norm := $normalize($dc_value);
+            $dc_ref := $norm != "" ? "reverse.dc." & $norm : null;
+            $dc_entry := $dc_ref != null ? $lookup($dcs, $dc_ref) : {};
+            {
+              "dc": $dc_ref,
+              "az": $exists($dc_entry.availabilityzone) ? $dc_entry.availabilityzone : []
+            }
+          )
+        };
+        $vaults := data_lake."seaf.ta.reverse.cloud_ru.advanced.vaults".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vaults.(
+          $vault := value;
+          $vault_key := key;
+          $vault_loc := $resolve_vault_location($vault.DC);
+          $resources := $type($vault.resources) = "array" ? $vault.resources : [];
+          $vault_az := $type($vault_loc.az) = "array" ? $vault_loc.az : [];
+          $server_locations := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.location) ? $srv.location : []
+          )[] ~> $distinct();
+          $server_az := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.availabilityzone) ? $srv.availabilityzone : []
+          )[] ~> $distinct();
+          $network_refs := $resources.(
+            $srv := $lookup($server_index, $.id);
+            $exists($srv.subnets) ? $srv.subnets : []
+          )[] ~> $distinct();
+          $location_refs := $distinct(
+            [
+              $vault_loc.dc,
+              $server_locations[]
+            ][ $ != null ]
+          );
+          $az_refs := $distinct(
+            [
+              $vault_az[],
+              $server_az[]
+            ][ $ != null ]
+          );
+          $resources.(
+            $res := $;
+            $res_id := $res.id;
+            $res_id != null
+              and $lowercase($string($res.protect_status)) != "deleted"
+              ? (
+                  $backup_key := $vault_key & "." & $res_id;
+                  $desc_parts := (
+                    [
+                      $res.name != null and $res.name != "" ? "Resource Name: " & $res.name : "",
+                      $res.type != null and $res.type != "" ? "Resource Type: " & $res.type : "",
+                      $res.size != null ? "Limit Size: " & $res.size & " GB" : "",
+                      $res.backup_size != null
+                        ? "Current Size: " & $round($to_number($res.backup_size) / (1024 * 1024 * 1024), 3) & " GB"
+                        : "",
+                      $res.backup_count != null ? "Backup Count: " & $res.backup_count : "",
+                      $res.protect_status != null ? "Protect Status: " & $res.protect_status : "",
+                      $exists($res.extra_info) ? "Extra Info: " & $string($res.extra_info) : ""
+                    ]
+                  )[ $type($) = "string" and $ != "" ];
+                  {
+                    ($backup_key): {
+                      "__id__": $backup_key,
+                      "__entity_id__": "seaf.company.ta.services.backups",
+                      "__entity_title__": "Backup (reverse import)",
+                      "__company_id__": $vault.tenant,
+                      "__link_to_card__": "/entities/seaf.company.ta.services.backup/card?id=" & $backup_key,
+                      "title": "Backup for " & ($res.name != null and $res.name != "" ? $res.name : $res_id),
+                      "description": $desc_parts != [] ? $join($desc_parts, "\n") : null,
+                      "external_id": $res_id,
+                      "path": "Vault: " & $vault.name,
+                      "replication": null,
+                      "network_connection": $network_refs,
+                      "availabilityzone": $az_refs,
+                      "location": $location_refs,
+                      "storage": $vault_key,
+                      "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vaults"
+                    }
+                  }
+                )
+              : {}
+          )
+        )[] ~> $merge()
+      )
+

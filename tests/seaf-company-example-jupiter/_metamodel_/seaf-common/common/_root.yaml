@@ -1,0 +1,7 @@
+imports:
+  - dochub_patching/_root.yaml
+  - configs.yaml
+  - defs.yaml
+  - data_types.yaml
+  - datasets.yaml
+  - functions/_root.yaml

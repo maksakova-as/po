@@ -1,0 +1,74 @@
+# Назначение: Единый реестр Kubernetes-сервисов.
+# Используется: rules, ta, auto_tests, internal_docs, widgets, presentations и другие разделы метамодели.
+datasets:
+  seaf.company.ds.ta.k8s:
+    description: |
+      ???????? Kubernetes
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.k8s";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.k8s";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: $merge([
+                    {
+                      "__id__": $new_id,
+                      "__entity_id__": "seaf.company.ta.services.k8s",
+                      "__link_to_card__": "/entities/seaf.company.ta.services.k8s/card?id=" & $new_id,
+                      "legacy_id": $id,
+                      "source": "seaf1"
+                    },
+                    $obj,
+                    {
+                      "availabilityzone": $obj.availabilityzone ? $obj.availabilityzone.("seaf1." & $) : [],
+                      "location": $obj.location ? $obj.location.("seaf1." & $) : [],
+                      "network_connection": $obj.network_connection ? $obj.network_connection.("seaf1." & $) : [],
+                      "management_networks": $obj.management_networks ? $obj.management_networks.("seaf1." & $) : [],
+                      "stand": $obj.stand ? $obj.stand.("seaf1." & $) : [],
+                      "backup": $obj.backup ? $obj.backup.("seaf1." & $) : [],
+                      "monitoring": $obj.monitoring ? $obj.monitoring.("seaf1." & $) : []
+                    }
+                  ])
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $reverse_data := "reverse" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $reverse_ctx := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              $eval($datasets."reverse2seaf2.ds.ta.reverse.k8s".source, $reverse_ctx)
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "reverse" and "reverse" in $sources_enabled ? $reverse_data : {}
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

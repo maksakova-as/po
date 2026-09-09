@@ -1,0 +1,135 @@
+entities:
+  # Наборы атрибутов, используемых в сущностях метамодели
+  seaf.company.def.ai:
+    title: Атрибуты для ИИ сущностей
+    schema:
+      $defs:
+
+        seaf.company.def.ai.not_used:
+          type: string
+          const: "Не используется"
+
+        seaf.company.def.ai.basic_attributes:
+          allOf:
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+          properties:
+            title:
+              title: Название
+              type: string
+              description: Используется в качестве названия объекта в схемах и отчетах
+            description:
+              title: Описание
+              description: Описание предназначения, сценария \ алгоритма работы данного элемента
+              type: string
+          required:
+            - title
+
+        seaf.company.def.ai.realized_in_refs:
+          anyOf:
+            - $ref: "#/$rels/seaf.company.ai.agents.agent"
+            - $ref: "#/$rels/seaf.company.app.systems.system" # если используется метамодель SEAF2
+            - $ref: "#/$rels/seaf.company.cybersec.systems.system" # если используется метамодель SEAF2
+            - $ref: "#/$rels/kadzo.v2023.systems.systems" # если используется метамодель КА ДЗО
+            - $ref: "#/$rels/kadzo.v2023.kb_systems.kb_systems" # если используется метамодель КА ДЗО
+            - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services" # если используется метамодель КА ДЗО
+            - $ref: "#/$rels/components.component" # энейблеры - если используется метамодель КА ДЗО
+            # TODO: ссылка на функции (сервисы) и\или точки взаимодействия\контракты
+
+        seaf.company.def.ai.realized_in:
+          properties:
+            realized_in:
+              title: Реализуется в
+              description: >
+                Ссылка на автоматизированную систему \ сервис \ ИИ-агента, с помощью которых реализуется данный элемент
+              $ref: "#/$defs/seaf.company.def.ai.realized_in_refs"
+
+        seaf.company.def.ai.delivery_type:
+          properties:
+            delivery_type:
+              title: Вариант поставки
+              description: >
+                Вариант поставки решения:
+                \n- Public SaaS - Сервис в публичном облаке 
+                \n- Private SaaS - Сервис в частном облаке 
+                \n- On-prem - Локально установленное решение на оборудовании компании
+              type: string
+              enum:
+                - Public SaaS
+                - Private SaaS
+                - On-prem
+
+        seaf.company.def.ai.stakeholders:
+          type: object
+          properties:
+            stakeholders:
+              title: Стейкхолдеры
+              description: Лица, играющие существенную роль по отношению к данному объекту
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  role:
+                    title: Роль
+                    description: >
+                      Роль стейкхолдера для данного объекта.
+                      \nВыбирайте из справочника или вводите свой вариант названия роли
+                    anyOf:
+                      - type: string
+                        enum:
+                          - Владелец от бизнеса
+                          - Владелец от ИТ
+                          - Куратор
+                          - Наблюдатель
+                      - type: string
+                        minLength: 3
+                  name:
+                    title: ФИО стейкхолдера
+                    type: string
+                  description:
+                    title: Описание
+                    description: Более подбробное Описание роли стейкхолдера
+                    type: string
+
+        seaf.company.def.ai.business_usages:
+          type: object
+          properties:
+            business_usages:
+              title: Использование бизнесом
+              description: >
+                Как бизнес использует данный агент в своей работе. 
+                Указываем ссылки на объекты типов "Продукты", "Каналы", "Процессы" с кратким описанием как именно 
+                используется данный агент.
+                \nЕсли в бизнесе агент не используется, то явно укажите эту опцию
+              oneOf:
+                - $ref: "#/$defs/seaf.company.def.ai.not_used"
+                - type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    # additionalProperties: false
+                    # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+                    # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+                    allOf:
+                      - $ref: "#/$defs/seaf.def.lifecycle_stage"
+                    properties:
+                      business_object:
+                        title: Ссылка на бизнес-объект
+                        description: Выберите id-объекта из справочника
+                        type: string
+                        anyOf:
+                          - $ref: "#/$rels/seaf.company.ba.channels.channel"  # если используется метамодель SEAF2
+                          - $ref: "#/$rels/seaf.company.ba.processes.process" # если используется метамодель SEAF2
+                          - $ref: "#/$rels/seaf.company.ba.products.product"  # если используется метамодель SEAF2
+                          - $ref: "#/$rels/kadzo.v2023.channels.channels"  # если используется метамодель КА ДЗО
+                          - $ref: "#/$rels/kadzo.v2023.processes.processes"  # если используется метамодель КА ДЗО
+                          - $ref: "#/$rels/kadzo.v2023.products.products"  # если используется метамодель КА ДЗО
+                          - $ref: "#/$rels/seaf.ba.processes.process" # если используется метамодель SEAF1
+                          - $ref: "#/$rels/seaf.ba.products.product"  # если используется метамодель SEAF1
+                      description:
+                        title: Описание
+                        description: Описание как используется данный агент
+                        type: string
+                    required:
+                      - business_object
+                      - description

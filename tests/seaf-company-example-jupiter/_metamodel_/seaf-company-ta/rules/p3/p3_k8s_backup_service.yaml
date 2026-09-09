@@ -1,0 +1,68 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_backup_service:
+      uid: SEAF-TA-P3-K8S-BACKUP-SVC
+      title: "[TACSA_4-P3-33-04] Наличие связи с сервисом резервного копирования (backup)"
+      description: |
+        Для каждого кластера ищем `seaf.company.ta.services.backups`, где кластер указан в `backed_up_services`.
+        Это гарантирует выгрузку etcd/объектов в центральную систему.
+      correction: |
+        Пропишите кластер в `backed_up_services` подходящего backup и синхронизируйте конфигурацию.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_backup_service";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+          $cfg_root2 := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $company_ids := $keys($cfg_root2.company ? $cfg_root2.company : ($configs.company ? $configs.company : {}));
+          $has_company_filter := $count($company_ids) > 0;
+          $is_local := function($obj, $key){
+            $has_company_filter
+              ? (
+                  ($exists($obj.__company_id__) and $obj.__company_id__ in $company_ids)
+                  or ($substringBefore($key, ".") in $company_ids)
+                )
+              : (
+                  $not($exists($obj.source)) or $obj.source = "seaf2"
+                )
+          };
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $code := "TACSA_4-P3-33-04";
+                  $backup_services := $."seaf.company.ta.services.backups".* ;
+                  $k8s := $."seaf.company.ta.services.k8s";
+                  $each($k8s, function($k, $k_key){
+                    (
+                      $not($is_local($k, $k_key)) ? [] :
+                      $matches := $filter($backup_services, function($svc){
+                        $exists($svc.backed_up_services) and $k_key in $svc.backed_up_services
+                      });
+                      ($count($matches)=0) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_backup_service.missing." & $k_key,
+                        "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_backup_service.missing." & $k_key,
+                        "title": "K8s '" & $k.title & "' не включён в backup",
+                        "correction": "ID: " & $k_key & ". " & ("Добавьте кластер в backed_up_services backup-сервиса"),
+                        "description": "Нет записи в seaf.company.ta.services.backups"
+                      }
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

@@ -1,0 +1,60 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.groups: seaf.company.ds.kadzo.groups
+
+  seaf.company.ds.kadzo.groups:
+    title: Группы систем КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.categories
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      configs: seaf.ds.configs
+
+    # Принятые допущения:
+    #    - корень дерева категорий считается типом и не переносится в Группы
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $configs := configs;
+      
+      /* Функция получения массива детей по заданному узлу дерева*/
+      $get_children := function($id, $level) {(
+          $exists($objects.$lookup($id))
+          ? (
+              $link2children := $objects_links.$lookup($id)[link_dir="reverse" and link_attr="is_part_of"]^(linked_id);
+              $exists($link2children) 
+              ? (
+                  $ch_arr := $map($link2children, function($l2c){(
+                      $get_children($l2c.linked_id, $level+1);
+                  )});
+                  /* превращаем массив массивов в плоский массив */
+                  $ch_arr := $ch_arr@$i.$append($a, $i);
+                  $append([{ "object_id": $id, "level": $level }], $ch_arr);
+              ) 
+              : [{ "object_id": $id, "level": $level }]
+          )
+      )};      
+      
+      /* Получаем массив узлов дерева групп */
+      $root_node := $configs."seaf->kadzo".groups.root_category;
+      $obj_in_arr := [$get_children($root_node, 0).object_id];
+      $obj_in_arr := $obj_in_arr[[1..$count($obj_in_arr)]]; /* избавляемся от 1 элемента */
+      
+      $obj_out := $map($obj_in_arr, function ($node) {(
+          /* готовим данные */
+          $obj := $obj_in.$lookup($node);
+          /* формируем объект КАДЗО */
+          { $obj.__id__: {
+              "title": $obj.title,
+              "parent": $obj.is_part_of != $root_node ? $obj.is_part_of,
+              "comments": $obj.comments
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

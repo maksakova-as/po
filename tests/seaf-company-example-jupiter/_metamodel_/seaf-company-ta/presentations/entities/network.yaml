@@ -1,0 +1,151 @@
+entities:
+  seaf.company.ta.services.networks:
+    presentations:
+      list:
+        title: Сети (LAN/WAN)
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: type
+            text: Тип
+          - value: ip
+            text: Подсеть / IP
+          - value: lan_type
+            text: Тип LAN
+          - value: provider
+            text: Провайдер
+          - value: locations
+            text: Локации
+            link: location_link
+          - value: segments
+            text: Сегменты
+          - value: id
+            text: ID
+        origin:
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $networks.*@$network.(
+              $location_objects := $exists($network.location)
+                ? $network.location[].($resolve_location($))
+                : [];
+              $segment_titles := $exists($network.segment)
+                ? $network.segment[].($lookup($segments, $).title)
+                : [];
+              {
+                "id": $network.__id__,
+                "link": "/entities/" & $network.__entity_id__ & "/card?id=" & $network.__id__,
+                "title": $network.title,
+                "type": $network.type,
+                "ip": $network.type = "LAN" ? $network.ipnetwork : $network.wan_ip,
+                "lan_type": $network.lan_type,
+                "provider": $network.provider,
+                "locations": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "segments": $segment_titles ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сети
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: network_card_details
+            align: "v"
+            order: 10
+          hierarchy:
+            title: Локация и сегменты
+            presentation: network_hierarchy
+            align: "v"
+            order: 20
+          platforms:
+            title: Подключения платформ
+            presentation: network_platform_connections
+            align: "v"
+            order: 30
+          infra:
+            title: Сети инфраструктуры хранения/обслуживания
+            presentation: network_infra_connections
+            align: "v"
+            order: 40
+          client_devices:
+            title: Клиентские устройства
+            presentation: network_client_devices
+            align: "v"
+            order: 50
+          network_devices:
+            title: Сетевые устройства
+            presentation: network_network_devices
+            align: "v"
+            order: 60
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.ds.objects
+          ta_all: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : (
+                  $obj_all := $lookup(ta_all, $params.id);
+                  $exists($obj_all.__id__)
+                    ? $seaf_fn_combine_widgets($self, $obj_all.__entity_id__, $obj_all.__id__)
+                    : { "type": "rows", "items": [] }
+                )
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

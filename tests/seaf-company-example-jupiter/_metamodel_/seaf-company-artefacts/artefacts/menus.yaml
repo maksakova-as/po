@@ -1,0 +1,33 @@
+entities:
+  seaf.company.artefacts:
+    config:
+      root_menu: Артефакты
+
+    menu: >
+      (
+          $entity_id := "seaf.company.artefacts";
+          $domain_id := "seaf.company.artefacts";
+          $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+          $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id) + 300;
+          $list_menu := $seaf_fn_generate_menu_item("", $root_menu);
+          
+          /* фомрируем п.меню для общего списка */
+          $menu_arr1 := [
+              $exists($.$lookup($entity_id)) 
+              ? {
+                  "link": "/entities/" & $entity_id & "/list",
+                  "location": $list_menu,
+                  "order": $root_menu_order
+                }
+          ];
+          /* фомрируем индивидуальный п.меню для каждого экземпляра */
+          $menu_arr2 := [
+              $.$lookup($entity_id).$spread()[*.menu].(
+                  {
+                      "link": "/entities/" & $entity_id & "/main?id=" & $keys()[0],      
+                      "location": $seaf_fn_generate_menu_item(*.menu, $root_menu)
+                  }
+              )
+          ];
+          $append($menu_arr1, $menu_arr2);
+      )

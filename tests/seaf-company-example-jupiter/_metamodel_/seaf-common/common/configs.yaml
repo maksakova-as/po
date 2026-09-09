@@ -1,0 +1,124 @@
+entities:
+  seaf.configs:
+    title: Конфигурации
+    description: Конфигурационные параметры архитектурного репозитория
+
+    objects:
+      config:
+        route: "/"
+        title: Конфигурация
+        symbol: "config"
+
+    schema:
+      type: object
+      description: |
+        Реестр настроек метамодели.
+        Задавайте ключи вида "seaf.company.ba" для задания настроек уровня домена или поддомена.
+        Специальный ключ "company" используется для задания идентификационной информации о компании - 
+        пользователе метамоделей SEAF
+        Специальный ключ "global" используется для задания настроек, действующих глобально на уровне всего арх. репозитория
+
+      additionalProperties: false
+
+      patternProperties:
+        "^global$":
+          title: Глобальные настройки
+          description: |
+            Задайте значения глобальных параметров 
+
+          type: object
+          additionalProperties: false
+          properties:
+            company_id_segments_number:
+              title: Количество сегментов в ID компании
+              description: |
+                Сколько сегментов, разделенных точкой, используется для кодирования идентификатора компании 
+                внутри ключа объекта. Например, если ключ объекта выглядит так: sber.rtcom.jupiter.app_system.sistema_001, 
+                т.е. идентификатор компании sber.rtcom.jupiter, то в параметр пишем 3. 
+                Если параметр не задан, то используется значение по-умолчанию = 1
+              type: number
+
+        "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)+$":
+          title: Раздел настроек
+          type: object
+          additionalProperties: false
+
+          properties:
+            root_menu:
+              title: Корневое меню раздела
+              description: |
+                Используется в алгоритмах автогенерации пунктов меню для домена\раздела\элемента. 
+                Если для конкретного элемента в его настройках будет задан относительный пункт меню (без ведущего прямого слэша /),
+                то итоговый пункт меню будет равен root_menu/относительный_пункт_меню_элемента.
+                Если для конкретного элемента в его настройках будет задан абсолютный пункт меню (с ведущим прямым слэшем, например /Березка/Отчет 01),
+                то итоговый пункт меню будет равен этому абсолютному пункту меню элемента (root_menu будет проигнорирован)
+
+              type: string
+
+            root_menu_order:
+              title: Порядок корневого меню
+              description: |
+                Используется в алгоритмах автогенерации пунктов меню для домена\раздела
+                Задает базовый порядок сортировки. Рекомендуется задавать кратно 1000.
+              type: number
+
+        "^company$":
+          title: Информация о компании
+          description: |
+            Задайте ключ = имени компании. Этот ключ должен соответствовать префиксу, используемому 
+            в идентификаторах объектов арх. модели данной компании.
+            Например, для компании ООО Юпитер все объекты начинаются с префикса jupiter (jupiter.app_system.1c_erp и т.п.).
+            Поэтому ключ надо использовать jupiter
+
+          type: object
+
+          patternProperties:
+            ".+":
+              title: Компания
+              description: |
+                Задайте основную информацию о компании, которая будет использоваться в отчетах, схемах и
+                процедурах проверки качества данных
+              type: object
+
+              # additionalProperties: false
+              # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+              # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+              allOf:
+                - $ref: "#/$defs/seaf.def.basic_attributes"
+
+              properties:
+                aliases:
+                  title: Псевдонимы
+                  description: |
+                    Альтернативные имена компании
+                  type: array
+                  items:
+                    type: string
+                urls:
+                  title: URL
+                  description: |
+                    URL вебсайтов компании
+                  type: array
+                  items:
+                    type: string
+                legal_entities:
+                  title: Юридические лица
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    properties:
+                      inn:
+                        title: ИНН
+                        type: integer
+                      name:
+                        title: Название
+                        type: string
+                    required:
+                      - inn
+                      - name
+
+
+
+
+

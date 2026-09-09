@@ -1,0 +1,31 @@
+seaf.company.artefacts:
+  jupiter.adr.doc_01:
+    menu: ADR/ADR 01
+    template: adr_doc_01.md
+
+    title: ADR 01
+    type: Обоснование архитектурного решения (ADR)
+    date_created: 2025Q2
+    version: 01/04
+
+    status: Действующий
+
+    task_tracker_links:
+      - https://jira.sberbank.ru/browse/SEAFDEV-144
+
+    authors:
+      - name: Иванов Иван
+        comment: автор
+      - name: Петров Петр
+        comment: Соавтор, мейнтейнер
+
+    stakeholders:
+      - role: Согласующий
+        name: Васильев Василий
+        description: Согласовано
+      - role: Утверждающий
+        name: Михайлов Михаил
+
+    references:
+      - url: www.leningrad.spb.ru
+        comment: Вводные по задаче

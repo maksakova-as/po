@@ -1,0 +1,22 @@
+entities:
+  seaf.company.ba.clients:
+    presentations:
+      card:
+        title: Карточка объекта
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+
+        type: mkr-grid
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+              $obj := $lookup(objects, $params.id);
+              $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__);
+          )

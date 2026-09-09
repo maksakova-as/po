@@ -1,0 +1,252 @@
+!pragma horizontalLineBetweenDifferentPackageAllowed
+!pragma layout elk
+'Общее позиционирование
+
+allowmixing
+
+skinparam {
+
+    titleFontSize 40
+
+	'maxMessageSize 200
+
+	'hide stereotype
+
+	tabSize 5
+
+	defaultfontname Arial
+
+	linetype ortho
+
+	'linetype polyline
+
+	nodesep 20
+
+	ranksep 20
+
+	shadowing true
+
+	stereotypefontsize 8
+
+	'padding 10
+
+    hyperlinkColor black
+
+    hyperlinkUnderline false
+
+}
+
+top to bottom direction
+'left to right direction
+hide circle
+hide empty members
+
+'Стили регионов
+skinparam rectangle {
+	borderthickness 2
+	fontstyle bold
+	attributefontsize 11
+	'sameClassWidth true
+	'padding 200
+	'ranksep 10
+	'bordercolor transparent
+	backgroundcolor #f0f0f0
+	bordercolor<<External-сеть>> transparent
+	backgroundcolor<<External-сеть>> #ddd5e4
+	bordercolor<<Internal-сеть>> transparent
+	backgroundcolor<<Internal-сеть>> #c5d7ef
+	borderstyle<<Группа систем>> dashed
+	bordercolor<< ДБ/ДЗО >> transparent
+	backgroundcolor<< ДБ/ДЗО >> #f0f0f0
+	bordercolor<<Каналы>> transparent
+	backgroundcolor<<Каналы>> #84b5f5
+	bordercolor<<Банк>> transparent
+	backgroundcolor<<Банк>> #e9f6dc
+	bordercolor<<ОЭ>> transparent
+	backgroundcolor<<ОЭ>> #a1f1dc
+	bordercolor<<Cloud>> transparent
+	backgroundcolor<<Cloud>> #a1f1dc
+	backgroundcolor<<Платформа>> #ffcc66
+}
+
+<style>
+    classDiagram {
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 10
+
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            linecolor #4e4948
+
+            'stereotypefontsize 9
+
+            header {
+                fontstyle bold
+                fontsize 11
+            }
+
+            .Внешняя {
+                linecolor gray
+                header {
+                    backgroundcolor lightblue/%lighten("#lightblue", 40)
+                }
+            }
+
+            .Нецелевая {
+                linecolor gray
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600-%lighten("#006600", 40)
+                }
+            }
+
+            .Нецелевая модифицируется {
+                linecolor red
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600/%lighten("#006600", 40)
+                }
+            }
+
+            .Целевая требуется выбор {
+                linecolor red
+                header {
+                    backgroundcolor orange/%lighten("#orange", 40)
+                }
+            }
+
+            .Целевая разработка {
+                linecolor red
+                header {
+                    backgroundcolor ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена {
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая внедрена полностью {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Целевая внедрена полностью модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Технический сервис {
+                header {
+                    backgroundcolor de924b/%lighten("de924b", 40)
+                }
+            }
+        }
+
+        node {
+            fontstyle bold
+            fontsize 14
+            linestyle 8
+            linethickness 2
+            backgroundcolor #GreenYellow/LightGoldenRodYellow
+            'backgroundcolor #84b5f5
+        }
+
+        frame {
+            fontstyle bold
+            fontsize 11
+            linestyle 8
+            linethickness 2
+
+            'backgroundColor #ffcc66
+        }
+
+        file {
+            backgroundcolor transparent
+            'borderColor transparent
+            linethickness 2
+            textcolor white
+            fontcolor transparent
+            fontsize 0
+        }
+
+        component {
+            .Person {
+                backgroundcolor transparent
+                lineColor transparent
+                linethickness 1
+                fontsize 14
+                fontstyle Bold
+            }
+        }
+    }
+</style>
+
+'hide stereotype
+hide <<>> stereotype
+hide <<Person>> stereotype
+'hide <<Технический сервис>> stereotype
+'hide <<Нецелевая>> stereotype
+
+set namespaceSeparator none
+title Архитектурная схема to-be
+
+@startuml
+
+    component jupiter.client.young_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Молодые люди..
+    ]
+    component jupiter.client.mature_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Зрелые люди..
+    ]
+    component jupiter.client.elderly_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Пожилые люди..
+    ]
+    component jupiter.client.employee <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Сотрудники..
+    ]
+
+    "jupiter.app_system.news_summary" -down-> "jupiter.app_system.ecm_news" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.ecm_news__news_summary__i001 П.1]]
+    "jupiter.tech_system.esb" -down-> "jupiter.app_system.1c_erp" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.esb" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.app_system.tms_logistics" -down-> "jupiter.tech_system.vorona" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.cs_system.esign" -down-> "jupiter.app_system.1c_erp" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__esign__i02 П.3]]
+    "jupiter.tech_system.kafka" -down-> "jupiter.app_system.mp_favorite_client" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.kafka" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.app_system.ecm_news" -down-> "jupiter.tech_system.vorona" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.tech_system.esb" -down-> "jupiter.app_system.efs_prod_expert" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_prod_expert__mes_clothing__i234 П.5]]
+    "jupiter.app_system.mes_clothing" -down-> "jupiter.tech_system.esb" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_prod_expert__mes_clothing__i234 П.5]]
+    "jupiter.tech_system.kafka" -down-> "jupiter.app_system.efs_news_editor" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.kafka" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.app_system.ecm_news" -down-> "jupiter.tech_system.vorona" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.app_system.news_summary" -down-> "jupiter.app_system.efs_news_editor" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__news_summary__i024 П.7]]
+
+    "jupiter.channel.website" -[dotted]down- "jupiter.app_system.website"
+    "jupiter.channel.digital4clients" -[dotted]down- "jupiter.app_system.mp_favorite_client"
+    "jupiter.channel.shopping_centre" -[dotted]down- "jupiter.app_system.efs"
+    "jupiter.channel.company_office" -[dotted]down- "jupiter.app_system.efs"
+
+
+@enduml

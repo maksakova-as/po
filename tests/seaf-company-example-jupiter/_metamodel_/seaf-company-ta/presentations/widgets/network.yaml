@@ -1,0 +1,521 @@
+entities:
+  seaf.company.ta.services.networks:
+
+    presentations:
+      card:
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: network_card_details
+            align: "v"
+            order: 10
+          hierarchy:
+            title: Локация и сегменты
+            presentation: network_hierarchy
+            align: "v"
+            order: 20
+          platforms:
+            title: Подключения платформ
+            presentation: network_platform_connections
+            align: "v"
+            order: 30
+          infra:
+            title: Сети инфраструктуры хранения/обслуживания
+            presentation: network_infra_connections
+            align: "v"
+            order: 40
+          client_devices:
+            title: Клиентские устройства
+            presentation: network_client_devices
+            align: "v"
+            order: 50
+          network_devices:
+            title: Сетевые устройства
+            presentation: network_network_devices
+            align: "v"
+            order: 60
+
+      network_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          networks: seaf.company.ds.ta.all_objects
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $network := $lookup($networks, $params.id);
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $resolve_segment := function($id){ $lookup($segments, $id) };
+            $rows := $exists($network)
+              ? [
+                  {"field": "ID", "value": $network.__id__},
+                  {"field": "Название", "value": $network.title},
+                  {"field": "Описание", "value": $network.description},
+                  {"field": "Тип", "value": $network.type},
+                  {"field": "Тип LAN", "value": $network.lan_type},
+                  {"field": "Подсеть / IP", "value": $network.type = "LAN" ? $network.ipnetwork : $network.wan_ip},
+                  {"field": "Провайдер", "value": $network.provider},
+                  {"field": "VLAN", "value": $network.vlan},
+                  {"field": "VRF", "value": $network.vrf},
+                  {"field": "Автономная система", "value": $network.autonomous_system},
+                  {"field": "Версия IP", "value": $network.ip_version},
+                  {"field": "Назначение", "value": $network.purpose},
+                  {"field": "Внешний ID", "value": $network.external_id}
+                ]
+              : [];
+            $location_rows := $exists($network.location)
+              ? $network.location[].(
+                  $loc := $resolve_location($);
+                  {
+                    "field": "Локация",
+                    "value": $loc.title,
+                    "link": $exists($loc) ? "/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ : null
+                  }
+                )
+              : [];
+            $segment_rows := $exists($network.segment)
+              ? $network.segment[].(
+                  $seg := $resolve_segment($);
+                  {
+                    "field": "Сегмент",
+                    "value": $seg.title,
+                    "link": $exists($seg) ? "/entities/" & $seg.__entity_id__ & "/card?id=" & $seg.__id__ : null
+                  }
+                )
+              : [];
+            $rows := $rows ~> $append($location_rows) ~> $append($segment_rows);
+            $exists($network) ? $rows : []
+          )
+
+      network_hierarchy:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $network := $lookup($networks, $params.id);
+            $has_network := $exists($network.__id__);
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $segment_nodes :=
+              $has_network and $exists($network.segment)
+                ? $network.segment[].(
+                    $seg := $lookup($segments, $);
+                    $exists($seg.__id__)
+                      ? "node \"Сегмент: [[../../entities/" & $seg.__entity_id__ & "/card?id=" & $seg.__id__ & " " & $seg.title & "]]\" as seg_" & $replace($seg.__id__,/[^A-Za-z0-9_]/,"_") & " #ffecb3\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $location_nodes :=
+              $has_network and $exists($network.location)
+                ? $network.location[].(
+                    $loc := $resolve_location($);
+                    $exists($loc.__id__)
+                      ? "node \"Локация: [[../../entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ & " " & $loc.title & "]]\" as loc_" & $replace($loc.__id__,/[^A-Za-z0-9_]/,"_") & " #bbdefb\n"
+                      : ""
+                  ) ~> $join("")
+                : "";
+            $network_node :=
+              $has_network
+                ? "node \"Сеть: [[../../entities/" & $network.__entity_id__ & "/card?id=" & $network.__id__ & " " & $network.title & "]]" &
+                  ($exists($network.ipnetwork) ? "\\n" & $network.ipnetwork : "") &
+                  ($exists($network.wan_ip) ? "\\n" & $network.wan_ip : "") &
+                  "\" as net_" & $replace($network.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                : "";
+            $edges_loc_seg :=
+              $has_network and $exists($network.location) and $exists($network.segment)
+                ? $network.location[].(
+                    $loc := $resolve_location($);
+                    $loc_id := $replace($loc.__id__,/[^A-Za-z0-9_]/,"_");
+                    $network.segment[].(
+                      $seg := $lookup($segments, $);
+                      $exists($seg.__id__)
+                        ? "loc_" & $loc_id & " --> seg_" & $replace($seg.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+                        : ""
+                    ) ~> $join("")
+                  ) ~> $join("")
+                : "";
+            $edges_seg_net :=
+              $has_network and $exists($network.segment)
+                ? $network.segment[].(
+                    $seg := $lookup($segments, $);
+                    $exists($seg.__id__)
+                      ? "seg_" & $replace($seg.__id__,/[^A-Za-z0-9_]/,"_") & " --> net_" & $replace($network.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+                      : ""
+                  ) ~> $join("")
+                : (
+                    $has_network and $exists($network.location)
+                      ? $network.location[].(
+                          $loc := $resolve_location($);
+                          $exists($loc.__id__)
+                            ? "loc_" & $replace($loc.__id__,/[^A-Za-z0-9_]/,"_") & " --> net_" & $replace($network.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+                            : ""
+                        ) ~> $join("")
+                      : ""
+                  );
+            $diagram :=
+              $has_network
+                ? (
+                    "@startuml\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam rectangle {\n" &
+                    "  BackgroundColor #f2f4f7\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    "skinparam note {\n" &
+                    "  BackgroundColor #fff8e1\n" &
+                    "  BorderColor #f0a500\n" &
+                    "  FontColor #382100\n" &
+                    "}\n" &
+                    $location_nodes &
+                    $segment_nodes &
+                    $network_node &
+                    $edges_loc_seg &
+                    $edges_seg_net &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Сеть не найдена\" as no_network\n@enduml";
+            {
+              "diagram": $diagram
+            }
+          )
+
+      network_platform_connections:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          networks: seaf.company.ds.ta.networks
+          compute_services: seaf.company.ds.ta.compute_services
+          cluster_virtualizations: seaf.company.ds.ta.cluster_virtualizations
+          k8s: seaf.company.ds.ta.k8s
+        source: >
+          (
+            $id := $params.id;
+            $net := $lookup(networks, $id);
+            $has_net := $exists($net.__id__);
+            $base := "@startuml\n" &
+              "left to right direction\n" &
+              "skinparam nodesep 60\n" &
+              "skinparam ranksep 60\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n";
+            $net_node :=
+              $has_net
+                ? "node \"Сеть: [[../../entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ & " " & $net.title & "]]\" as net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                : "";
+            $to_array := function($val){ $type($val) = "array" ? $val : ($exists($val) ? [$val] : []) };
+            $collect := function($objects, $title_prefix, $symbol){
+              $objects[$id in $to_array(network_connection) or $id in $to_array(management_networks)].{
+                "node": "node \"" & $title_prefix & ": [[../../entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]]\" as " & $symbol & "_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #d1c4e9\n",
+                "edge": "net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " --> " & $symbol & "_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+              }
+            };
+            $compute_nodes := $collect(compute_services.*, "Вычислительный сервис", "cs");
+            $virt_nodes := $collect(cluster_virtualizations.*, "Кластер виртуализации", "clv");
+            $k8s_nodes := $collect(k8s.*, "Kubernetes", "k8s");
+            $nodes := ($compute_nodes.node ~> $join("")) & ($virt_nodes.node ~> $join("")) & ($k8s_nodes.node ~> $join(""));
+            $edges := ($compute_nodes.edge ~> $join("")) & ($virt_nodes.edge ~> $join("")) & ($k8s_nodes.edge ~> $join(""));
+            $diagram :=
+              $has_net
+                ? $base & $net_node & $nodes & $edges & "@enduml"
+                : "@startuml\nnote \"Сеть не найдена\" as no_network\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      network_infra_connections:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          networks: seaf.company.ds.ta.networks
+          storages: seaf.company.ds.ta.storages
+          hw_storages: seaf.company.ds.ta.hw_storages
+          backup: seaf.company.ds.ta.backup
+          monitoring: seaf.company.ds.ta.monitoring
+          kb: seaf.company.ds.ta.kb
+        source: >
+          (
+            $id := $params.id;
+            $net := $lookup(networks, $id);
+            $has_net := $exists($net.__id__);
+            $base := "@startuml\n" &
+              "left to right direction\n" &
+              "skinparam nodesep 60\n" &
+              "skinparam ranksep 60\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n";
+            $net_node :=
+              $has_net
+                ? "node \"Сеть: [[../../entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ & " " & $net.title & "]]\" as net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                : "";
+            $to_array := function($val){ $type($val) = "array" ? $val : ($exists($val) ? [$val] : []) };
+            $collect := function($objects, $title_prefix, $symbol){
+              $objects[$id in $to_array(network_connection) or $id in $to_array(management_networks)].{
+                "node": "node \"" & $title_prefix & ": [[../../entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]]\" as " & $symbol & "_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #d1c4e9\n",
+                "edge": "net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " --> " & $symbol & "_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+              }
+            };
+            $storage_nodes := $collect(storages.*, "Хранилище", "st");
+            $hw_storage_nodes := $collect(hw_storages.*, "HW-СХД", "hwst");
+            $backup_nodes := $collect(backup.*, "Backup", "bk");
+            $mon_nodes := $collect(monitoring.*, "Monitoring", "mon");
+            $kb_nodes := $collect(kb.*, "Security", "kb");
+            $nodes := ($storage_nodes.node ~> $join("")) & ($hw_storage_nodes.node ~> $join("")) & ($backup_nodes.node ~> $join("")) & ($mon_nodes.node ~> $join("")) & ($kb_nodes.node ~> $join(""));
+            $edges := ($storage_nodes.edge ~> $join("")) & ($hw_storage_nodes.edge ~> $join("")) & ($backup_nodes.edge ~> $join("")) & ($mon_nodes.edge ~> $join("")) & ($kb_nodes.edge ~> $join(""));
+            $diagram :=
+              $has_net
+                ? $base & $net_node & $nodes & $edges & "@enduml"
+                : "@startuml\nnote \"Сеть не найдена\" as no_network\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      network_client_devices:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          networks: seaf.company.ds.ta.networks
+          user_devices: seaf.company.ds.ta.user_devices
+        source: >
+          (
+            $id := $params.id;
+            $net := $lookup(networks, $id);
+            $has_net := $exists($net.__id__);
+            $base := "@startuml\n" &
+              "left to right direction\n" &
+              "skinparam nodesep 60\n" &
+              "skinparam ranksep 60\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n";
+            $net_node :=
+              $has_net
+                ? "node \"Сеть: [[../../entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ & " " & $net.title & "]]\" as net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                : "";
+            $to_array := function($val){ $type($val) = "array" ? $val : ($exists($val) ? [$val] : []) };
+            $device_nodes :=
+              user_devices.*[$id in $to_array(network_connection)].{
+                "node": "node \"Клиентское устройство: [[../../entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]]\" as ud_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #d1c4e9\n",
+                "edge": "net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " --> ud_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+              };
+            $nodes := $device_nodes.node ~> $join("");
+            $edges := $device_nodes.edge ~> $join("");
+            $diagram :=
+              $has_net
+                ? $base & $net_node & $nodes & $edges & "@enduml"
+                : "@startuml\nnote \"Сеть не найдена\" as no_network\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      network_network_devices:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          networks: seaf.company.ds.ta.networks
+          network_components: seaf.company.ds.ta.network_components
+        source: >
+          (
+            $id := $params.id;
+            $net := $lookup(networks, $id);
+            $has_net := $exists($net.__id__);
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n";
+            $net_node :=
+              $has_net
+                ? "node \"Сеть: [[../../entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ & " " & $net.title & "]]\" as net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                : "";
+            $to_array := function($val){ $type($val) = "array" ? $val : ($exists($val) ? [$val] : []) };
+            $device_nodes :=
+              network_components.*[$id in $to_array(network_connection)].{
+                "node": "node \"Сетевое устройство: [[../../entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]]\" as nd_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #d1c4e9\n",
+                "edge": "net_" & $replace($net.__id__,/[^A-Za-z0-9_]/,"_") & " --> nd_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+              };
+            $nodes := $device_nodes.node ~> $join("");
+            $edges := $device_nodes.edge ~> $join("");
+            $diagram :=
+              $has_net
+                ? $base & $net_node & $nodes & $edges & "@enduml"
+                : "@startuml\nnote \"Сеть не найдена\" as no_network\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

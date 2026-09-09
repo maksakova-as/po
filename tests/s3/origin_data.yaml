@@ -1,0 +1,108 @@
+editable_table.s3.table.data:
+  #  =================== EMTPY ===================
+  row_10:
+    text: 1.1. Пустые. НЕ ЗАПОЛНЕН
+
+  row_11:
+    text: 1.2. Пустые. null
+    upload: null
+    upload_disabled: null
+
+  #  =================== STRING ===================
+  row_20:
+    text: 2.1. String. empty
+    upload: ""
+    upload_disabled: ""
+
+  row_21:
+    text: 2.2. String. valid link
+    upload: http://google.com
+    upload_disabled: http://google.com
+
+  row_22:
+    text: 2.3. String. valid link (relative)
+    upload: /main
+    upload_disabled: /main
+
+  row_23:
+    text: 2.4. String. invalid link
+    upload: hello world
+    upload_disabled: hello world
+
+  #  =================== NUMBERS ===================
+  row_30:
+    text: 3.1. Number
+    upload: 123
+    upload_disabled: 0
+
+
+  #  =================== OBJECT ===================
+  row_40:
+    text: 4.1. Object. href (valid) only
+    upload:
+      href: http://google.com
+    upload_disabled:
+      href: /main
+
+  row_41:
+    text: 4.2. Object. href (invalid) only
+    upload:
+      href: test
+    upload_disabled:
+      href: test
+
+  row_42:
+    text: 4.3. Object. href (valid) + text
+    upload:
+      href: http://google.com
+      text: GOOGLE
+    upload_disabled:
+      href: /main
+      text: MAIN
+
+  row_43:
+    text: 4.4. Object. href (INvalid) + text
+    upload:
+      href: test
+      text: JUST TEXT VALUE
+    upload_disabled:
+      href: test
+      text: JUST TEXT VALUE
+
+  row_44:
+    text: 4.4. Object. href (INvalid) + text
+    upload:
+      href: test
+      text: JUST TEXT VALUE
+    upload_disabled:
+      href: test
+      text: JUST TEXT VALUE
+
+  row_45:
+    text: 4.4. Object. random invalid props
+    upload:
+      test: test
+    upload_disabled:
+      test: test
+      text: JUST TEXT VALUE
+
+  #  =================== ARRAY ===================
+  row_50:
+    text: 5.1. Array<string - valid url>
+    upload:
+      - http://google.com
+      - http://ya.ru
+    upload_disabled:
+      - http://google.com
+      - http://ya.ru
+
+  row_51:
+    text: 5.2. Array<string - valid url + just text>
+    upload:
+      - http://google.com
+      - some text
+      - http://ya.ru
+    upload_disabled:
+      - http://google.com
+      - some text
+      - http://ya.ru

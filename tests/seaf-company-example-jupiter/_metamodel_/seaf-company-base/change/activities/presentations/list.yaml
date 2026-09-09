@@ -1,0 +1,42 @@
+entities:
+  seaf.company.change.activities:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: type
+            text: Тип
+            align: left
+          - value: status
+            text: Статус
+            align: left
+          - value: planned_start_date
+            text: План.старт
+            align: left
+          - value: planned_finish_date
+            text: План.финиш
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin: seaf.company.ds.change.activities
+        source: >
+          (
+          $.*@$val.{
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "type": $val.type,
+              "status": $val.status,
+              "planned_start_date": $val.planned_start_date,
+              "planned_finish_date": $val.planned_finish_date,
+              "description": $val.description
+          }[];
+          )

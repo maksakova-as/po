@@ -1,0 +1,99 @@
+entities:
+  kadzo.v2023.tech_services:
+    title: Технологические сервисы
+    description: Перечень технологических систем и сервисов, обеспечивающих функционирование ИТ-ландшафта компании. Технологические сервисы не должны непосредственно учувствовать в бизнес-процессах компании, иначе они должны рассматриваться как системы / компоненты, обеспечивающие выполнение бизнес-процессов и отображаться в Реестре АС
+    schema:
+      $defs:
+        kadzo.v2023.tech_services.ownership:
+          title: Модель владения
+          type: object
+          properties:
+            location:
+              title: Размещение
+              enum:
+                - Внешняя
+                - Внутренняя
+          required:
+            - location
+        kadzo.v2023.tech_services.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Создается
+                - Используется
+                - Выводится
+                - В архиве
+          required:
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.tech_services.ownership"
+            - $ref: "#/$defs/kadzo.v2023.tech_services.livestage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            class:
+              title: Класс систем
+              enum:
+                - BigData
+                - CDC (Change Data Capture)
+                - DWH (Хранилище данных)
+                - E-mail
+                - ETL
+                - FTP/SFTP/FTPS серверы
+                - MDM (Master Data Management)
+                - Message Queue
+                - NoSQL СУБД
+                - OLAP & BI
+                - Proxy-серверы
+                - Service Desk
+                - Web-серверы
+                - Архитектурный репозиторий
+                - Балансировка нагрузки (load balancers)
+                - Бекапирование и восстановление данных
+                - Видеосвязь
+                - Виртуализация
+                - Виртуализация рабочих мест (ВАРМ и VDI)
+                - Интеграционная шина
+                - Каналы обслуживания клиентов (фронтальные решения)
+                - Контакт-центр
+                - Контейнеризация
+                - Логгирование
+                - Мессенджеры
+                - Мониторинг
+                - Почтовый сервис
+                - Проверка и очистка данных
+                - Распределенный кэш
+                - Рассылка SMS/Push
+                - Реляционные СУБД
+                - Серверы приложений (Application Servers)
+                - Системы управления сетевым адресным пространством (DHCP, DNS т.д.)
+                - Телефония
+                - Удаленный доступ
+                - Управление конфигурациями
+                - Управление облачной инфраструктурой
+                - Файловое хранилище
+                - Иное
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - class
+    objects:
+      tech_services:
+        route: "/"
+        title: Технологические сервисы
+        symbol: "tech_services"

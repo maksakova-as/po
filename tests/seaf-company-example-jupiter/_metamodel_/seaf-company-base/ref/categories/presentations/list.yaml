@@ -1,0 +1,43 @@
+entities:
+  seaf.company.categories:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: root
+            text: Корневая категория
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin:
+          categories: seaf.company.ds.categories
+          all_objects: seaf.ds.objects
+
+        source: >
+          (
+          $categories := categories;
+          $all_objects := all_objects;
+          
+          $each($categories, function ($val, $key) {(
+              $rc := $exists($val.root_category) ? $seaf_fn_get_object_info($val.root_category, $all_objects);
+              {
+                  "id": $val.__id__,
+                  "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "title": $val.title,
+                  "root": $rc.title,
+                  "description": $val.description
+              };
+          )})[];
+          )

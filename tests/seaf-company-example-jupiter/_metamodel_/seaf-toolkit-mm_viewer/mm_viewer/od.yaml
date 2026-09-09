@@ -1,0 +1,85 @@
+seaf.toolkit.mm_viewer.obj_diagrams:
+  od_all_model:
+    title: Карта объектов - вся модель
+    location: SEAF/Инструменты/MM Viewer/Карта объектов (вся модель)
+    order: 93000
+    entity_patterns:
+      - "**" # Отражаем все домены
+
+  od_seaf_model:
+    title: Карта объектов - SEAF
+    location: SEAF/Инструменты/MM Viewer/Карта объектов SEAF
+    order: 93100
+    entity_patterns:
+      - "seaf.**"
+
+    grouping: true
+
+#    object_patterns_formats:
+#      - pattern: "*.infra_system.**" # техническая(инфра)-архитектура
+#        group: ТА (ИНФРАСТРУКТУРА)
+#        object_format: "#header:99FF99"
+#        link_format: "#line:60FF60;line.bold"
+
+
+    entity_patterns_formats:
+      - pattern: "seaf.company.ba.**" # бизнес-архитектура
+        group: БИЗНЕС-АРХИТЕКТУРА
+        object_format: "#header:FFFF88"
+        link_format: "#line:CCCC00;line.bold"
+
+      - pattern: "seaf.company.app.**" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.functions" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.app.systems" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.cybersec.systems"
+        group: АРХИТЕКТУРА КИБЕРБЕЗОПАСНОСТИ
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.sys_components" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.services"
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.ta.**" # техническая(инфра)-архитектура
+        group: ТА (ИНФРАСТРУКТУРА)
+        object_format: "#header:99FF99"
+        link_format: "#line:60FF60;line.bold"
+
+      - pattern: "seaf.company.change.**" # домен change
+        group: CHANGE
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.artefacts"
+        group: CHANGE
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.da.**" # домен архитектура данных
+        group: АРХИТЕКТУРА ДАННЫХ
+        object_format: "#header:FFD040"
+        link_format: "#line:CCA633"
+
+      - pattern: "seaf.company.ai.**"
+        group: ИИ-АРХИТЕКТУРА
+        object_format: "#header:FF66FF"
+        link_format: "#line:FF66FF"
+

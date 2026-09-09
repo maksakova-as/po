@@ -1,0 +1,66 @@
+entities:
+  seaf.company.da.physical_tables:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          physical_tables:
+            title: Физические таблицы, связанные с данной
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: physical_tables
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 30
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      physical_tables:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: path_to_object
+          - value: linked_title
+            text: Название
+            link: path_to_object
+          - value: linked_attr
+            text: Атрибут-связь
+
+        origin:
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $objects_links := objects_links;
+          $id := $params.id;
+          $data2present := $lookup($objects_links, $id)[linked_entity_id="seaf.company.da.physical_tables" and link_dir="reverse"] ;
+          $data2show := $data2present#$i.{
+                          "number": $i+1,
+                          "linked_id": linked_id,
+                          "path_to_object": "/entities/" &linked_entity_id& "/card?id=" & linked_id,
+                          "linked_title": linked_title,
+                          "linked_attr": (
+                              $pht_attr := $match(link_attr, /^(attributes)\.(.*)\.(linked_table)$/)[0].groups;
+                              $pht_attr != []
+                                  ? $pht_attr[1]
+                                  : "???"
+                                 
+                          )
+                        }[];
+          )

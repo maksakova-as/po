@@ -1,0 +1,31 @@
+docs:
+  2521.table:
+    type: editable-table
+    location: ERA / 2521 После загрузки файла некорректно отражается в таблице
+
+    format: >
+      (
+         {"2521.data": table}
+      )
+
+    origin:
+#      body: >
+#        ($."2521.data")
+      body: >
+        ({"row_1": {}})
+    headers:
+      - value: col_1
+        editable: true
+        save:
+          path: data.yaml
+#      - value: col_2
+#        type: upload
+#        editable: true
+#        save:
+#          path: data.yaml
+    source: >
+      (   
+          $log(body, "++++++++++++++++++++++++");
+          {"body": body}
+      )
+

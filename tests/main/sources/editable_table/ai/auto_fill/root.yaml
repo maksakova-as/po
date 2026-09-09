@@ -1,0 +1,3 @@
+imports:
+  - simple/root.yaml
+  - gigachat/root.yaml

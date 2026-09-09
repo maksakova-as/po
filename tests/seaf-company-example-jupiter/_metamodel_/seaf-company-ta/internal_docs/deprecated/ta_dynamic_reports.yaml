@@ -1,0 +1,439 @@
+# Датасеты и представления для динамической аналитики TA
+
+datasets:
+  docs.ta.metamodel.entities:
+    description: |
+      Динамическая выборка всех сущностей метамодели TA (seaf.ta.*) с краткой статистикой по объектам, $defs и ссылкам.
+    source: >
+      (
+        $entities := $lookup($, "entities");
+        $rows := $entities.$spread().(
+          $entity_id := $keys()[0];
+          $entity := *;
+          $match($entity_id, /^seaf\.ta\./)
+            ? (
+                $objects := $entity.objects ? $entity.objects.$spread().(
+                  {
+                    "route": *.route,
+                    "symbol": *.symbol
+                  }
+                ) : [];
+                {
+                  "entity_id": $entity_id,
+                  "title": $entity.title,
+                  "description": $entity.description,
+                  "domain": $contains($entity_id, ".services.") ? "services" : ($contains($entity_id, ".components.") ? "components" : "other"),
+                  "object_total": $count($objects),
+                  "object_routes": $objects.route ~> $join(", "),
+                  "symbols": $objects.symbol ~> $join(", "),
+                  "has_schema": $exists($entity.schema),
+                  "defs_total": $entity.schema.'$defs' ? $count($keys($entity.schema.'$defs')) : 0,
+                  "pattern_props": $entity.schema.patternProperties ? $count($entity.schema.patternProperties.$keys()) : 0,
+                  "rels_total": $entity.schema.'$rels' ? $count($keys($entity.schema.'$rels')) : 0
+                }
+              )
+            : {}
+        );
+        $filter($rows, function($v){ $exists($v.entity_id) })
+      )
+
+  docs.ta.metamodel.properties:
+    description: |
+      Раскрывает свойства всех $defs, schema.properties и patternProperties TA (название, тип, enum, обязательность и ссылки).
+    source: >
+      (
+        $entities := $lookup($, "entities");
+        $entities.$spread().(
+          $entity_id := $keys()[0];
+          $entity := *;
+          $match($entity_id, /^seaf\.ta\./)
+            ? (
+                $schema := $entity.schema;
+                $blocks := [
+                  (
+                    $schema.'$defs'
+                      ? $schema.'$defs'.$spread().(
+                        $def_name := $keys()[0];
+                        $def := *;
+                        $req_list := $def.required ? $def.required : [];
+                        $scope :=
+                          $contains($def_name, "dzo")
+                            ? "dzo"
+                            : (
+                                $contains($def_name, "base")
+                                  ? "base"
+                                  : (
+                                      $contains($def_name, "virtual")
+                                        ? "virtual"
+                                        : (
+                                            $contains($def_name, "physical") ? "physical" : "core"
+                                          )
+                                    )
+                              );
+                        $def.properties ? $def.properties.$spread().(
+                          $prop_name := $keys()[0];
+                          $prop := *;
+                          $refs := [
+                            $prop.'$ref',
+                            $prop.items.'$ref',
+                            $prop.items.anyOf.'$ref',
+                            $prop.items.oneOf.'$ref',
+                            $prop.items.allOf.'$ref',
+                            $prop.anyOf.'$ref',
+                            $prop.oneOf.'$ref',
+                            $prop.allOf.'$ref'
+                          ][];
+                          $refs := $refs[$exists($)];
+                          $links := $distinct($refs).(
+                            $rel_path := $substringAfter($, "#/$rels/");
+                            $segments := $split($rel_path, ".");
+                            $entity_part := $count($segments) > 1 ? ($contains($rel_path, ".") ? $replace($rel_path, "\\.[^.]+$", "") : $rel_path) : $rel_path;
+                            $target := $lookup($entities, $entity_part);
+                            {
+                              "entity": $entity_part,
+                              "object": $segments[-1],
+                              "title": $target.title ? $target.title : $entity_part,
+                              "link": "/entities/" & $entity_part & "/list"
+                            }
+                          );
+                          {
+                            "entity_id": $entity_id,
+                            "entity_title": $entity.title,
+                            "definition": $def_name,
+                            "definition_title": $def.title ? $def.title : $def_name,
+                            "definition_kind": "definition",
+                            "scope": $scope,
+                            "property": $prop_name,
+                            "title": $prop.title,
+                            "description": $prop.description,
+                            "type":
+                              $prop.type
+                                ? (
+                                    $type($prop.type) = "array"
+                                      ? $prop.type ~> $join("|")
+                                      : $prop.type
+                                  )
+                                : (
+                                    $prop.enum ? "enum"
+                                    : (
+                                        $prop.const ? "const"
+                                        : (
+                                            $prop.properties ? "object"
+                                            : ($prop.items ? "array" : "")
+                                          )
+                                      )
+                                  ),
+                            "enum": $prop.enum ? $prop.enum ~> $join(", ") : null,
+                            "required": $count($req_list[$ = $prop_name]) > 0,
+                            "links": $links,
+                            "ref": $links[0].entity ? $links[0].entity : null
+                          }
+                        ) : []
+                      )
+                    : []
+                  ),
+                  (
+                    $schema.properties
+                      ? $schema.properties.$spread().(
+                        $prop_name := $keys()[0];
+                        $prop := *;
+                        $refs := [
+                          $prop.'$ref',
+                          $prop.items.'$ref',
+                          $prop.items.anyOf.'$ref',
+                          $prop.items.oneOf.'$ref',
+                          $prop.items.allOf.'$ref',
+                          $prop.anyOf.'$ref',
+                          $prop.oneOf.'$ref',
+                          $prop.allOf.'$ref'
+                        ][];
+                        $refs := $refs[$exists($)];
+                        $links := $distinct($refs).(
+                          $rel_path := $substringAfter($, "#/$rels/");
+                          $segments := $split($rel_path, ".");
+                          $entity_part := $count($segments) > 1 ? ($contains($rel_path, ".") ? $replace($rel_path, "\\.[^.]+$", "") : $rel_path) : $rel_path;
+                          $target := $lookup($entities, $entity_part);
+                          {
+                            "entity": $entity_part,
+                            "object": $segments[-1],
+                            "title": $target.title ? $target.title : $entity_part,
+                            "link": "/entities/" & $entity_part & "/list"
+                          }
+                        );
+                        {
+                          "entity_id": $entity_id,
+                          "entity_title": $entity.title,
+                          "definition": "schema.properties",
+                          "definition_title": "Глобальные свойства",
+                          "definition_kind": "schema",
+                          "scope": "core",
+                          "property": $prop_name,
+                          "title": $prop.title,
+                          "description": $prop.description,
+                          "type":
+                            $prop.type
+                              ? (
+                                  $type($prop.type) = "array"
+                                    ? $prop.type ~> $join("|")
+                                    : $prop.type
+                                )
+                              : (
+                                  $prop.enum ? "enum"
+                                  : (
+                                      $prop.const ? "const"
+                                      : (
+                                          $prop.properties ? "object"
+                                          : ($prop.items ? "array" : "")
+                                        )
+                                    )
+                                ),
+                          "enum": $prop.enum ? $prop.enum ~> $join(", ") : null,
+                          "required": $schema.required ? ($count($schema.required[$ = $prop_name]) > 0) : false,
+                          "links": $links,
+                          "ref": $links[0].entity ? $links[0].entity : null
+                        }
+                       )
+                      : []
+                  ),
+                  (
+                    $schema.patternProperties
+                      ? $schema.patternProperties.$spread().(
+                        $pattern_key := $keys()[0];
+                        $pattern := *;
+                        $req_pat := $pattern.required ? $pattern.required : [];
+                        $scope := $contains($pattern_key, "dzo") ? "dzo" : "entity";
+                        $pattern.properties ? $pattern.properties.$spread().(
+                          $prop_name := $keys()[0];
+                          $prop := *;
+                          $refs := [
+                            $prop.'$ref',
+                            $prop.items.'$ref',
+                            $prop.items.anyOf.'$ref',
+                            $prop.items.oneOf.'$ref',
+                            $prop.items.allOf.'$ref',
+                            $prop.anyOf.'$ref',
+                            $prop.oneOf.'$ref',
+                            $prop.allOf.'$ref'
+                          ][];
+                          $refs := $refs[$exists($)];
+                          $links := $distinct($refs).(
+                            $rel_path := $substringAfter($, "#/$rels/");
+                            $segments := $split($rel_path, ".");
+                            $entity_part := $count($segments) > 1 ? ($contains($rel_path, ".") ? $replace($rel_path, "\\.[^.]+$", "") : $rel_path) : $rel_path;
+                            $target := $lookup($entities, $entity_part);
+                            {
+                              "entity": $entity_part,
+                              "object": $segments[-1],
+                              "title": $target.title ? $target.title : $entity_part,
+                              "link": "/entities/" & $entity_part & "/list"
+                            }
+                          );
+                          {
+                            "entity_id": $entity_id,
+                            "entity_title": $entity.title,
+                            "definition": $pattern_key,
+                            "definition_title": $pattern.title ? $pattern.title : ("Pattern " & $pattern_key),
+                            "definition_kind": "pattern",
+                            "scope": $scope,
+                            "property": $prop_name,
+                            "title": $prop.title,
+                            "description": $prop.description,
+                            "type":
+                              $prop.type
+                                ? (
+                                    $type($prop.type) = "array"
+                                      ? $prop.type ~> $join("|")
+                                      : $prop.type
+                                  )
+                                : (
+                                    $prop.enum ? "enum"
+                                    : (
+                                        $prop.const ? "const"
+                                        : (
+                                            $prop.properties ? "object"
+                                            : ($prop.items ? "array" : "")
+                                          )
+                                      )
+                                  ),
+                            "enum": $prop.enum ? $prop.enum ~> $join(", ") : null,
+                            "required": $count($req_pat[$ = $prop_name]) > 0,
+                            "links": $links,
+                            "ref": $links[0].entity ? $links[0].entity : null
+                          }
+                        ) : []
+                       )
+                      : []
+                  )
+                ];
+                $blocks[]
+              )
+            : []
+        )[]
+      )
+
+  docs.ta.example.capability_matrix:
+    description: |
+      Матрица «потребность АС → чем закрывается» по доменным датасетам TA.
+    origin:
+      compute_services: seaf.company.ds.ta.compute_services
+      servers: seaf.company.ds.ta.servers
+      k8s: seaf.company.ds.ta.k8s
+      clusters: seaf.company.ds.ta.clusters
+      storages: seaf.company.ds.ta.storages
+      hw_storages: seaf.company.ds.ta.hw_storages
+      networks: seaf.company.ds.ta.networks
+      network_segments: seaf.company.ds.ta.network_segments
+      network_components: seaf.company.ds.ta.network_components
+      kb: seaf.company.ds.ta.kb
+      monitoring: seaf.company.ds.ta.monitoring
+      backup: seaf.company.ds.ta.backup
+      stands: seaf.company.ds.ta.stands
+    source: >
+      (
+        $ctx := {
+          "compute_services": compute_services,
+          "servers": servers,
+          "k8s": k8s,
+          "clusters": clusters,
+          "storages": storages,
+          "hw_storages": hw_storages,
+          "networks": networks,
+          "network_segments": network_segments,
+          "network_components": network_components,
+          "kb": kb,
+          "monitoring": monitoring,
+          "backup": backup,
+          "stands": stands
+        };
+        $needs := [
+          {
+            "need": "Вычисления",
+            "category": "Compute",
+            "datasets": [
+              {"ref": "compute_services", "label": "Platform Compute"},
+              {"ref": "servers", "label": "Servers"},
+              {"ref": "k8s", "label": "Kubernetes"},
+              {"ref": "clusters", "label": "Virtualization Clusters"}
+            ]
+          },
+          {
+            "need": "Сеть",
+            "category": "Network",
+            "datasets": [
+              {"ref": "networks", "label": "LAN/WAN"},
+              {"ref": "network_segments", "label": "Segments"},
+              {"ref": "network_components", "label": "Network Components"}
+            ]
+          },
+          {
+            "need": "Хранение",
+            "category": "Storage",
+            "datasets": [
+              {"ref": "storages", "label": "Storage Services"},
+              {"ref": "hw_storages", "label": "HW Storage"}
+            ]
+          },
+          {
+            "need": "Кибербезопасность",
+            "category": "Security",
+            "datasets": [
+              {"ref": "kb", "label": "Security Services"},
+              {"ref": "monitoring", "label": "Monitoring"},
+              {"ref": "backup", "label": "Cyberbackup"}
+            ]
+          }
+        ];
+        $needs.(
+          $need := $;
+          $need.datasets.(
+            $data := $lookup($ctx, ref);
+            $data_items := $type($data) = "array"
+              ? $data
+              : ($exists($data) ? $data.$spread().* : []);
+            $links := $data_items.(
+              $spread().(
+                $field := $keys()[0];
+                $value := *;
+                $values := $type($value) = "array" ? $value : ($exists($value) ? [$value] : []);
+                $values[$type($) = "string" and $contains($, ".")].{
+                  "field": $field
+                }
+              )
+            )[];
+            $link_fields := $distinct($links.field).(
+              {
+                "field": $,
+                "count": $count($links[field = $])
+              }
+            );
+            $samples := [$data_items[0], $data_items[1], $data_items[2]] ~> $filter(function($v){ $exists($v) });
+            {
+              "need": $need.need,
+              "category": $need.category,
+              "dataset": ref,
+              "label": label,
+              "items_total": $count($data_items),
+              "sample_titles": $exists($samples[0]) ? $samples.title ~> $join("; ") : "",
+              "link_summary": $exists($link_fields)
+                ? $link_fields.(field & ":" & $string(count)) ~> $join(", ")
+                : ""
+            }
+          )
+        )[]
+      )
+
+docs:
+  docs.ta.metamodel.entities_table:
+    title: "Сущности метамодели TA"
+    location: /SEAF/Документация/Техническая архитектура/Метамодель/Сущности
+    type: table
+    headers:
+      - { value: entity_id, text: "ID", width: 25%, align: left, sortable: true }
+      - { value: title, text: "Название", width: 20%, align: left }
+      - { value: domain, text: "Блок", width: 8%, align: left }
+      - { value: object_total, text: "Объекты", width: 6%, align: right }
+      - { value: defs_total, text: "$defs", width: 6%, align: right }
+      - { value: pattern_props, text: "patternProps", width: 8%, align: right }
+      - { value: rels_total, text: "$rels", width: 6%, align: right }
+      - { value: object_routes, text: "Routes", width: 15%, align: left }
+    origin: docs.ta.metamodel.entities
+    source: >
+      (
+        $^(entity_id)
+      )
+
+  docs.ta.metamodel.properties_table:
+    title: "Свойства $defs TA"
+    location: /SEAF/Документация/Техническая архитектура/Метамодель/Свойства
+    type: table
+    headers:
+      - { value: entity_id, text: "Сущность", width: 20%, align: left }
+      - { value: definition, text: "Определение", width: 15%, align: left }
+      - { value: property, text: "Свойство", width: 15%, align: left }
+      - { value: title, text: "Описание", width: 20%, align: left }
+      - { value: type, text: "Тип", width: 8%, align: left }
+      - { value: enum, text: "Enum", width: 12%, align: left }
+      - { value: required, text: "Req", width: 5%, align: center }
+      - { value: ref, text: "$ref", width: 15%, align: left }
+    origin: docs.ta.metamodel.properties
+    source: >
+      (
+        $^(entity_id)
+      )
+
+  docs.ta.example.capability_matrix_table:
+    title: "Матрица покрытий потребностей"
+    location: /SEAF/Документация/Техническая архитектура/Пример/Матрица покрытий
+    type: table
+    headers:
+      - { value: need, text: "Потребность", width: 15%, align: left }
+      - { value: category, text: "Категория", width: 10%, align: left }
+      - { value: label, text: "Срез", width: 20%, align: left }
+      - { value: items_total, text: "Объекты", width: 8%, align: right }
+      - { value: sample_titles, text: "Примеры", width: 27%, align: left }
+      - { value: link_summary, text: "Связи", width: 20%, align: left }
+    origin: docs.ta.example.capability_matrix
+    source: >
+      (
+        $^(need)
+      )

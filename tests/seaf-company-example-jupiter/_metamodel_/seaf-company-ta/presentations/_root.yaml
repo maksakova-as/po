@@ -1,0 +1,6 @@
+# UI-слой TA: презентации сущностей, карточные виджеты и меню.
+
+imports:
+  - entities/_root.yaml
+  - widgets/_root.yaml
+  - menu/_root.yaml

@@ -1,0 +1,75 @@
+entities:
+  seaf.company.sys_components:
+    title: &entity_title Компоненты системы
+    description: &entity_description |
+      Конструктивные (рантайм) компоненты автоматизированной системы. Аналог уровня L2 C4model
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.sys_component.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+
+      additionalProperties: false
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.company.def.system_lifecycle_stage"
+            - $ref: "#/$defs/seaf.def.stakeholders"
+            - $ref: "#/$defs/seaf.company.def.uses_technologies"
+            - $ref: "#/$defs/seaf.company.def.tech_params.scalability"
+
+          properties:
+            type:
+              title: Тип компонента
+              description: |
+                Основная функциональная роль компонента, которую он выполняет в системе
+              type: string
+              enum:
+                - Фронт (web-приложение)
+                - Фронт (мобильное приложение)
+                - Фронт (десктопное приложение)
+                - Шлюз
+                - Proxy
+                - Балансировщик
+                - Распределенный кеш
+                - Web сервер
+                - Серверное приложение
+                - Микросервис
+                - Функция (serverless function)
+                - Консольное приложение
+                - Shell-скрипт
+                - ETL
+                - Интеграционный компонент
+                - Очередь сообщений (message queue)
+                - База данных
+                - Файловый ресурс
+                - Облачное хранилище
+                - Прочее
+
+            realizes_system:
+              title: Реализует систему
+              description: Конструктивной частью какой системы является данный компонент
+              anyOf:
+                - $ref: "#/$rels/seaf.company.app.systems.system"
+                - $ref: "#/$rels/seaf.company.cybersec.systems.system"
+
+          required:
+            - realizes_system
+            - type
+
+    objects:
+      sys_component:
+        route: "/"
+        title: Компонент системы
+        symbol: sys_component

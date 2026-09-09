@@ -1,0 +1,58 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.da.logical_links:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          summary:
+            title: Сводка
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: summary
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      summary:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.da.logical_links
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $objects := objects;
+          $all_objects := all_objects;
+          $obj2present := $lookup($objects, $params.id);
+          [
+              { "field_name": "Идентификатор объекта", "field_content": { "value": $obj2present.__id__} },
+              { "field_name": "Идентификатор объекта во внешней системе", "field_content": { "value": $obj2present.external_id } },
+              { "field_name": "Идентификатор сущности", "field_content": { "value": $obj2present.__entity_id__ } },
+              { "field_name": "Название", "field_content": { "value":$obj2present.title } },
+              { "field_name": "Описание", "field_content": { "value": $obj2present.description } },
+              { "field_name": "Тип", "field_content": { "value": $obj2present.type } },
+              { "field_name": "Сущность A", "field_content": ( $o := $seaf_fn_get_object_info($obj2present.entity_a, $all_objects); {"value": $o.title, "link": $o.link_to_card } ) },
+              { "field_name": "Множественность A", "field_content": { "value":$obj2present.multiplicity_a } },
+              { "field_name": "Сущность B", "field_content": ( $o := $seaf_fn_get_object_info($obj2present.entity_b, $all_objects); {"value": $o.title, "link": $o.link_to_card } ) },
+              { "field_name": "Множественность B", "field_content": { "value":$obj2present.multiplicity_b } },
+              { "field_name": "Направления связи", "field_content": { "value": $obj2present.visual_style } },
+              { "field_name": "Этап ЖЦ объекта", "field_content": { "value": $obj2present.lifecycle_stage } }
+          ];
+          )

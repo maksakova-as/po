@@ -1,0 +1,25 @@
+# Назначение: Индекс связей monitoring по обслуживаемому сервису.
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._idx.monitoring_by_service:
+    description: |
+      Индекс сервисов мониторинга по monitored_services.
+    origin:
+      monitoring: seaf.company.ds.ta.monitoring
+    source: >
+      (
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        (
+          monitoring.*.(
+            $m := $;
+            $to_list($m.monitored_services).{
+              "service_id": $,
+              "row": {
+                "title": $m.title,
+                "link": "/entities/" & $m.__entity_id__ & "/card?id=" & $m.__id__,
+                "type": "Monitoring"
+              }
+            }
+          )
+        ){ service_id: row }
+      )

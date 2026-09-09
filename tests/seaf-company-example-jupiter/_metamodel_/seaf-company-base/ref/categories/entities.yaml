@@ -1,0 +1,47 @@
+entities:
+  seaf.company.categories:
+    title: &entity_title Категории
+    description: &entity_description |
+      Универсальный механизм - категории. Категории можно использовать для разметки объектов с целью их группировки
+      в различных разрезах (функциональные области, домены, группы для визуализации и т.п.)
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.<тип_категории>.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - <тип_категории>. Рекомендуется указывать для удобства использования архитектурных данных особенно,
+      если используются несколько альтернативных категорий для классификации объектов 
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      category:
+        route: "/"
+        title: Категория
+        symbol: category
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: |
+                Используется для задания древовидной структуры категории. 
+                Если атрибут не задан, то данная категория будет считаться корневой (задающей тип). 
+                Все потомки данной категории будут считаться подкатегориями этого типа.
+              $ref: "#/$rels/seaf.company.categories.category"

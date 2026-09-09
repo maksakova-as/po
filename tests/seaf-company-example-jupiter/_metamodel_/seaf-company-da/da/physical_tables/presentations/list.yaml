@@ -1,0 +1,57 @@
+entities:
+  seaf.company.da.physical_tables:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: object_link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: description
+            text: Описание
+            align: left
+          - value: type
+            text: Тип
+            align: left
+          - value: system
+            text: Система
+            link: system_link
+            align: left
+          - value: dbms
+            text: СУБД
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+
+        origin:
+          objects: seaf.company.ds.da.physical_tables
+          all_objects: seaf.ds.objects
+
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $data2present := $objects;
+          $each($data2present, function($val, $key) {(
+              $s := $seaf_fn_get_object_info($val.system, $all_objects);
+              {
+                  "id": $val.__id__,
+                  "object_link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "title": $val.title,
+                  "description": $val.description,
+                  "type": $val.type,
+                  "system": $s.title,
+                  "system_link": $s.link_to_card,
+                  "dbms": $val.dbms,
+                  "lifecycle_stage": $val.lifecycle_stage
+              }
+          )})[];
+          )

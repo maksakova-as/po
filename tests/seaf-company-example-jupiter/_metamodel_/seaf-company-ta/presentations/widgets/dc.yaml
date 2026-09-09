@@ -1,0 +1,157 @@
+entities:
+  seaf.company.ta.services.dcs:
+
+    presentations:
+      dc_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          dcs: seaf.company.ds.ta.dcs
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $get_first := function($v) { $type($v) = "array" ? $v[0] : $v };
+            $dc := $lookup(dcs, $params.id);
+            $az_id := $get_first($dc.availabilityzone);
+            $az := $exists($dc) ? $lookup(azs, $az_id) : {};
+            $region_id := $get_first($az.region);
+            $region := $exists($region_id) ? $lookup(regions, $region_id) : {};
+            $exists($dc)
+              ? [
+                  {"field": "ID", "value": $dc.__id__},
+                  {"field": "Название", "value": $dc.title},
+                  {"field": "Описание", "value": $dc.description},
+                  {
+                    "field": "Зона доступности",
+                    "value": $az.title,
+                    "link": $exists($az) ? "/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ : null
+                  },
+                  {
+                    "field": "Регион",
+                    "value": $region.title,
+                    "link": $exists($region) ? "/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ : null
+                  },
+                  {"field": "Провайдер", "value": $dc.vendor},
+                  {"field": "Тип владения", "value": $dc.ownership},
+                  {"field": "Тип ЦОДа", "value": $dc.type},
+                  {"field": "Tier", "value": $dc.tier},
+                  {"field": "Адрес", "value": $dc.address},
+                  {"field": "Количество стоек", "value": $dc.rack_qty},
+                  {"field": "Внешний ID", "value": $dc.external_id}
+                ]
+              : []
+          )
+
+      dc_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          dcs: seaf.company.ds.ta.dcs
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $get_first := function($v) { $type($v) = "array" ? $v[0] : $v };
+            $is_present := function($val){ $val != null and $val != "" };
+            $dc := $lookup(dcs, $params.id);
+            $has_dc := $exists($dc.__id__);
+            $az_id := $get_first($dc.availabilityzone);
+            $az := $has_dc and $is_present($az_id) ? $lookup(azs, $az_id) : {};
+            $region_id := $get_first($az.region);
+            $region := $exists($region_id) ? $lookup(regions, $region_id) : {};
+            $has_az := $exists($az.__id__);
+            $has_region := $exists($region.__id__);
+            $no_az := $has_az = false;
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              (
+                $has_region
+                  ? "node \"Регион: [[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_az
+                  ? "node \"AZ: [[/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ & " " & $az.title & "]]\" as az_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_dc
+                  ? "node \"ЦОД: [[/entities/" & $dc.__entity_id__ & "/card?id=" & $dc.__id__ & " " & $dc.title & "]]\" as dc_node #d1c4e9\n"
+                  : ""
+              );
+            $diagram_core :=
+              ($has_region and $has_az ? "region_node --> az_node\n" : "") &
+              ($has_az and $has_dc ? "az_node --> dc_node\n" : "") &
+              ($no_az and $has_region and $has_dc ? "region_node --> dc_node\n" : "");
+            $diagram :=
+              $has_dc
+                ? ($base & $diagram_core & "@enduml")
+                : "@startuml\nnote \"ЦОД не найден\" as no_dc\n@enduml";
+            {
+              "diagram": $diagram
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

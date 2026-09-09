@@ -1,0 +1,5 @@
+# Корневой список общих правил валидации.
+imports:
+  - validation_json_schema.yaml
+  - empty_list_items.yaml
+  - schema_validation.yaml

@@ -1,0 +1,21 @@
+entities:
+  kadzo.components:
+    presentations:
+      card:
+        widgets:
+          summary:
+            title: Описание компонента
+            entity: kadzo.components
+            presentation: summary
+            align: "<"
+            order: 10
+          interactions:
+            title: Исходящие взаимодействия
+            entity: kadzo.components
+            presentation: interactions
+            order: 20
+          schema:
+            title: Схема взаимодействий
+            entity: kadzo.components_context_schema
+            presentation: component_context_select
+            order: 30

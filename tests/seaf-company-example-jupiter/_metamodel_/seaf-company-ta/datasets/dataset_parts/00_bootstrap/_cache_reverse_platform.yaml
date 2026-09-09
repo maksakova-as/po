@@ -1,0 +1,53 @@
+# Назначение: Промежуточный кеш платформенных объектов reverse (compute/k8s/storage/servers).
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._cache.reverse_platform:
+    description: |
+      Кэш reverse-датасетов платформенного слоя (compute/storage/monitoring/k8s/virtualization).
+    origin:
+      data_lake: ($)
+      reverse_core: seaf.company.ds.ta._cache.reverse_core
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        "reverse" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $ctx_base := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              $servers_cloud := reverse_core.servers_cloud ? reverse_core.servers_cloud : {};
+              $servers_vmware := reverse_core.servers_vmware ? reverse_core.servers_vmware : {};
+              $dcs_cloud := reverse_core.dcs_cloud ? reverse_core.dcs_cloud : {};
+              $ctx_stor := $merge([
+                $ctx_base,
+                {
+                  "reverse_servers": $servers_cloud,
+                  "reverse_dcs": $dcs_cloud
+                }
+              ]);
+              $ctx_vmvirt := $merge([
+                $ctx_base,
+                {
+                  "reverse_servers": $servers_vmware
+                }
+              ]);
+              {
+                "elbs": $eval($datasets."reverse2seaf2.ds.ta.reverse.elbs".source, $ctx_base),
+                "dmss": $eval($datasets."reverse2seaf2.ds.ta.reverse.dmss_clusters".source, $ctx_base),
+                "rdss": $eval($datasets."reverse2seaf2.ds.ta.reverse.rdss_clusters".source, $ctx_base),
+                "k8s": $eval($datasets."reverse2seaf2.ds.ta.reverse.k8s".source, $ctx_base),
+                "monitoring": $eval($datasets."reverse2seaf2.ds.ta.reverse.monitoring".source, $ctx_base),
+                "backups": $eval($datasets."reverse2seaf2.ds.ta.reverse.backups".source, $ctx_stor),
+                "storages": $eval($datasets."reverse2seaf2.ds.ta.reverse.storages".source, $ctx_stor),
+                "cluster_virtualizations_cloud": $eval($datasets."reverse2seaf2.ds.ta.reverse.cluster_virtualizations".source, $merge([$ctx_base, {"reverse_servers": $servers_cloud}])),
+                "cluster_virtualizations_vmware": $eval($datasets."reverse2seaf2.ds.ta.reverse.vmware.cluster_virtualizations".source, $ctx_vmvirt)
+              }
+            )
+          : {}
+      )

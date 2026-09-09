@@ -1,0 +1,5 @@
+seaf.configs:
+  seaf.company.cybersec:
+    root_menu: "Архитектура кибербезопасности"
+    root_menu_order: 6000
+

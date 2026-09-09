@@ -1,0 +1,107 @@
+functions:
+  seaf_fn_get_company_id_segments_number:
+    title: Возвращает количество сегментов в идентификаторе компании
+    description: |
+      Функция возвращает число - сколько сегментов используется в идентификаторе компании
+    params:
+      - alias: configs
+        type: object
+        title: Коллекция конфигураций
+    result:
+      type: number
+    code: >
+      (      
+      $configs := configs;
+      $sn := $configs.global."company_id_segments_number";
+      $exists($sn) and $sn != null ? $number($sn) : 1;
+      )
+
+  seaf_fn_split_object_key:
+    title: Разбивка ключа объекта на сегменты
+    description: |
+      Функция возвращает объект с сегментами ключа: префикс (ключ компании\домена), тип объекта, 
+      локальный ID объекта.
+      Ключ объекта должен соответствовать соглашениям об именованиях объектов SEAF
+    params:
+      - alias: object_key
+        type: string
+        title: Ключ (идентификатор) объекта
+      - alias: configs
+        type: object
+        title: Коллекция конфигураций
+    result:
+      type: object
+    code: >
+      (      
+      $object_key := object_key;
+      $configs := configs;
+      $segments := $split($object_key, ".");
+      $company_id_sn := $seaf_fn_get_company_id_segments_number($configs);
+      $company_id := $segments[[0..$company_id_sn-1]] ~> $join(".");
+      $object_type := $segments[$company_id_sn];
+      $object_id := $segments[[$company_id_sn+1..$count($segments)]] ~> $join(".");
+      { 
+          "company_id": $exists($company_id) ? $company_id : "_не задано_", 
+          "object_type": $exists($object_type) ? $object_type : "_не задано_",
+          "object_id": $exists($object_id) ? $object_id : "_не задано_"
+      }
+      )
+
+  seaf_fn_get_company_title:
+    title: Имя компании
+    description: |
+      Функция возвращает имя компании-владельца по идентификатору компании
+    params:
+      - alias: company_id
+        type: string
+        title: Идентификатор компании
+      - alias: configs
+        type: object
+        title: Коллекция конфигураций
+    result:
+      type: string
+    code: >
+      (      
+      $company_id := company_id;
+      $configs := configs;
+      $company_info := $lookup($configs.company, $company_id);
+      $exists($company_info) and $company_info != null ? $company_info.title : $company_id;
+      )
+
+  seaf_fn_get_object_info:
+    title: Получить информацию об объекте
+    description: |
+      Функция по входному ключу (ID) объекта возвращает json объект с базовыми стандартными для seaf атрибутами
+      указанного объекта.
+      Функцию, например, удобно использовать при визуализациях - показывать вместо id бъекта его кликабельное имя
+    params:
+      - alias: object_id
+#        type: string
+        title: Идентификатор объекта
+      - alias: objects
+        type: object
+        title: Коллекция объектов
+    result:
+      type: object
+    code: >
+      (      
+      $object_id := object_id;
+      $objects := objects;
+      $obj := $objects.$lookup($object_id);
+      $exists($obj) and $obj != null
+      ? 
+        {
+            "__id__": $object_id,
+            "__entity_id__": $obj.__entity_id__,
+            "__entity_title__": $obj.__entity_title__,
+            "title": ($exists($obj.title) and $obj.title != null and $obj.title != "" ? $obj.title : $object_id),
+            "description": $obj.description,
+            "link_to_card": ( $exists($obj.__link_to_card__) and $obj.__link_to_card__!=null ? $obj.__link_to_card__ : "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__ )
+        }
+      : 
+        {
+            "__id__": $object_id,
+            "title": $object_id,
+            "description": ""
+        }
+      )

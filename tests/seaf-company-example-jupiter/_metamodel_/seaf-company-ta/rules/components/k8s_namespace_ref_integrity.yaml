@@ -1,0 +1,63 @@
+rules:
+  validators:
+    seaf.validation.ta.components.k8s_namespace_ref_integrity:
+      uid: SEAF-TA-K8S-REF-NS
+      title: Проверка корректности связи Namespace с K8s
+      description: |
+        Проверяет, что у каждого seaf.company.ta.components.k8s_namespaces поле cluster_ref
+        ссылается на существующий объект в seaf.company.ta.services.k8s.
+      correction: |
+        Убедитесь, что значение cluster_ref у Namespace соответствует ключу существующего
+        кластера в seaf.company.ta.services.k8s, или скорректируйте ссылку/создайте кластер.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.components.k8s_namespace_ref_integrity";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.k8s_namespaces";
+                  $namespaces := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $k8s_ds := $.datasets."seaf.company.ds.ta.k8s";
+                  $clusters := $eval($k8s_ds.source, { "objects": $, "data_lake": $ });
+                  $defined_k8s := $keys($clusters);
+
+                  $each($namespaces, function($ns, $ns_key){
+                    (
+                      $ref := $ns.cluster_ref;
+                      ($not($exists($ref)) or $ref = "") ? {
+                        "uid": "seaf.validation.ta.k8s_namespace_ref_integrity.empty." & $ns_key,
+                        "title": "Namespace '" & $ns.title & "' не содержит cluster_ref",
+                        "correction": "ID: " & $ns_key & ". " & ("Заполните поле cluster_ref значением ключа кластера K8s"),
+                        "description": "Namespace '" & $ns.title & "' (UID: " & $ns_key & ") не содержит ссылку cluster_ref"
+                      } : (
+                        $not($ref in $defined_k8s) ? {
+                          "uid": "seaf.validation.ta.k8s_namespace_ref_integrity.notfound." & $ns_key,
+                          "title": "Namespace '" & $ns.title & "' ссылается на несуществующий кластер",
+                          "correction": "ID: " & $ns_key & ". " & ("Исправьте cluster_ref на существующий ключ из seaf.company.ta.services.k8s"),
+                          "description": "Указанный cluster_ref='" & $ref & "' отсутствует среди ключей seaf.company.ta.services.k8s"
+                        }
+                      )
+                    )
+                  })
+                )
+              ])
+
+            )
+            : []
+        )

@@ -1,0 +1,58 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      ta_services:
+        title: Технические сервисы
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор системы
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+            align: left
+          - value: type_label
+            text: Тип сервиса
+            align: left
+          - value: description
+            text: Описание
+            align: left
+
+        origin:
+          ta_services: seaf.company.ds.app.systems_ta_services
+        source: >
+          (
+            $services := ta_services;
+            $system_id := $params.id;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+
+            $type_labels := {
+              "seaf.company.ta.services.k8s": "Kubernetes",
+              "seaf.company.ta.services.cluster_virtualizations": "Кластеры виртуализации",
+              "seaf.company.ta.services.compute_services": "Вычислительные сервисы",
+              "seaf.company.ta.services.storages": "Хранилища",
+              "seaf.company.ta.services.backups": "Резервное копирование",
+              "seaf.company.ta.services.monitorings": "Мониторинг",
+              "seaf.company.ta.services.kbs": "Базы знаний",
+              "seaf.company.ta.services.networks": "Сети",
+              "seaf.company.ta.services.network_segments": "Сетевые сегменты",
+              "seaf.company.ta.services.dcs": "ЦОДы",
+              "seaf.company.ta.services.dc_azs": "Зоны доступности",
+              "seaf.company.ta.services.dc_regions": "Регионы",
+              "seaf.company.ta.services.dc_offices": "Офисы"
+            };
+
+            $services[$system_id in $to_list(app_components)].{
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type_label": $lookup($type_labels, __entity_id__) ? $lookup($type_labels, __entity_id__) : __entity_id__,
+              "description": description
+            }
+          )

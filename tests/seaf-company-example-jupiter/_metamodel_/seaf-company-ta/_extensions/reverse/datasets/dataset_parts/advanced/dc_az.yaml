@@ -1,0 +1,59 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.dc_az` (dc az) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.dc_az:
+    description: |
+      Collects unique availability zones from the reverse servers list and exposes them as `seaf.company.ta.services.dc_azs`, linking each zone to the region produced by `reverse2seaf2.ds.ta.reverse.dc_regions`.
+    source: |
+      (
+        $region_from_az := function($az){
+          (
+            $str := $type($az) = "string" ? $trim($az) : "";
+            $len := $length($str);
+            $len <= 0
+              ? ""
+              : (
+                  $last := $substring($str, $len-1, 1);
+                  $match($last, /[A-Za-z]/) ? $substring($str, 0, $len-1) : $str
+                )
+          )
+        };
+        $servers := $eval(datasets."seaf.ta.reverse.servers_list".source);
+        $az_entries := $servers.(
+          $az_value := $type(az) = "string" ? $trim(az) : "";
+          $az_value != ""
+            ? {
+                "az": $az_value,
+                "tenant": $type(tenant) = "string" ? $trim(tenant) : null,
+                "vendor": $type(iaas_provider) = "string" ? $trim(iaas_provider) : null
+              }
+            : null
+        )[ $ != null ];
+        $az_index := $merge($az_entries.{ $.az: $ });
+        $distinct_az := $keys($az_index);
+        $distinct_az.(
+          $az_value := $;
+          $row := $lookup($az_index, $az_value);
+          $tenant := $row.tenant;
+          $vendor_value := $row.vendor;
+          $region_value := $region_from_az($az_value);
+          $key := "reverse.dc_az." & $az_value;
+          {
+            ($key): {
+              "__id__": $key,
+              "__entity_id__": "seaf.company.ta.services.dc_azs",
+              "__entity_title__": "DC Availability Zone (reverse import)",
+              "__company_id__": $tenant,
+              "title": $az_value,
+              "external_id": $az_value,
+              "vendor": $vendor_value != null and $vendor_value != "" ? $vendor_value : "Cloud.ru",
+              "region": $region_value != "" ? "reverse.dc_region." & $region_value : null,
+              "__link_to_card__": "/entities/seaf.company.ta.services.dc_azs/card?id=" & $key,
+              "link": "/entities/seaf.company.ta.services.dc_azs/card?id=" & $key,
+              "source_key": $az_value,
+              "reverse_source": "seaf.ta.reverse.servers_list"
+            }
+          }
+        )[] ~> $merge()
+      )
+

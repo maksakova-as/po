@@ -1,0 +1,155 @@
+docs:
+  seaf.company.ta.docs.environments.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Окружения/Изменение окружений
+    description: Редактирование окружений (architecture/ta/environment.yaml)
+    page_size: 15
+    filtration: true
+    selection: false
+    origin:
+      environments: seaf.company.ds.ta.environments
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+      - value: title
+        text: Название
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/environment.yaml
+      - value: external_id
+        text: Внешний ID
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/environment.yaml
+    source: >
+      (
+        $entries := $exists(environments) ? environments : {};
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "external_id": $entry.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_data := $lookup(file, "seaf.company.ta.services.environments");
+        $existing := $exists($file_data) ? $file_data : {};
+        $updates := $map($keys($table), function($id){
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "external_id": $row.external_id
+            }
+          }
+        }) ~> $merge();
+        {
+          "seaf.company.ta.services.environments": $merge([$existing, $updates])
+        }
+      )
+
+  seaf.company.ta.docs.stands.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Стенды/Изменение стендов
+    description: Редактирование стендов (architecture/ta/stand.yaml)
+    page_size: 15
+    filtration: true
+    selection: false
+    origin:
+      stands: seaf.company.ds.ta.stands
+      envs: seaf.company.ds.ta.environments
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/stand.yaml
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/stand.yaml
+      - value: external_id
+        text: Внешний ID
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/stand.yaml
+      - value: env
+        text: Окружение
+        width: 250px
+        type: select
+        options: >
+          (
+            $opts := $exists(envs) ? envs : {};
+            $map($keys($opts), function($k){(
+              $o := $lookup($opts, $k);
+              {
+                "value": $k,
+                "text": $o.title ? $o.title : $k
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/stand.yaml
+    source: >
+      (
+        $entries := $exists(stands) ? stands : {};
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "description": $entry.description,
+              "external_id": $entry.external_id,
+              "env": $entry.env
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_data := $lookup(file, "seaf.company.ta.services.stands");
+        $existing := $exists($file_data) ? $file_data : {};
+        $updates := $map($keys($table), function($id){
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "external_id": $row.external_id,
+              "env": $row.env
+            }
+          }
+        }) ~> $merge();
+        {
+          "seaf.company.ta.services.stands": $merge([$existing, $updates])
+        }
+      )

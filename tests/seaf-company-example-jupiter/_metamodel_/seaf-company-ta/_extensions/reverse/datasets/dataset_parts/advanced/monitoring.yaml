@@ -1,0 +1,12 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.monitoring` (monitoring) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.monitoring:
+    description: Placeholder for Cloud.ru Monitoring (CES) reverse import.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        []
+      )
+

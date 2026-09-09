@@ -1,0 +1,9 @@
+imports:
+  # 10_sources
+  - 10_sources/schema_r41_static.yaml
+  # 20_compat
+  - 20_compat/schema_r41_seaf2.yaml
+  - 20_compat/schema_r41_seaf1_compat.yaml
+  - 20_compat/schema_r41_reverse_compat.yaml
+  # 30_merge
+  - 30_merge/schema_r41_plural.yaml

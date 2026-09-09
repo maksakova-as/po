@@ -1,0 +1,121 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.cluster_virtualizations` (cluster virtualizations) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.cluster_virtualizations:
+    description: |
+      Creates a single VMware On-Prem virtualization cluster and aggregates all ESXi hosts/VM networks into it.
+    origin:
+      data_lake: ($)
+      reverse_networks: reverse2seaf2.ds.ta.reverse.vmware.networks
+      reverse_dcs: reverse2seaf2.ds.ta.reverse.vmware.dcs
+    source: |
+      (
+        $to_list := function($value){
+          $type($value) = "array" ? $value : ($exists($value) ? [$value] : [])
+        };
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $normalize_vdc := function($id){
+          $id ? $replace($id, /^vdc\./, "vdcs.") : $id
+        };
+        $to_list := function($value){
+          $type($value) = "array" ? $value : ($exists($value) ? [$value] : [])
+        };
+        $flatten_list := function($value){
+          $type($value) = "array"
+            ? $reduce($value, function($acc, $v){
+                $acc & ($type($v) = "array" ? $v : [$v])
+              }, [])
+            : ($value ? [$value] : [])
+        };
+        $hosts := data_lake."seaf.ta.reverse.vmwareonprem.hosts";
+        $vms := data_lake."seaf.ta.components.server";
+        $network_ref := function($id){
+          (
+            $norm := $normalize($id);
+            $norm != "" ? "reverse.network.vmwareonprem." & $norm : null
+          )
+        };
+        $datasets := datasets ? datasets : {};
+        $networks := $datasets and $datasets."reverse2seaf2.ds.ta.reverse.vmware.networks"
+          ? $eval(
+              $datasets."reverse2seaf2.ds.ta.reverse.vmware.networks".source,
+              $merge([data_lake, {"data_lake": data_lake, "datasets": $datasets}])
+            )
+          : ($exists(reverse_networks) ? reverse_networks : {});
+        $vmware_servers := $datasets and $datasets."reverse2seaf2.ds.ta.reverse.vmware.servers"
+          ? $eval(
+              $datasets."reverse2seaf2.ds.ta.reverse.vmware.servers".source,
+              $merge([data_lake, {"data_lake": data_lake, "datasets": $datasets}])
+            )
+          : null;
+        $net_ref_by_title := function($name){
+          (
+            $key := $networks ? $networks.$spread().(
+              $nkey := $keys()[0];
+              $nobj := $.*[0];
+              $nobj.title = $name ? $nkey : null
+            )[ $ != null ][0] : null;
+            $key
+              ? ($contains($string($key), "reverse.network.vmwareonprem.") ? $key : $network_ref($key))
+              : null
+          )
+        };
+        $vdcs := data_lake."seaf.ta.reverse.vmwareonprem.vdcs";
+        $vdc_ids := $distinct(
+          $append(
+            $hosts ? $hosts.*.vdc : [],
+            $vms ? $vms.*.reverse.vdc : []
+          )[ $ != null ]
+        ).($normalize_vdc($));
+        $vdc_to_dc := $vdcs ? $vdcs.$spread().(
+          $vdc_id := $keys()[0];
+          $dc_id := $.*[0].dc;
+          $dc_norm := $dc_id ? $normalize($dc_id) : null;
+          $dc_ref := $dc_norm != null ? "seaf1." & $dc_norm : null;
+          {
+            ($vdc_id): $dc_ref
+          }
+        ) ~> $merge() : {};
+        $merge($vdc_ids.(
+          $cluster_id := "reverse.cluster_virtualization.vmwareonprem." & $normalize($);
+          $dc_ref := $lookup($vdc_to_dc, $);
+          $vdc_title := $vdcs and $lookup($vdcs, $) ? $lookup($vdcs, $).title : $;
+          $host_list := $hosts ? $hosts.* : [];
+          $vm_list := $vms ? $vms.* : [];
+          $cluster_servers := $vmware_servers ? $vmware_servers.*[virtualization = $cluster_id] : [];
+          $cluster_hosts := $vmware_servers ? $vmware_servers.*[$cluster_id in $to_list(is_part_of)] : [];
+          $vm_subnets := $vmware_servers
+            ? $flatten_list($cluster_servers.subnets)
+            : $flatten_list($vm_list[reverse.reverse_type = "VMwareOnprem" and $normalize_vdc(reverse.vdc) = $].subnets);
+          $vm_network_refs := $vmware_servers
+            ? $vm_subnets[ $ != null ]
+            : $vm_subnets.($network_ref($))[ $ != null ];
+          $pg_names := $host_list[$normalize_vdc(vdc) = $].network_config.portgroups.$spread().($.*[0].name);
+          $host_network_refs := $to_list($pg_names).($net_ref_by_title($))[ $ != null ];
+          $network_refs := $distinct($append($vm_network_refs, $host_network_refs));
+          $host_count := $vmware_servers ? $count($cluster_hosts) : $count($host_list[ $normalize_vdc(vdc) = $ ]);
+          $vm_count := $vmware_servers ? $count($cluster_servers) : $count($vm_list[reverse.reverse_type = "VMwareOnprem" and $normalize_vdc(reverse.vdc) = $]);
+          {
+            ($cluster_id): {
+              "__id__": $cluster_id,
+              "__entity_id__": "seaf.company.ta.services.cluster_virtualizations",
+              "__entity_title__": "Virtualization Cluster (vmware reverse import)",
+              "__link_to_card__": "/entities/seaf.company.ta.services.cluster_virtualizations/card?id=" & $cluster_id,
+              "link": "/entities/seaf.company.ta.services.cluster_virtualizations/card?id=" & $cluster_id,
+              "title": "VMware On-Prem cluster " & $vdc_title,
+              "description": "Hosts: " & $host_count & "\nVMs: " & $vm_count,
+              "hypervisor": "VMware vSphere (on-prem)",
+              "network_connection": $network_refs,
+              "location": $dc_ref != null ? [$dc_ref] : [],
+              "availabilityzone": [],
+              "resource_id": $cluster_id,
+              "source_key": $,
+              "reverse_source": "seaf.ta.reverse.vmwareonprem.vdcs",
+              "is_reverse": true
+            }
+          }
+        ))
+      )
+

@@ -1,0 +1,19 @@
+entities:
+  seaf.company.ba.channels:
+
+    menu: >
+      (
+          $entity_id := "seaf.company.ba.channels";
+          $domain_id := "seaf.company.ba";
+          $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+          $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id) + 400;
+          $menu := $seaf_fn_generate_menu_item("Каналы", $root_menu);
+          [
+          $exists($.$lookup($entity_id)) 
+          ?   {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order
+              }
+          ]  
+      )

@@ -1,0 +1,53 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.da.business_terms:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          summary:
+            title: Сводка
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: summary
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      summary:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.da.business_terms
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          
+          [
+              { "field_name": "Идентификатор объекта", "field_content": { "value": $obj2present.__id__} },
+              { "field_name": "Идентификатор объекта во внешней системе", "field_content": { "value": $obj2present.external_id } },
+              { "field_name": "Идентификатор сущности", "field_content": { "value": $obj2present.__entity_id__ } },
+              { "field_name": "Название", "field_content": { "value":$obj2present.title } },
+              { "field_name": "Описание", "field_content": { "value": $obj2present.description } },
+              { "field_name": "Владелец", "field_content": { "value": $obj2present.owner } },
+              { "field_name": "Дата создания", "field_content": { "value": $obj2present.creation_date } },
+              { "field_name": "Дата модификации", "field_content": { "value": $obj2present.modify_date } },
+              { "field_name": "Этап ЖЦ объекта", "field_content": { "value": $obj2present.lifecycle_stage } }
+          ];
+          )

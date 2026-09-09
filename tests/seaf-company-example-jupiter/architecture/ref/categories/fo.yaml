@@ -1,0 +1,48 @@
+seaf.company.categories:
+  jupiter.fo.root:
+    title: Функциональные области
+    description: |
+      Групировка объектов по функциональным областям.
+      Корень дерева
+
+  jupiter.fo.clothing_production:
+    title: ФО Производство одежды
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Производство одежды
+    is_part_of: jupiter.fo.root
+
+  jupiter.fo.news_production:
+    title: ФО Производство новостей
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Производство новостей
+    is_part_of: jupiter.fo.root
+
+  jupiter.fo.gen_ai:
+    title: ФО Gen AI
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Gen AI
+    is_part_of: jupiter.fo.root
+
+  jupiter.fo.logistics:
+    title: ФО Логистика
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Логистика
+    is_part_of: jupiter.fo.root
+
+  jupiter.fo.company_management:
+    title: ФО Управление компанией
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Управление компанией
+    is_part_of: jupiter.fo.root
+
+  jupiter.fo.it:
+    title: ФО ИТ
+    description: |
+      Групировка объектов по функциональным областям.
+      ФО Информационные технологии
+    is_part_of: jupiter.fo.root

@@ -1,0 +1,57 @@
+# Назначение: Подготовка датасета `kadzo.ds.ta.compute_services` (compute services) в контуре kadzo.
+# Используется: ta/dataset_parts/* и объединенные TA-таблицы через reverse2seaf2.ds.ta.kadzo.*.
+datasets:
+  kadzo.ds.ta.compute_services:
+    source: >
+      (
+        $services := data_lake."kadzo.v2023.tech_services";
+        $excluded_classes := ["Средства мониторинга", "Системы логирования", "Системы резервного/архивного копирования"];
+        
+        $map_type := function($c) {
+          $c = "СУБД" ? "СУБД" :
+          $c = "Кэш, распределенный кеш" ? "Распределенный кэш" :
+          $c = "Файловый ресурс" ? "Файловый ресурс (FTP, NFS, SMB, S3 и т.д.)" :
+          $c = "Шлюзы, Балансировщики, Proxy" ? "Шлюз, Балансировщик, прокси" :
+          $c = "Средства управления ИТ-службой, ИТ-инфраструктурой и ИТ-активами" ? "Управление ИТ-службой, ИТ-инфраструктурой и ИТ-активами (CMDB, ITSM и т.д.)" :
+          $c = "Средства управления и автоматизации" ? "Управление и автоматизацией (Ansible, Terraform, Jenkins и т.д.)" :
+          $c = "Инфраструктура удаленного доступа" ? "Инфраструктура удаленного доступа" :
+          $c = "Средства коммуникации" ? "Коммуникации (АТС, Почта, мессенджеры, СМС шлюзы и т.д.)" :
+          $c = "Интеграционная шина" ? "Интеграционная шина  (MQ, ETL, API)" :
+          $c = "Средства (инструменты) управления разработкой и хранения кода" ? "Управление разработкой и хранения кода (Gitlab, Jira и т.д.)" :
+          "Серверы приложений и т.д."
+        };
+
+        $services.$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          
+          $ha_raw := $exists($obj.high_availability.type)
+            ? $obj.high_availability.type
+            : ($exists($obj.high_availability) ? $obj.high_availability : null);
+          $ha_raw_str := $lowercase($string($ha_raw));
+          $is_ha := $ha_raw = "Да" or $ha_raw = true or $ha_raw_str = "yes" or $ha_raw_str = "true";
+          $is_excluded := $obj.class in $excluded_classes;
+          
+          $not($is_excluded) ? {
+            "kadzo.compute." & $id : {
+              "__id__": "kadzo.compute." & $id,
+              "__entity_id__": "seaf.company.ta.services.compute_services",
+              "__entity_title__": "Вычислительный сервис",
+              "title": $obj.title,
+              "description": $obj.description,
+              "app_components": $obj.provides ? $obj.provides : [],
+              "service_type": $map_type($obj.class),
+              "high_availability": $is_ha ? {
+                "type": "Да",
+                "capacity_reservation_type": $obj.high_availability.capacity_reservation_type ? $obj.high_availability.capacity_reservation_type : "Active",
+                "capacity_management": $obj.high_availability.capacity_management ? $obj.high_availability.capacity_management : "Частичное"
+              } : null,
+              "location": [],
+              "availabilityzone": [],
+              "network_connection": [],
+              "source": "kadzo",
+              "legacy_id": $id
+            }
+          } : {}
+        ) ~> $merge()
+      )

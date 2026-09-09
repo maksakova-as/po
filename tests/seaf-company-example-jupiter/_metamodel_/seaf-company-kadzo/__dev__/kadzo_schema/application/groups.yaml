@@ -1,0 +1,28 @@
+entities:
+  kadzo.v2023.groups:
+    title: Группы
+    description: Признак, по которому могут быть сгруппированы автоматизированные системы или их обособленные логические части
+    schema:
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          properties:
+            title:
+              title: Наименование
+              type: string
+            parent:
+              title: ID родительской группы (при иерархии групп)
+              $ref: "#/$rels/kadzo.v2023.groups.groups"
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+    objects:
+      groups:
+        route: "/"
+        title: Группы
+        symbol: "grp"

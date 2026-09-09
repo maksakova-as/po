@@ -1,0 +1,64 @@
+entities:
+  seaf.company.ba.processes:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          artefacts:
+            title: Упоминание объекта в артефактах
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: artefacts
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 2000
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      artefacts:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: __linked_id__
+            text: ID артефакта
+            link: path_to_object
+          - value: __linked_title__
+            text: Название
+            link: path_to_object
+          - value: change_type
+            text: Тип упоминания
+          - value: change_finish_date
+            text: Срок
+          - value: change_description
+            text: Описание изменения
+
+        origin:
+          linked_objects: seaf.company.ds.artefacts.by_changed_objects
+        source: >
+          (
+          $data2present := $lookup(linked_objects, $params.id);
+          $data2present#$i^(<change_finish_date).{
+                          "number": $i+1,
+                          "__linked_id__": __linked_id__,
+                          "path_to_object": "/entities/" &__linked_entity_id__& "/main?id=" & __linked_id__,
+                          "__linked_title__": __linked_title__,
+                          "change_type": change_type,
+                          "change_finish_date": change_finish_date,
+                          "change_description": change_description
+                        }
+          )

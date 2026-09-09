@@ -1,0 +1,54 @@
+seaf.configs:
+  seaf.company.ta:
+    description: "Конфигурация TA домена для Jupiter"
+    root_menu: "Техническая архитектура"
+    root_menu_order: 5000
+    rules:
+      rules_enabled: true
+      rules_disabled: []
+    data_sources:
+      # Активный профиль источников данных.
+      # Допустимые значения: seaf2_only | seaf2_seaf1 | full_with_reverse
+      # Если профиль задан, TA датасеты берут enabled/priority из блока profiles.<profile>.
+      # Если профиль не задан, используется fallback из data_sources.enabled / data_sources.priority ниже.
+      profile: seaf2_only
+      profiles:
+        # Минимальный и самый быстрый режим: только объекты seaf2.
+        seaf2_only:
+          enabled:
+            - seaf2
+          priority:
+            - seaf2
+        # Рабочий режим без reverse/kadzo: seaf2 + seaf1.
+        seaf2_seaf1:
+          enabled:
+            - seaf2
+            - seaf1
+          priority:
+            - seaf2
+            - seaf1
+        # Полный режим интеграции: seaf2 + seaf1 + kadzo + reverse.
+        full_with_reverse:
+          enabled:
+            - seaf2
+            - seaf1
+            - kadzo
+            - reverse
+          priority:
+            - seaf2
+            - seaf1
+            - kadzo
+            - reverse
+      # Fallback-конфигурация (используется только если profile отсутствует/не найден).
+      enabled:
+        - seaf2
+        - seaf1
+        - kadzo
+        - reverse
+      priority:
+        - seaf2
+        - seaf1
+        - kadzo
+        - reverse
+    schema_r41_plural:
+      include_reverse: false

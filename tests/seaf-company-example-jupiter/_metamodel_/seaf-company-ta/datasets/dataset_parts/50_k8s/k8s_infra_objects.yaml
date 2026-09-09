@@ -1,0 +1,55 @@
+# Назначение: Инфраструктурные объекты, обслуживающие Kubernetes.
+# Используется: internal_docs, widgets, auto_tests, ta, presentations.
+datasets:
+  seaf.company.ds.ta.k8s_infra_objects:
+    description: |
+      ?????????????? ???????? Kubernetes (Storage/Backup/Monitoring/Security)
+    origin:
+      objects: seaf.ds.objects
+      k8s: seaf.company.ds.ta.k8s
+      k8s_namespaces: seaf.company.ds.ta.k8s_namespaces
+      k8s_deployments: seaf.company.ds.ta.k8s_deployments
+      k8s_hpas: seaf.company.ds.ta.k8s_hpas
+      k8s_nodes: seaf.company.ds.ta.k8s_nodes
+      kb_idx: seaf.company.ds.ta._idx.kb_by_protected_service
+      backup_idx: seaf.company.ds.ta._idx.backup_by_service
+      monitoring_idx: seaf.company.ds.ta._idx.monitoring_by_service
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        "seaf2" in $sources_enabled
+          ? (
+              $objects := objects;
+              $k8s := k8s;
+              $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+              $as_rows := function($v){
+                $type($v) = "array" ? $v : ($exists($v) ? [$v] : [])
+              };
+              $mk_rows := function($ids, $type, $cluster_id){
+                $to_list($ids).(
+                  $o := $lookup($objects, $);
+                  $exists($o.__id__)
+                    ? {
+                        "cluster": $cluster_id,
+                        "title": $o.title,
+                        "link": "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__,
+                        "type": $type
+                      }
+                    : {}
+                )
+              };
+              $k8s.*.(
+                $cid := __id__;
+                $kb_rows := $as_rows($lookup(kb_idx, $cid)).($merge([$, {"cluster": $cid}]));
+                $backup_rows := $as_rows($lookup(backup_idx, $cid)).($merge([$, {"cluster": $cid}]));
+                $monitoring_rows := $as_rows($lookup(monitoring_idx, $cid)).($merge([$, {"cluster": $cid}]));
+                [
+                  $mk_rows(storage, "Storage", $cid),
+                  $mk_rows(backup, "Backup", $cid),
+                  $mk_rows(monitoring, "Monitoring", $cid)
+                ] ~> $append($kb_rows) ~> $append($backup_rows) ~> $append($monitoring_rows)
+              )[] ~> $filter(function($v){ $exists($v.title) }) ~> $distinct
+            )
+          : []
+      )

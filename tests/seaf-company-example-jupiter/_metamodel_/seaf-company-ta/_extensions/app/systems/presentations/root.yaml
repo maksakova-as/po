@@ -1,0 +1,7 @@
+imports:
+  - ta_services.yaml
+  - ta_services_widget.yaml
+  - k8s_deployments.yaml
+  - resource_map_graph.yaml
+  - deployment_view.yaml
+  - deployment_widget.yaml

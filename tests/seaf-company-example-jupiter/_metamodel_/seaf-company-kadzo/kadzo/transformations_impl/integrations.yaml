@@ -1,0 +1,79 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.integrations: seaf.company.ds.kadzo.integrations
+
+  seaf.company.ds.kadzo.integrations:
+    title: Интеграции КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.systems.integrations
+      services: seaf.company.ds.services
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      kadzo_status_enum:
+        "Эскиз": Создается
+        "В разработке / приобретение": Дорабатывается
+        "Внедрение / Не введена в эксплуатацию": Дорабатывается
+        "Опытная эксплуатация": Используется
+        "Промышленная эксплуатация": Используется
+        "Архивная": Используется
+        "Отменена": Удаляется
+      kadzo_tech_use_enum:
+        "По запросу (pull)": По запросу
+        "По событию (push)": По событию
+        "По расписанию": По событию
+      kadzo_async_enum:
+        "async": Истинно
+        "sync": Ложно
+
+    # Принятые допущения:
+    #    - считаем, что для КА ДЗО - система ,вызывающая сервис, - она же и потребитель данных (consumer)
+    #    - систему-источник данных не переносим - в КАДЗО будет взята из точки взаимодействия
+    #    - систему-источник данных не переносим - в КАДЗО будет взята из точки взаимодействия
+    #    - technical-use = По событию - чтобы в КА ДЗО корректно отрисовывалась стрелка
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $services := services;
+      $objects_links := objects_links;
+      $objects := objects;
+      $kadzo_status_enum := kadzo_status_enum;
+      $kadzo_tech_use_enum := kadzo_tech_use_enum;
+      $kadzo_async_enum := kadzo_async_enum;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          $srv := $services.$lookup($val.service);
+          $do_arr := [$srv.data_flow.data_object];
+          /* формируем объект КАДЗО */
+          { $key: {
+              "description": $val.description,
+              "comments": $val.comments,
+              "consumer": $val.system1,
+      /*        "source": $val.system2, TODO конвертировать в зависимости от наличия ТВ*/
+              "endpoint": $val.service, 
+              "data-objects": $do_arr != [] ? $do_arr, 
+              "technologies": $srv.integration_technologies,
+              "technical-use": "По событию", /* TODO переделать когда в КА ДЗО уточнится алгоритм отрисовки стрелок */
+      /*        "technical-use": (*/
+      /*          $attr_val := $srv.trigger_type;*/
+      /*          $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_tech_use_enum, $attr_val, [$key, "атрибут trigger_type", $attr_val])*/
+      /*        ),*/
+              "async": (
+                $attr_val := $srv.communication_mode;
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_async_enum, $attr_val, [$key, "атрибут communication_mode", $attr_val])
+              ),
+      /*        "changes": string TODO связь с артефактами, */
+              "agreement": $val.data_exchange_grounds,
+              "protected": $val.protection_methods,
+              "status": ( /* TODO связь с артефактами, */
+                $attr_val := $val.lifecycle_stage;
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_status_enum, $attr_val, [$key, "атрибут lifecycle_stage", $attr_val])
+              )
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

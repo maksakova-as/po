@@ -1,0 +1,43 @@
+entities:
+  seaf.company.artefacts:
+    presentations:
+      main:
+        title: Рендеринг основного представления
+        type: markdown
+        template: templates/main.md
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        toc: false
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (                    
+          /*  ищем объект для презентации */          
+          $obj2present := $lookup(objects, $params.id);
+          /*  Формируем объект для визуализации */
+          {
+              "__id__": $obj2present.__id__,
+              "title": $obj2present.title
+          }
+          )
+
+        $constructor: >
+          (
+          $id := $params.id;
+          $prototype := entities."seaf.company.artefacts".presentations.main;
+          $doc := $lookup($."seaf.company.artefacts", $id);
+          $template := ($exists($doc.template) and $doc.template != "" and $doc.template != null) ? $doc.template : $id & ".md";
+          $merge([ $prototype,
+              {
+                  "type": "markdown",
+                  "template": $template,
+                  "toc": $doc.toc,
+                  "$base": "/seaf.company.artefacts/" & $id
+              }
+          ]);
+          )

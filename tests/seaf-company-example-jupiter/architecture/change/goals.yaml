@@ -1,0 +1,28 @@
+seaf.company.change.goals:
+
+  jupiter.goal.01:
+    title: "Охватить 30% рынка"
+    type: Бизнес цель
+    horizon: 2028
+
+  jupiter.goal.02:
+    title: "Уровень цифровизации бизнеса 90%"
+    type: Бизнес цель
+    horizon: 2028
+
+  jupiter.goal.03:
+    title: "Стать технологическим лидером отрасли"
+    type: Бизнес цель
+    horizon: 2028
+
+  jupiter.goal.03_01:
+    title: "Перейти на платформу Platform V"
+    is_part_of: jupiter.goal.03
+    type: Технологическая цель
+    horizon: 2027Q3
+
+  jupiter.goal.03_02:
+    title: "Стать номером 1 среди соискателей работы в области ИТ"
+    is_part_of: jupiter.goal.03
+    type: Бизнес цель
+    horizon: 2027

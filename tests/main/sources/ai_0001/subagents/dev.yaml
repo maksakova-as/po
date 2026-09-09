@@ -1,0 +1,79 @@
+docs:
+  ai_001.subagents:
+    type: ai-chat
+    location:  AI / SUBAGENTS
+    scenarios:
+
+      supervisor:
+        title: supervisor
+        type: gigachat
+        model: GigaChat-2-Pro
+        compact_context: true
+        system_prompt: | 
+          Ты управляешь субагентами.
+
+        subagents:
+          - id: random
+            description: Генерирует случайное число
+          - id: formater
+            description: Форматирует введенное значение особым образом
+        
+      random:
+        title: random
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты генератор случайных рандомных чисел.
+          Помни, что у тебя есть следующие функции:
+          get_random: Генерирует случайных число
+          Помни: 
+          - На любой запрос пользователя ты возращаешь случайное число
+          - В качестве ответа пользователю ты возращаешь результат выполнения функции, без добавления текста
+
+        tools:
+          - name: get_random
+            query: >
+              (100500)
+            schema:
+              name: get_random
+              description: Генерирует случайное число
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: integer
+                    description: Случайное целое число
+                required:
+                  - number
+
+      formater:
+        title: formater
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты умеешь форматировать введенное значение особым образом.
+          ВАЖНО: возращай результат выполненого тула без форматирования!
+
+        tools:
+          - type: jsonata
+            schema:
+              name: format
+              description: Форматирует текст введенный пользователем
+              parameters:
+                type: object
+                properties:
+                  input:
+                    type: string
+                    description: Оригинальное значение.
+            return_parameters:
+              type: string
+              properties: {}
+              description: Данные
+            query: >
+              (
+                  "RESULT = " & $params.input
+              )

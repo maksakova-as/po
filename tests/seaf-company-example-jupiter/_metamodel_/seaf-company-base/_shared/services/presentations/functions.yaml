@@ -1,0 +1,78 @@
+entities:
+  seaf.company.services:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          functions:
+            title: Публикуемые функции
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: functions
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 410
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      functions:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: function
+            text: Функция
+            link: function_link
+          - value: system
+            text:  АС - поставщик функции
+            link: system_link
+          - value: description
+            text:  Описание
+
+        origin:
+          systems: seaf.company.ds.systems
+          objects_links: seaf.ds.objects_links
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $systems := systems;
+          $objects_links := objects_links;
+          $all_objects := all_objects;
+          $id := $params.id;
+          /* формируем массив ИД систем, которые публикуют функции через данный сервис */
+          $sys_arr := $lookup($objects_links, $id)[link_attr="realizes_functions.service" and link_dir="reverse"].[linked_id] ~> $distinct();
+          /* формируем массив функций, публикуемых через наш сервис */
+          $fn_arr := $map($sys_arr, function($sys) {(
+              $system := $lookup($systems, $sys);
+              $s2t := $seaf_fn_get_object_info($system.__id__, $all_objects);
+              /* обходим все фукнции данной системы, опубликованные через наш сервис */
+              $map($system."realizes_functions"[service=$id], function($val) {(
+                  $f2t := $exists($val."function") ? $seaf_fn_get_object_info($val."function", $all_objects);
+                  {
+                      "function": $f2t.title,
+                      "function_link": $f2t.link_to_card,
+                      "description": $val.description,
+                      "system": $s2t.title,
+                      "system_link": $s2t.link_to_card
+                  }
+              )})[];
+          )})[];
+          /* превращаем массив массивов в плоский массив */
+          $fn_arr := $fn_arr@$i.$append($a, $i);
+          /* добавляем номер п.п. к объектам массива */
+          $fn_arr#$i.$merge([{ "number": $i+1 }, $ ]);          
+          )

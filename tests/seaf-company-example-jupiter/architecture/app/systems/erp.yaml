@@ -1,0 +1,29 @@
+seaf.company.systems:
+  jupiter.app_system.1c_erp:
+    title: АС 1С ERP
+    description: Комплекс функционала для работы маркетплейса компании
+    class: Управление внутрихозяйственной деятельностью
+    categories:
+      - jupiter.fo.company_management
+      - jupiter.sys_group.internal_cloudru
+    target_status: Нецелевая
+    lifecycle_stage: Промышленная эксплуатация
+    location: Внутренняя
+    criticality_level: Business Critical
+    uses_technologies:
+      - technology: jupiter.software.1c_erp
+      - technology: jupiter.technology.xyz_lang
+        description: Применяется язык xyz
+      - technology: jupiter.technology.xyz_compiler
+    integrations:
+      i01:
+        lifecycle_stage: Отменена
+        title: ИП Доставка грузов
+        service: jupiter.srv.shipping
+        data_exchange_grounds: Бизнес-стратегия 2025
+      i02:
+        title: ЭЦП
+        description: Электронное подписание документов
+        service: jupiter.srv.esign
+        lifecycle_stage: Опытная эксплуатация
+

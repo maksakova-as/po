@@ -1,0 +1,319 @@
+entities:
+  seaf.company.ta.services.cluster_virtualizations:
+    presentations:
+      list:
+        title: Кластеры виртуализации
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: hypervisor
+            text: Гипервизор
+          - value: oversubscription_rate
+            text: Переподписка
+          - value: drs_support
+            text: DRS
+          - value: sdrs_support
+            text: Storage DRS
+          - value: locations
+            text: Локации
+            link: location_link
+          - value: id
+            text: ID
+        origin:
+          virtualizations: seaf.company.ds.ta.cluster_virtualizations
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $virtualizations := virtualizations;
+            $dcs := dcs;
+            $offices := offices;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $virtualizations.*@$virt.(
+              $location_objects := $exists($virt.location)
+                ? $virt.location[].($resolve_location($))
+                : [];
+              {
+                "id": $virt.__id__,
+                "link": "/entities/" & $virt.__entity_id__ & "/card?id=" & $virt.__id__,
+                "title": $virt.title,
+                "hypervisor": $virt.hypervisor,
+                "oversubscription_rate": $virt.oversubscription_rate,
+                "drs_support": $virt.drs_support ? "Да" : "Нет",
+                "sdrs_support": $virt.sdrs_support ? "Да" : "Нет",
+                "locations": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка кластера виртуализации
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: cluster_virtualization_details
+            align: "v"
+            order: 10
+          infra:
+            title: Инфраструктура
+            presentation: cluster_virtualization_infra
+            align: "v"
+            order: 20
+          networks:
+            title: Сети
+            presentation: cluster_virtualization_networks
+            align: "v"
+            order: 30
+          cluster_servers:
+            title: Узлы кластера
+            presentation: cluster_virtualization_cluster_servers
+            align: "v"
+            order: 40
+          guest_servers:
+            title: Гостевые серверы
+            presentation: cluster_virtualization_guest_servers
+            align: "v"
+            order: 50
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      cluster_virtualization_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          clusters: seaf.company.ds.ta.cluster_virtualizations
+          azs: seaf.company.ds.ta.dc_azs
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $cluster := $lookup(clusters, $params.id);
+            $azs := azs;
+            $dcs := dcs;
+            $offices := offices;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $location_rows := $exists($cluster.location)
+              ? $cluster.location[].(
+                  $loc := $resolve_location($);
+                  {
+                    "field": "Локация",
+                    "value": $loc.title,
+                    "link": $exists($loc) ? "/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ : null
+                  }
+                )
+              : [];
+            $az_rows := $exists($cluster.availabilityzone)
+              ? $cluster.availabilityzone[].(
+                  $az := $lookup($azs, $);
+                  {
+                    "field": "Зона доступности",
+                    "value": $az.title,
+                    "link": $exists($az) ? "/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ : null
+                  }
+                )
+              : [];
+            $exists($cluster)
+              ? [
+                  {"field": "ID", "value": $cluster.__id__},
+                  {"field": "Название", "value": $cluster.title},
+                  {"field": "Описание", "value": $cluster.description},
+                  {"field": "Гипервизор", "value": $cluster.hypervisor},
+                  {"field": "Переподписка", "value": $cluster.oversubscription_rate},
+                  {"field": "DRS", "value": $cluster.drs_support ? "Да" : "Нет"},
+                  {"field": "Storage DRS", "value": $cluster.sdrs_support ? "Да" : "Нет"}
+                ] ~> $append($az_rows) ~> $append($location_rows)
+              : []
+          )
+
+      cluster_virtualization_infra:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Объект
+            link: link
+          - value: type
+            text: Тип
+        origin:
+          infra: seaf.company.ds.ta.cluster_virtualization_infra_objects
+        source: >
+          (
+            $id := $params.id;
+            $rows := $type(infra) = "array" ? infra : infra.*;
+            $rows[$.cluster = $id]
+          )
+
+      cluster_virtualization_networks:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Сеть
+            link: link
+          - value: segment
+            text: Сегмент
+            link: segment_link
+        origin:
+          clusters: seaf.company.ds.ta.cluster_virtualizations
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          servers: seaf.company.ds.ta.servers
+        source: >
+          (
+            $cluster := $lookup(clusters, $params.id);
+            $networks := networks;
+            $segments := segments;
+            $servers := servers;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $network_ids := $exists($cluster.network_connection)
+              ? $to_list($cluster.network_connection)
+              : $distinct($to_list(
+                  $servers.*[
+                    virtualization = $params.id or $params.id in $to_list(is_part_of)
+                  ].subnets
+                ));
+            $network_ids.(
+              $net := $lookup($networks, $);
+              $seg_ids := $exists($net.segment) ? ($type($net.segment) = "array" ? $net.segment : [$net.segment]) : [];
+              $seg_titles := $seg_ids.($lookup($segments, $).title) ~> $join(", ");
+              $seg_link := $exists($seg_ids[0]) ? "/entities/seaf.ta.services.network_segments/card?id=" & $seg_ids[0] : null;
+              {
+                "title": $net.title,
+                "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null,
+                "segment": $seg_titles,
+                "segment_link": $seg_link
+              }
+            )
+          )
+
+      cluster_virtualization_cluster_servers:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Сервер
+            link: link
+          - value: type
+            text: Тип
+        origin:
+          servers: seaf.company.ds.ta.servers
+        source: >
+          (
+            $servers := servers ? servers : {};
+            $id := $params.id;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $servers.*[
+              $id in $to_list(is_part_of)
+            ].{
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type": type
+            }
+          )
+
+      cluster_virtualization_guest_servers:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Сервер
+            link: link
+          - value: type
+            text: Тип
+        origin:
+          servers: seaf.company.ds.ta.servers
+        source: >
+          (
+            $servers := servers ? servers : {};
+            $id := $params.id;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $servers.*[
+              $id in $to_list(virtualization)
+            ].{
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type": type
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

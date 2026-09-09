@@ -1,0 +1,1058 @@
+[
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.dc_regions",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/list",
+    "dataset": "seaf.company.ds.ta.dc_regions"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_regions / jupiter.dc_region.russia",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=jupiter.dc_region.russia",
+    "dataset": "seaf.company.ds.ta.dc_regions",
+    "id": "jupiter.dc_region.russia",
+    "source": "seaf2",
+    "expectedTitle": "Регион Россия"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_regions / seaf1.flix.dc_region.russia",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=seaf1.flix.dc_region.russia",
+    "dataset": "seaf.company.ds.ta.dc_regions",
+    "id": "seaf1.flix.dc_region.russia",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_regions / reverse.dc_region.ru-moscow-1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_regions/card?id=reverse.dc_region.ru-moscow-1",
+    "dataset": "seaf.company.ds.ta.dc_regions",
+    "id": "reverse.dc_region.ru-moscow-1",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.dc_azs",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/list",
+    "dataset": "seaf.company.ds.ta.dc_azs"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_azs / jupiter.dc_az.moscow",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=jupiter.dc_az.moscow",
+    "dataset": "seaf.company.ds.ta.dc_azs",
+    "id": "jupiter.dc_az.moscow",
+    "source": "seaf2",
+    "expectedTitle": "AZ Москва"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_azs / jupiter.dc_az.moscow_dr",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=jupiter.dc_az.moscow_dr",
+    "dataset": "seaf.company.ds.ta.dc_azs",
+    "id": "jupiter.dc_az.moscow_dr",
+    "source": "seaf2",
+    "expectedTitle": "AZ резервный (DR)"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_azs / seaf1.flix.dc_az.moscow",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=seaf1.flix.dc_az.moscow",
+    "dataset": "seaf.company.ds.ta.dc_azs",
+    "id": "seaf1.flix.dc_az.moscow",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_azs / reverse.dc_az.ru-moscow-1a",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=reverse.dc_az.ru-moscow-1a",
+    "dataset": "seaf.company.ds.ta.dc_azs",
+    "id": "reverse.dc_az.ru-moscow-1a",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_azs / reverse.dc_az.ru-moscow-1b",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_azs/card?id=reverse.dc_az.ru-moscow-1b",
+    "dataset": "seaf.company.ds.ta.dc_azs",
+    "id": "reverse.dc_az.ru-moscow-1b",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.dcs",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/list",
+    "dataset": "seaf.company.ds.ta.dcs"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / jupiter.dc.moscow_dc01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=jupiter.dc.moscow_dc01",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "jupiter.dc.moscow_dc01",
+    "source": "seaf2",
+    "expectedTitle": "Sber Cloud DC"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / jupiter.dc.moscow_dc02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=jupiter.dc.moscow_dc02",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "jupiter.dc.moscow_dc02",
+    "source": "seaf2",
+    "expectedTitle": "VK DC"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / seaf1.flix.dc.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=seaf1.flix.dc.01",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "seaf1.flix.dc.01",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / seaf1.flix.dc.02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=seaf1.flix.dc.02",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "seaf1.flix.dc.02",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / reverse.dc.ru-moscow-1a",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=reverse.dc.ru-moscow-1a",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "reverse.dc.ru-moscow-1a",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dcs / reverse.dc.ru-moscow-1b",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dcs/card?id=reverse.dc.ru-moscow-1b",
+    "dataset": "seaf.company.ds.ta.dcs",
+    "id": "reverse.dc.ru-moscow-1b",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.dc_offices",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/list",
+    "dataset": "seaf.company.ds.ta.dc_offices"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_offices / jupiter.dc_office.hq",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/card?id=jupiter.dc_office.hq",
+    "dataset": "seaf.company.ds.ta.dc_offices",
+    "id": "jupiter.dc_office.hq",
+    "source": "seaf2",
+    "expectedTitle": "Головной офис"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.dc_offices / seaf1.flix.office.hq",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.dc_offices/card?id=seaf1.flix.office.hq",
+    "dataset": "seaf.company.ds.ta.dc_offices",
+    "id": "seaf1.flix.office.hq",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.network_segments",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/list",
+    "dataset": "seaf.company.ds.ta.network_segments"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / jupiter.network_segment.dc.dmz",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=jupiter.network_segment.dc.dmz",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "jupiter.network_segment.dc.dmz",
+    "source": "seaf2",
+    "expectedTitle": "DMZ"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / jupiter.network_segment.dc.ext_wan_edge",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=jupiter.network_segment.dc.ext_wan_edge",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "jupiter.network_segment.dc.ext_wan_edge",
+    "source": "seaf2",
+    "expectedTitle": "EXT WAN-EDGE"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / seaf1.flix.network_segment.dc.dmz",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=seaf1.flix.network_segment.dc.dmz",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "seaf1.flix.network_segment.dc.dmz",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / seaf1.flix.network_segment.dc.ext_wan_edge",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=seaf1.flix.network_segment.dc.ext_wan_edge",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "seaf1.flix.network_segment.dc.ext_wan_edge",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "reverse.segment.ru-moscow-1a.EXTERNAL-NET",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_segments / reverse.segment.ru-moscow-1a.INTERNET",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_segments/card?id=reverse.segment.ru-moscow-1a.INTERNET",
+    "dataset": "seaf.company.ds.ta.network_segments",
+    "id": "reverse.segment.ru-moscow-1a.INTERNET",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.networks",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/list",
+    "dataset": "seaf.company.ds.ta.networks"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / jupiter.network.lan.192.168.101.0",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=jupiter.network.lan.192.168.101.0",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "jupiter.network.lan.192.168.101.0",
+    "source": "seaf2",
+    "expectedTitle": "LAN сеть Sber"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / jupiter.network.lan.dc01.dmz.prod",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=jupiter.network.lan.dc01.dmz.prod",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "jupiter.network.lan.dc01.dmz.prod",
+    "source": "seaf2",
+    "expectedTitle": "DMZ-PROD"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / seaf1.flix.lan.office.admin.ARM",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=seaf1.flix.lan.office.admin.ARM",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "seaf1.flix.lan.office.admin.ARM",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / seaf1.flix.lan.office.ext.lan",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=seaf1.flix.lan.office.ext.lan",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "seaf1.flix.lan.office.ext.lan",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "reverse.network.0d9f37b6-0889-4763-8cf3-20d9641af0c1",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.networks / reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.networks/card?id=reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+    "dataset": "seaf.company.ds.ta.networks",
+    "id": "reverse.network.f90d9869-6c04-4be5-944f-2a08f3e72c2f",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.network_links",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_links/list",
+    "dataset": "seaf.company.ds.ta.network_links"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.network_links / jupiter.link.hq_to_dc01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.network_links/card?id=jupiter.link.hq_to_dc01",
+    "dataset": "seaf.company.ds.ta.network_links",
+    "id": "jupiter.link.hq_to_dc01",
+    "source": "seaf2",
+    "expectedTitle": "Канал связи Офис - ЦОД-01"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.logical_links",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/list",
+    "dataset": "seaf.company.ds.ta.logical_links"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.logical_links / jupiter.link.fw_to_servers",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=jupiter.link.fw_to_servers",
+    "dataset": "seaf.company.ds.ta.logical_links",
+    "id": "jupiter.link.fw_to_servers",
+    "source": "seaf2",
+    "expectedTitle": "Связь NGFW с серверами"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.logical_links / seaf1.flix.link.fw_to_servers",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=seaf1.flix.link.fw_to_servers",
+    "dataset": "seaf.company.ds.ta.logical_links",
+    "id": "seaf1.flix.link.fw_to_servers",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.logical_links / reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+    "dataset": "seaf.company.ds.ta.logical_links",
+    "id": "reverse.link.peering.b58bce54-e2c9-4d00-b5eb-a7db6e80bd7c",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.logical_links / reverse.link.vpn.vpn-hq",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.logical_links/card?id=reverse.link.vpn.vpn-hq",
+    "dataset": "seaf.company.ds.ta.logical_links",
+    "id": "reverse.link.vpn.vpn-hq",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.softwares",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/list",
+    "dataset": "seaf.company.ds.ta.software"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.softwares / jupiter.software.windows_server",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=jupiter.software.windows_server",
+    "dataset": "seaf.company.ds.ta.software",
+    "id": "jupiter.software.windows_server",
+    "source": "seaf2",
+    "expectedTitle": "Windows Server 2019"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.softwares / jupiter.software.ubuntu",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=jupiter.software.ubuntu",
+    "dataset": "seaf.company.ds.ta.software",
+    "id": "jupiter.software.ubuntu",
+    "source": "seaf2",
+    "expectedTitle": "Ubuntu 22.04 LTS"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.softwares / seaf1.flix.licenses.cryptopro",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.softwares/card?id=seaf1.flix.licenses.cryptopro",
+    "dataset": "seaf.company.ds.ta.software",
+    "id": "seaf1.flix.licenses.cryptopro",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.compute_services",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/list",
+    "dataset": "seaf.company.ds.ta.compute_services"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / jupiter.compute_service.ac9.app",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=jupiter.compute_service.ac9.app",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "jupiter.compute_service.ac9.app",
+    "source": "seaf2",
+    "expectedTitle": "Фронт (десктопное приложение)"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / jupiter.compute_service.ac9.db",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=jupiter.compute_service.ac9.db",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "jupiter.compute_service.ac9.db",
+    "source": "seaf2",
+    "expectedTitle": "База данных AS9"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / seaf1.flix.compute_service.ac9.app",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=seaf1.flix.compute_service.ac9.app",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "seaf1.flix.compute_service.ac9.app",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / seaf1.flix.compute_service.ac9.db",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=seaf1.flix.compute_service.ac9.db",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "seaf1.flix.compute_service.ac9.db",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "reverse.comp.elb.6d174721-db0e-4758-9a96-2f626e1a6632",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.compute_services / reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.compute_services/card?id=reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+    "dataset": "seaf.company.ds.ta.compute_services",
+    "id": "reverse.comp.elb.ad9af3b6-fd82-404e-8d6c-466660e92329",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.cluster_virtualizations",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/list",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / jupiter.cluster_virtualization.esx.cloudru",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=jupiter.cluster_virtualization.esx.cloudru",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "jupiter.cluster_virtualization.esx.cloudru",
+    "source": "seaf2",
+    "expectedTitle": "Кластер виртуализации ESX в Cloud.ru"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / jupiter.cluster_virtualization.proxmox.vk",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=jupiter.cluster_virtualization.proxmox.vk",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "jupiter.cluster_virtualization.proxmox.vk",
+    "source": "seaf2",
+    "expectedTitle": "Кластер виртуализации Proxmox в VK Cloud"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / seaf1.flix.cluster_virtualization.esx.cloudru",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=seaf1.flix.cluster_virtualization.esx.cloudru",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "seaf1.flix.cluster_virtualization.esx.cloudru",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / seaf1.flix.cluster_virtualization.proxmox.vk",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=seaf1.flix.cluster_virtualization.proxmox.vk",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "seaf1.flix.cluster_virtualization.proxmox.vk",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "reverse.cluster_virtualization.9f7dcs8823ed23e9cwe223ecwe22236.vm",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.cluster_virtualizations / reverse.cluster_virtualization.vmwareonprem.mangerok.gora.vdcs.datacenter-3",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.cluster_virtualizations/card?id=reverse.cluster_virtualization.vmwareonprem.mangerok.gora.vdcs.datacenter-3",
+    "dataset": "seaf.company.ds.ta.cluster_virtualizations",
+    "id": "reverse.cluster_virtualization.vmwareonprem.mangerok.gora.vdcs.datacenter-3",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.servers",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/list",
+    "dataset": "seaf.company.ds.ta.servers"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / jupiter.server_metal.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=jupiter.server_metal.01",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "jupiter.server_metal.01",
+    "source": "seaf2",
+    "expectedTitle": "Физический сервер 01"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / jupiter.server_metal.02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=jupiter.server_metal.02",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "jupiter.server_metal.02",
+    "source": "seaf2",
+    "expectedTitle": "Физический сервер 02"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / seaf1.flix.server_metal.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=seaf1.flix.server_metal.01",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "seaf1.flix.server_metal.01",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / seaf1.flix.server_metal.02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=seaf1.flix.server_metal.02",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "seaf1.flix.server_metal.02",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "reverse.server.flix.ecss.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.servers / reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.servers/card?id=reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "dataset": "seaf.company.ds.ta.servers",
+    "id": "reverse.server.flix.ecss.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.storages",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/list",
+    "dataset": "seaf.company.ds.ta.storages"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / jupiter.obj_storage.cloud_s3",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=jupiter.obj_storage.cloud_s3",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "jupiter.obj_storage.cloud_s3",
+    "source": "seaf2",
+    "expectedTitle": "S3 Storage in Sber"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / jupiter.obj_storage.vk_s3",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=jupiter.obj_storage.vk_s3",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "jupiter.obj_storage.vk_s3",
+    "source": "seaf2",
+    "expectedTitle": "S3 Storage in VK"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / seaf1.flix.obj_storage.cloud_s3",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=seaf1.flix.obj_storage.cloud_s3",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "seaf1.flix.obj_storage.cloud_s3",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / seaf1.flix.obj_storage.vk_s3",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=seaf1.flix.obj_storage.vk_s3",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "seaf1.flix.obj_storage.vk_s3",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.storages / flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.storages/card?id=flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+    "dataset": "seaf.company.ds.ta.storages",
+    "id": "flix.vaults.b25cffcc-b485-4c7b-9f92-6acb6e736e66",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.k8s",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/list",
+    "dataset": "seaf.company.ds.ta.k8s"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / jupiter.k8s.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=jupiter.k8s.01",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "jupiter.k8s.01",
+    "source": "seaf2",
+    "expectedTitle": "K8s кластер"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / jupiter.k8s.02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=jupiter.k8s.02",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "jupiter.k8s.02",
+    "source": "seaf2",
+    "expectedTitle": "K8s кластер расширенный (ДЗО)"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / seaf1.flix.k8s.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=seaf1.flix.k8s.01",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "seaf1.flix.k8s.01",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / seaf1.flix.k8s.02",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=seaf1.flix.k8s.02",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "seaf1.flix.k8s.02",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "reverse.k8s.a8350fe7-cfdd-11ed-9fc0-0255ac100088",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s / reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s/card?id=reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+    "dataset": "seaf.company.ds.ta.k8s",
+    "id": "reverse.k8s.37ff849a-91b4-11ed-92d6-0255ac100089",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.backups",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/list",
+    "dataset": "seaf.company.ds.ta.backup"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.backups / jupiter.backup.cyberbackup",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=jupiter.backup.cyberbackup",
+    "dataset": "seaf.company.ds.ta.backup",
+    "id": "jupiter.backup.cyberbackup",
+    "source": "seaf2",
+    "expectedTitle": "Cyberbackup"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.backups / seaf1.flix.backup.cyberbackup",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=seaf1.flix.backup.cyberbackup",
+    "dataset": "seaf.company.ds.ta.backup",
+    "id": "seaf1.flix.backup.cyberbackup",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.backups / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "dataset": "seaf.company.ds.ta.backup",
+    "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.e5e60a69-0653-4297-8799-ea0df4f0cacc",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.backups / flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.backups/card?id=flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "dataset": "seaf.company.ds.ta.backup",
+    "id": "flix.vaults.25bd50a1-20a3-4ca7-b84a-d9f6dda9a65c.fb77c40e-b1e2-4aa5-89a9-45725b7ccf30",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.monitorings",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/list",
+    "dataset": "seaf.company.ds.ta.monitoring"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.monitorings / jupiter.monitoring.elk",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=jupiter.monitoring.elk",
+    "dataset": "seaf.company.ds.ta.monitoring",
+    "id": "jupiter.monitoring.elk",
+    "source": "seaf2",
+    "expectedTitle": "ELK"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.monitorings / jupiter.monitoring.zabbix",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=jupiter.monitoring.zabbix",
+    "dataset": "seaf.company.ds.ta.monitoring",
+    "id": "jupiter.monitoring.zabbix",
+    "source": "seaf2",
+    "expectedTitle": "Zabbix"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.monitorings / seaf1.flix.monitoring.elk",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=seaf1.flix.monitoring.elk",
+    "dataset": "seaf.company.ds.ta.monitoring",
+    "id": "seaf1.flix.monitoring.elk",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.monitorings / seaf1.flix.monitoring.zabbix",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.monitorings/card?id=seaf1.flix.monitoring.zabbix",
+    "dataset": "seaf.company.ds.ta.monitoring",
+    "id": "seaf1.flix.monitoring.zabbix",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.networks",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/list",
+    "dataset": "seaf.company.ds.ta.network_components"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / jupiter.kb.fpsu_1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=jupiter.kb.fpsu_1",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "jupiter.kb.fpsu_1",
+    "source": "seaf2",
+    "expectedTitle": "FPSU-1"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / jupiter.network_device.dc.fw.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=jupiter.network_device.dc.fw.01",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "jupiter.network_device.dc.fw.01",
+    "source": "seaf2",
+    "expectedTitle": "NGFW-01"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / seaf1.flix.kb.fpsu_1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=seaf1.flix.kb.fpsu_1",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "seaf1.flix.kb.fpsu_1",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / seaf1.flix.network.dc.fw.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=seaf1.flix.network.dc.fw.01",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "seaf1.flix.network.dc.fw.01",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "reverse.netcomp.vpc.d48e294f-eb6a-4352-8d73-275b7a966e90",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.networks / reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.networks/card?id=reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+    "dataset": "seaf.company.ds.ta.network_components",
+    "id": "reverse.netcomp.vpc.abddcd66-c607-4ec6-9d12-30378e0e54c0",
+    "source": "reverse",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.user_devices",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/list",
+    "dataset": "seaf.company.ds.ta.user_devices"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.user_devices / jupiter.user_device.pc",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/card?id=jupiter.user_device.pc",
+    "dataset": "seaf.company.ds.ta.user_devices",
+    "id": "jupiter.user_device.pc",
+    "source": "seaf2",
+    "expectedTitle": "Ноутбуки сотрудников"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.user_devices / jupiter.user_device.laptop",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.user_devices/card?id=jupiter.user_device.laptop",
+    "dataset": "seaf.company.ds.ta.user_devices",
+    "id": "jupiter.user_device.laptop",
+    "source": "seaf2",
+    "expectedTitle": "Ноутбуки сотрудников"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.environments",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/list",
+    "dataset": "seaf.company.ds.ta.environments"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.environments / jupiter.environment.dev",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/card?id=jupiter.environment.dev",
+    "dataset": "seaf.company.ds.ta.environments",
+    "id": "jupiter.environment.dev",
+    "source": "seaf2",
+    "expectedTitle": "Окружение для разработки"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.environments / jupiter.environment.prod",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.environments/card?id=jupiter.environment.prod",
+    "dataset": "seaf.company.ds.ta.environments",
+    "id": "jupiter.environment.prod",
+    "source": "seaf2",
+    "expectedTitle": "Окружение для продакшена"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.hw_storages",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.hw_storages/list",
+    "dataset": "seaf.company.ds.ta.hw_storages"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.hw_storages / jupiter.hw_storage.01",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.hw_storages/card?id=jupiter.hw_storage.01",
+    "dataset": "seaf.company.ds.ta.hw_storages",
+    "id": "jupiter.hw_storage.01",
+    "source": "seaf2",
+    "expectedTitle": "СХД IBM"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.k8s_deployments",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s_deployments/list",
+    "dataset": "seaf.company.ds.ta.k8s_deployments"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s_deployments / jupiter.k8s.deployment.efs_webapp",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s_deployments/card?id=jupiter.k8s.deployment.efs_webapp",
+    "dataset": "seaf.company.ds.ta.k8s_deployments",
+    "id": "jupiter.k8s.deployment.efs_webapp",
+    "source": "seaf2",
+    "expectedTitle": "EFS WebApp Deployment"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s_deployments / jupiter.k8s.deployment.efs_rm",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s_deployments/card?id=jupiter.k8s.deployment.efs_rm",
+    "dataset": "seaf.company.ds.ta.k8s_deployments",
+    "id": "jupiter.k8s.deployment.efs_rm",
+    "source": "seaf2",
+    "expectedTitle": "EFS RM Deployment"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s_deployments / seaf1.flix.k8s.deployment.auth",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s_deployments/card?id=seaf1.flix.k8s.deployment.auth",
+    "dataset": "seaf.company.ds.ta.k8s_deployments",
+    "id": "seaf1.flix.k8s.deployment.auth",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.k8s_deployments / seaf1.flix.k8s.deployment.catalog",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.k8s_deployments/card?id=seaf1.flix.k8s.deployment.catalog",
+    "dataset": "seaf.company.ds.ta.k8s_deployments",
+    "id": "seaf1.flix.k8s.deployment.catalog",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.k8s_hpa",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/list",
+    "dataset": "seaf.company.ds.ta.k8s_hpas"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_hpa / jupiter.k8s.hpa.efs_webapp",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/card?id=jupiter.k8s.hpa.efs_webapp",
+    "dataset": "seaf.company.ds.ta.k8s_hpas",
+    "id": "jupiter.k8s.hpa.efs_webapp",
+    "source": "seaf2",
+    "expectedTitle": "HPA for EFS WebApp"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_hpa / jupiter.k8s.hpa.efs_rm",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_hpa/card?id=jupiter.k8s.hpa.efs_rm",
+    "dataset": "seaf.company.ds.ta.k8s_hpas",
+    "id": "jupiter.k8s.hpa.efs_rm",
+    "source": "seaf2",
+    "expectedTitle": "HPA for EFS RM"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.k8s_namespaces",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespaces/list",
+    "dataset": "seaf.company.ds.ta.k8s_namespaces"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_namespaces / jupiter.ns.efs",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespaces/card?id=jupiter.ns.efs",
+    "dataset": "seaf.company.ds.ta.k8s_namespaces",
+    "id": "jupiter.ns.efs",
+    "source": "seaf2",
+    "expectedTitle": "EFS Namespace"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_namespaces / jupiter.ns.llm_apps",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespaces/card?id=jupiter.ns.llm_apps",
+    "dataset": "seaf.company.ds.ta.k8s_namespaces",
+    "id": "jupiter.ns.llm_apps",
+    "source": "seaf2",
+    "expectedTitle": "LLM Apps Namespace"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_namespaces / seaf1.flix.ns.home_cinema",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespaces/card?id=seaf1.flix.ns.home_cinema",
+    "dataset": "seaf.company.ds.ta.k8s_namespaces",
+    "id": "seaf1.flix.ns.home_cinema",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_namespaces / seaf1.flix.ns.llm_apps",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_namespaces/card?id=seaf1.flix.ns.llm_apps",
+    "dataset": "seaf.company.ds.ta.k8s_namespaces",
+    "id": "seaf1.flix.ns.llm_apps",
+    "source": "seaf1",
+    "expectedTitle": null
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.components.k8s_nodes",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/list",
+    "dataset": "seaf.company.ds.ta.k8s_nodes"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_nodes / jupiter.k8s.node01.master1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/card?id=jupiter.k8s.node01.master1",
+    "dataset": "seaf.company.ds.ta.k8s_nodes",
+    "id": "jupiter.k8s.node01.master1",
+    "source": "seaf2",
+    "expectedTitle": "K8s Master 1"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.components.k8s_nodes / jupiter.k8s.node01.master2",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.components.k8s_nodes/card?id=jupiter.k8s.node01.master2",
+    "dataset": "seaf.company.ds.ta.k8s_nodes",
+    "id": "jupiter.k8s.node01.master2",
+    "source": "seaf2",
+    "expectedTitle": "K8s Master 2"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.kbs",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/list",
+    "dataset": "seaf.company.ds.ta.kb"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.kbs / jupiter.kb.1",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/card?id=jupiter.kb.1",
+    "dataset": "seaf.company.ds.ta.kb",
+    "id": "jupiter.kb.1",
+    "source": "seaf2",
+    "expectedTitle": "Инструментальный контроль защищенности"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.kbs / jupiter.kb.11",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.kbs/card?id=jupiter.kb.11",
+    "dataset": "seaf.company.ds.ta.kb",
+    "id": "jupiter.kb.11",
+    "source": "seaf2",
+    "expectedTitle": "S11"
+  },
+  {
+    "type": "List",
+    "name": "seaf.company.ta.services.stands",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.stands/list",
+    "dataset": "seaf.company.ds.ta.stands"
+  },
+  {
+    "type": "Card",
+    "name": "seaf.company.ta.services.stands / jupiter.stand.prod",
+    "url": "http://127.0.0.1:8080/entities/seaf.company.ta.services.stands/card?id=jupiter.stand.prod",
+    "dataset": "seaf.company.ds.ta.stands",
+    "id": "jupiter.stand.prod",
+    "source": "seaf2",
+    "expectedTitle": "stand.prod"
+  }
+]

@@ -1,0 +1,732 @@
+docs:
+  seaf.company.ta.docs.storages.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Хранилища/Изменение хранилищ
+    description: Редактирование хранилищ из architecture/ta/storage.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+
+    origin:
+      storages: seaf.company.ds.ta.storages
+      azs: seaf.company.ds.ta.dc_azs
+      networks: seaf.company.ds.ta.networks
+      softwares: seaf.company.ds.ta.software
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+      dcs: seaf.company.ds.ta.dcs
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: type
+        text: Тип
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: softwares
+        text: Программное обеспечение
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $items := $exists(softwares) ? softwares : {};
+            $map($keys($items), function($id){(
+              $entry := $lookup($items, $id);
+              {
+                "value": $id,
+                "text": $entry.title ? $entry.title : $id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: availabilityzone
+        text: Зоны доступности
+        width: 250px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: network_connection
+        text: Сеть
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: stand
+        text: Стенды
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: location
+        text: Локация
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $locs := $exists(dcs) ? dcs : {};
+            $map($keys($locs), function($loc_id){(
+              $loc := $lookup($locs, $loc_id);
+              {
+                "value": $loc_id,
+                "text": $loc.title ? $loc.title : $loc_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: sla
+        text: SLA
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/storage.yaml
+
+    source: >
+      (
+        $entries := $exists(storages) ? storages : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "description": $entry.description,
+              "type": $entry.type,
+              "softwares": $exists($entry.softwares)
+                ? $to_array($entry.softwares)
+                : ($exists($entry.software) ? [$entry.software] : []),
+              "availabilityzone": $to_array($entry.availabilityzone),
+              "network_connection": $to_array($entry.network_connection),
+              "stand": $to_array($entry.stand),
+              "location": $to_array($entry.location),
+              "sla": $entry.sla,
+              "external_id": $entry.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($id){(
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "type": $row.type,
+              "softwares": $to_array($row.softwares),
+              "availabilityzone": $to_array($row.availabilityzone),
+              "network_connection": $to_array($row.network_connection),
+              "stand": $to_array($row.stand),
+              "location": $to_array($row.location),
+              "sla": $row.sla,
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.storages": $rows
+        }
+      )
+
+  seaf.company.ta.docs.backup.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Резервное копирование/Изменение резервного копирования
+    description: Резервное копирование (architecture/ta/backup.yaml)
+    page_size: 12
+    filtration: true
+    selection: false
+
+    origin:
+      backup: seaf.company.ds.ta.backup
+      azs: seaf.company.ds.ta.dc_azs
+      dcs: seaf.company.ds.ta.dcs
+      networks: seaf.company.ds.ta.networks
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+      services: seaf.company.ds.ta.all_objects
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 240px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: description
+        text: Описание
+        width: 320px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: path
+        text: Путь
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: replication
+        text: Репликация
+        width: 140px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: availabilityzone
+        text: Зоны доступности
+        width: 240px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: location
+        text: Локации
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $dcs := $exists(dcs) ? dcs : {};
+            $map($keys($dcs), function($dc_id){(
+              $dc := $lookup($dcs, $dc_id);
+              {
+                "value": $dc_id,
+                "text": $dc.title ? $dc.title : $dc_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: network_connection
+        text: Сети
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: stand
+        text: Стенды
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+      - value: backed_up_services
+        text: Защищённые сервисы
+        width: 320px
+        type: multiple-select
+        options: >
+          (
+            $services := $exists(services) ? services : {};
+            $map($keys($services), function($srv_id){(
+              $srv := $lookup($services, $srv_id);
+              {
+                "value": $srv_id,
+                "text": $srv.title ? $srv.title : $srv_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/backup.yaml
+
+    source: >
+      (
+        $entries := $exists(backup) ? backup : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "description": $entry.description,
+              "path": $entry.path,
+              "replication": $entry.replication,
+              "availabilityzone": $to_array($entry.availabilityzone),
+              "location": $to_array($entry.location),
+              "network_connection": $to_array($entry.network_connection),
+              "stand": $to_array($entry.stand),
+              "backed_up_services": $to_array($entry.backed_up_services)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($id){(
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "path": $row.path,
+              "replication": $row.replication,
+              "availabilityzone": $to_array($row.availabilityzone),
+              "location": $to_array($row.location),
+              "network_connection": $to_array($row.network_connection),
+              "stand": $to_array($row.stand),
+              "backed_up_services": $to_array($row.backed_up_services)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.backups": $rows
+        }
+      )
+
+  seaf.company.ta.docs.monitoring.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Мониторинг/Изменение мониторинга
+    description: Редактирование monitoring/architecture/ta/monitoring.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+
+    origin:
+      monitoring: seaf.company.ds.ta.monitoring
+      azs: seaf.company.ds.ta.dc_azs
+      dcs: seaf.company.ds.ta.dcs
+      networks: seaf.company.ds.ta.networks
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+      role_options: seaf.company.ds.ta.monitoring_roles
+      services: seaf.company.ds.ta.all_objects
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: description
+        text: Описание
+        width: 320px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: ha
+        text: HA
+        width: 120px
+        type: checkbox
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: role
+        text: Роли
+        width: 240px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(role_options) ? role_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: availabilityzone
+        text: Зоны
+        width: 250px
+        type: multiple-select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: location
+        text: Локации
+        width: 260px
+        type: multiple-select
+        options: >
+          (
+            $dcs := $exists(dcs) ? dcs : {};
+            $map($keys($dcs), function($dc_id){(
+              $dc := $lookup($dcs, $dc_id);
+              {
+                "value": $dc_id,
+                "text": $dc.title ? $dc.title : $dc_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: network_connection
+        text: Сети
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: stand
+        text: Стенды
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+      - value: monitored_services
+        text: Мониторируемые сервисы
+        width: 320px
+        type: multiple-select
+        options: >
+          (
+            $services := $exists(services) ? services : {};
+            $map($keys($services), function($srv_id){(
+              $srv := $lookup($services, $srv_id);
+              {
+                "value": $srv_id,
+                "text": $srv.title ? $srv.title : $srv_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/monitoring.yaml
+
+    source: >
+      (
+        $entries := $exists(monitoring) ? monitoring : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "description": $entry.description,
+              "external_id": $entry.external_id ? $entry.external_id : $id,
+              "ha": $entry.ha,
+              "role": $entry.role,
+              "availabilityzone": $to_array($entry.availabilityzone),
+              "location": $to_array($entry.location),
+              "network_connection": $to_array($entry.network_connection),
+              "stand": $to_array($entry.stand),
+              "monitored_services": $to_array($entry.monitored_services)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($table), function($id){(
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "external_id": $row.external_id,
+              "ha": $row.ha,
+              "role": $row.role,
+              "availabilityzone": $to_array($row.availabilityzone),
+              "location": $to_array($row.location),
+              "network_connection": $to_array($row.network_connection),
+              "stand": $to_array($row.stand),
+              "monitored_services": $to_array($row.monitored_services)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.monitorings": $rows
+        }
+      )
+
+  seaf.company.ta.docs.software.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Инфраструктура/Программное обеспечение/Изменение программного обеспечения
+    description: Редактирование software/architecture/ta/software.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+
+    origin:
+      software: seaf.company.ds.ta.software
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+      - value: vendor
+        text: Вендор
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+      - value: type
+        text: Тип
+        width: 200px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+      - value: support
+        text: Поддержка
+        width: 120px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+      - value: expiration
+        text: Срок
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+      - value: lic_qty
+        text: Кол-во лицензий
+        width: 150px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/software.yaml
+
+    source: >
+      (
+        $items := $exists(software) ? software : {};
+        $rows := $map($keys($items), function($id){(
+          $item := $lookup($items, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $item.title,
+              "vendor": $item.vendor,
+              "type": $item.type,
+              "support": $item.support,
+              "expiration": $item.expiration,
+              "lic_qty": $item.lic_qty
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $rows := $map($keys($table), function($id){(
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "vendor": $row.vendor,
+              "type": $row.type,
+              "support": $row.support,
+              "expiration": $row.expiration,
+              "lic_qty": $row.lic_qty
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.softwares": $rows
+        }
+      )

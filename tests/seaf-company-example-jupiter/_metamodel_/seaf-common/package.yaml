@@ -1,0 +1,17 @@
+# Метаданные пакета
+$package:
+  seaf-commmon: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF Common
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Базовый модуль для всех метамоделей SEAF
+    # Версия
+    version: 1.5.2
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+
+imports:
+  - common/_root.yaml

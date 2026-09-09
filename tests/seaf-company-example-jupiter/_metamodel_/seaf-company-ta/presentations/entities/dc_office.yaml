@@ -1,0 +1,104 @@
+entities:
+  seaf.company.ta.services.dc_offices:
+    presentations:
+      list:
+        title: Офисы и точки присутствия
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: address
+            text: Адрес
+          - value: region_title
+            text: Регион
+            link: region_link
+          - value: id
+            text: ID
+          - value: external_id
+            text: Внешний ID
+        origin:
+          offices: seaf.company.ds.ta.dc_offices
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $offices := offices;
+            $regions := regions;
+            $offices.*@$office.(
+              $region := $lookup($regions, $office.region);
+              {
+                "id": $office.__id__,
+                "link": "/entities/" & $office.__entity_id__ & "/card?id=" & $office.__id__,
+                "title": $office.title,
+                "address": $office.address,
+                "region_title": $region.title,
+                "region_link": $exists($region)
+                  ? "/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__
+                  : null,
+                "external_id": $office.external_id
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка офиса/локации
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: dc_office_card_details
+            align: "v"
+            order: 10
+          topology:
+            title: Регион
+            presentation: dc_office_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

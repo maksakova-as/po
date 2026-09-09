@@ -1,0 +1,38 @@
+entities:
+  seaf.company.technologies:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: type
+            text: Тип
+            align: left
+          - value: description
+            text: Описание
+            align: left
+          - value: status
+            text: Статус
+            align: left
+
+        origin: seaf.company.ds.technologies
+        source: >
+          (
+          $.*@$val.{
+              "id": $val.__id__,
+              "link": $val.__link_to_card__,
+              "title": $val.title,
+              "type": $val.type ~> $join(",\n"),
+              "description": $val.description,
+              "status": $val.status
+          }[];
+          )

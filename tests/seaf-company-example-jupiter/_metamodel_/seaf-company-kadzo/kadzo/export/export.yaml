@@ -1,0 +1,129 @@
+docs:
+  to_kadzo.exporter:
+    location: /КА ДЗО/Экспорт данных SEAF -> КА ДЗО
+    type: arch-formater
+    origin:
+      data: seaf.company.ds.kadzo
+      
+    components:
+      - id: systems
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.systems";
+              {"kadzo.v2023.systems":  $subset}
+          )
+      - id: goals
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.goals";
+              {"kadzo.v2023.goals": $subset}
+          )
+      - id: strategy
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.strategy";
+              {"kadzo.v2023.strategy": $subset}
+          )
+      - id: clients
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.clients";
+              {"kadzo.v2023.clients": $subset}
+          )
+      - id: products
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.products";
+              {"kadzo.v2023.products": $subset}
+          )
+      - id: channels
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.channels";
+              {"kadzo.v2023.channels": $subset}
+          )
+      - id: processes
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.processes";
+              {"kadzo.v2023.processes": $subset}
+          )
+      - id: business_objects
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.business_objects";
+              {"kadzo.v2023.business_objects": $subset}
+          )
+      - id: data_objects
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.data_objects";
+              {"kadzo.v2023.data_objects": $subset}
+          )
+      - id: tasks
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.tasks";
+              {"kadzo.v2023.tasks": $subset}
+          )
+      - id: functions
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.functions";
+              {"kadzo.v2023.functions": $subset}
+          )
+      - id: groups
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.groups";
+              {"kadzo.v2023.groups": $subset}
+          )
+      - id: kb_systems
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.kb_systems";
+              {"kadzo.v2023.kb_systems": $subset}
+          )
+      - id: integrations
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.integrations";
+              {"kadzo.v2023.integrations": $subset}
+          )
+
+      - id: endpoints
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.v2023.endpoints";
+              {"kadzo.v2023.endpoints": $subset}
+          )
+
+      - id: softwares
+        path: exported
+        source: >
+          (
+              $subset := data."kadzo.softwares";
+              {"kadzo.softwares": $subset}
+          )
+#      - id: tech_services
+#        path: exported
+#        source: >
+#          (
+#              $subset := data."kadzo.v2023.tech_services";
+#              {"kadzo.v2023.tech_services": $subset}
+#          )

@@ -1,0 +1,18 @@
+$package:
+  seaf-company-ta:
+    name: SEAF company TA
+    vendor: Sber
+    description: Пакет для описания технической архитектуры
+    version: 0.1.0
+    dependencies:
+      dochub: ">=4.1.0"
+      seaf-common: ">=1.5.0"
+imports:
+  - _shared/_root.yaml
+  - configs.yaml
+  - _extensions/_root.yaml
+  - datasets/_root.yaml
+  - components/_root.yaml
+  - services/_root.yaml
+  - presentations/_root.yaml
+  - rules/_root.yaml

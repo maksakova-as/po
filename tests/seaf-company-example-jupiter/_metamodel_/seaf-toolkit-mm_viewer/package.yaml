@@ -1,0 +1,17 @@
+# Метаданные пакета
+$package:
+  seaf-archgov-mm_viewer: # Идентификатор пакета
+    # Краткое название пакета
+    name: Исследователь метамодели
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Инструмент изучения метамодели в SEAF Archtool
+    # Версия
+    version: 2.5.0
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+
+imports:
+  - mm_viewer/_root.yaml

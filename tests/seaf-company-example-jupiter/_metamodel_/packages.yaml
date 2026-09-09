@@ -1,0 +1,11 @@
+imports:
+  - seaf-common/package.yaml
+  - seaf-company-base/package.yaml
+  - seaf-company-da/package.yaml
+  - seaf-company-ta/package.yaml
+  - seaf-company-ai/package.yaml
+  - seaf-company-artefacts/package.yaml
+  - seaf-company-kadzo/package.yaml # подключаем, если хотим экспортировать данные SEAF в формат КА ДЗО
+  - seaf-toolkit-mm_viewer/package.yaml # подключаем, если необходимо изучать метамодель арх. репозитория
+  - seaf-docs/package.yaml # подключаем, если необходимо изучать документацию по фреймворку SEAF
+  - _custom_/package.yaml

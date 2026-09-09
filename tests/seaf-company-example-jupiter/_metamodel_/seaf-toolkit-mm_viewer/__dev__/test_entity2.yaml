@@ -1,0 +1,27 @@
+entities:
+
+  seaf.toolkit.test_entities2:
+    title: Тестовые сущности2
+    schema:
+      type: object
+      patternProperties:
+        "^[a-zA-Z0-9_]{3,}\\.(test)\\.[a-zA-Z0-9_]*$":
+          title: "СУЩНОСТЬ2"
+          type: object
+          additionalProperties: false
+          properties:
+            title:
+              title: Название
+              type: string
+    objects:
+      test:
+        route: "/"
+        title: test
+        symbol: "test"
+
+
+# **********************************************8
+
+seaf.toolkit.test_entities2:
+  rrr.test.ttt:
+    title: dfgdfgdfg

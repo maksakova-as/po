@@ -1,0 +1,74 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          feedbacks:
+            title: Способы обработки обратной связи
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: feedbacks
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 450
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      feedbacks:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: title
+            text: Название
+          - value: type
+            text: Тип
+          - value: description
+            text: Описание
+          - value: realized_in
+            text: Реализуется в
+            link: realized_in_link
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+
+        origin:
+          objects: seaf.company.ds.ai.agents
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $lcs := $obj2present.lifecycle_stage;
+          $data2present := $obj2present.feedbacks;
+          $data2present = "Не используется"
+          ? { "title": "Не используется" }
+          : $map($data2present, function($val, $i) {(
+              $r_in := $exists($val.realized_in) ? $seaf_fn_get_object_info($val.realized_in, $all_objects);
+              {
+                "number": $i+1,
+                "title": $val.title,
+                "type": $val.type,
+                "description": $val.description,
+                "lifecycle_stage": $exists($val.lifecycle_stage) ? $val.lifecycle_stage : $lcs,
+                "realized_in": $r_in.title,
+                "realized_in_link": $r_in.link_to_card
+              }
+            )})[];
+          )

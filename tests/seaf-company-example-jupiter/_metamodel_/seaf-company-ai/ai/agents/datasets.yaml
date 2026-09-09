@@ -1,0 +1,24 @@
+datasets:
+  seaf.company.ds.ai.agents:
+    description: >
+      Датасет формирует коллекцию всех агентов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $objects_by_entities := $;
+      $agents := $objects_by_entities."seaf.company.ai.agents";
+      /* Рассчитываем степень агентности */
+      $get_score := function($attr) {(
+          $exists($attr) and $attr != null
+          ? ($attr != "Не используется" ? 1 : 0)
+          : -10;
+      )};
+      $result := $each($agents, function ($val, $key) {(
+          $agent_degree := 100 * ($get_score($val.models) + $get_score($val.control_flows) + $get_score($val.memory) + $get_score($val.tools)) / 4.0;
+          {
+              $key: $merge([$val, {"agent_degree": $agent_degree >= 0 ? $agent_degree &"%" : "Недостаточно данных"}])
+          }
+      )})[]~>$merge();
+      $result;
+      )

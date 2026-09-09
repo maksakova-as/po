@@ -1,0 +1,50 @@
+seaf.company.sys_components:
+  jupiter.sys_component.ecm_news.db:
+    title: База данных (ECM Новости)
+    description: | 
+      Персистентное хранилище состояния\данных для АС ECM Новости
+    realizes_system: jupiter.app_system.ecm_news
+    type: База данных
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - name: Петров Иван
+        department: Управление сопровождения ИТ
+        role: Лидер сопровождения
+    scalability: Вертикальная
+    uses_technologies:
+      - technology: jupiter.software.dbms_pangolin_standard
+    comments:
+      - Комментарий 1
+      - Комментарий 2
+
+  jupiter.sys_component.ecm_news.app:
+    title: Основное приложение (ECM Новости)
+    description: | 
+      Основное приложение АС ECM Новости
+    realizes_system: jupiter.app_system.ecm_news
+    type: Серверное приложение
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - name: Иванов Иван
+        department: Управление развития ИТ
+        role: Лидер разработки
+    scalability: Вертикальная и горизонтальная
+    uses_technologies:
+      - technology: jupiter.technology.java
+
+  jupiter.sys_component.ecm_news.ms_delivery:
+    title: Микросервис Доставка (ECM Новости)
+    description: | 
+      Функциональность доставки грузов АС ECM Новости
+    realizes_system: jupiter.app_system.ecm_news
+    type: Микросервис
+    lifecycle_stage: Отменена
+    stakeholders:
+      - name: Сидоров Петр
+        department: Управление развития ИТ трайб "Доставка"
+        role: Лидер разработки
+    scalability: Горизонтальная
+    uses_technologies:
+      - technology: jupiter.technology.xyz_compiler
+      - technology: jupiter.technology.xyz_compiler
+

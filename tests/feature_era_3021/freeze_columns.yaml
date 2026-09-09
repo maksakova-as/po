@@ -1,0 +1,90 @@
+row_1:
+  ID: 1
+  name: Иванов Иван
+  age: ""
+  city: Москва
+  department: IT
+  position: Разработчик
+  salary: 120000
+  experience: 5
+row_2:
+  ID: 2
+  name: Петров Петр Петрович
+  age: 30
+  city: Санкт-Петербург
+  department: HR
+  position: Менеджер
+  salary: 90000
+  experience: 7
+row_3:
+  ID: 3
+  name: Сидоров Сидор Сидорович
+  age: 35
+  city: Новосибирск
+  department: Finance
+  position: Аналитик
+  salary: 110000
+  experience: 10
+row_4:
+  ID: 4
+  name: Кузнецова Анна Сергеевна
+  age: 28
+  city: Екатеринбург
+  department: IT
+  position: Тестировщик
+  salary: 80000
+  experience: 3
+row_5:
+  ID: 5
+  name: Смирнов Алексей Владимирович
+  age: 42
+  city: Казань
+  department: Marketing
+  position: Директор
+  salary: 150000
+  experience: 15
+row_6:
+  ID: 6
+  name: Попова Елена Дмитриевна
+  age: 33
+  city: Нижний Новгород
+  department: IT
+  position: DevOps
+  salary: 130000
+  experience: 8
+row_7:
+  ID: 7
+  name: Васильев Максим Андреевич
+  age: 29
+  city: Челябинск
+  department: Sales
+  position: Менеджер
+  salary: 95000
+  experience: 4
+row_8:
+  ID: 8
+  name: Михайлова Ольга Игоревна
+  age: 45
+  city: Самара
+  department: HR
+  position: Директор
+  salary: 140000
+  experience: 20
+row_9:
+  ID: 9
+  name: Новиков Илья Павлович
+  age: 22
+  city: Омск
+  department: IT
+  position: Стажер
+  salary: 50000
+  experience: 1
+row_10:
+  ID: 10
+  name: Федорова Татьяна Александровна
+  age: 38
+  city: Ростов-на-Дону
+  department: Finance
+  position: Главный бухгалтер
+  salary: 125000
+  experience: 12

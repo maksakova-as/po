@@ -1,0 +1,5 @@
+docs:
+  dochub.welcome:
+    type: markdown
+    location: /SEAF/common/README
+    source: ../README.md

@@ -1,0 +1,39 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.strategy: seaf.company.ds.kadzo.strategy
+
+  seaf.company.ds.kadzo.strategy:
+    title: Стратегические задачи КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.change.activities
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+
+# Принятые допущения:
+#    - под стратегической задачей понимаем активности с типом Стратегическая инициатива
+#    - если задача выполняет несколько целей - берем первую
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          $result := $val.type = "Стратегическая инициатива"
+          ? ( 
+            $goal := $val.realizes[0];
+            /* формируем объект КАДЗО */
+            { $key: {
+                "strategy": $val.title,
+                "goal": $goal,
+                "description": $val.description,
+                "comments": $val.comments,
+                "horizont": $val.planned_finish_date
+            }}
+            );
+          $result
+      )})[] ~> $merge();
+      $obj_out
+      )

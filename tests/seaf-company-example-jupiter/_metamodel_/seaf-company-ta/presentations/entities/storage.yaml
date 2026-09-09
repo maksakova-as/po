@@ -1,0 +1,124 @@
+entities:
+  seaf.company.ta.services.storages:
+    presentations:
+      list:
+        title: Хранилища данных
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: type
+            text: Тип
+          - value: softwares
+            text: ПО
+          - value: volume
+            text: Объём, ТБ
+          - value: protocols
+            text: Протоколы
+          - value: networks
+            text: Сети
+          - value: id
+            text: ID
+        origin:
+          storages: seaf.company.ds.ta.storages
+          networks: seaf.company.ds.ta.networks
+          hw: seaf.company.ds.ta.hw_storages
+          softwares: seaf.company.ds.ta.software
+        source: >
+          (
+            $storages := storages;
+            $networks := networks;
+            $softwares := softwares;
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $storages.*@$storage.(
+              $network_titles := $exists($storage.network_connection)
+                ? $storage.network_connection[].($lookup($networks, $).title)
+                : [];
+              $software_ids := $exists($storage.softwares) ? $to_list($storage.softwares) : $to_list($storage.software);
+              $software_titles := $software_ids.(
+                $sw_title := $lookup($softwares, $).title;
+                $sw_title ? $sw_title : $
+              ) ~> $join(", ");
+              {
+                "id": $storage.__id__,
+                "link": "/entities/" & $storage.__entity_id__ & "/card?id=" & $storage.__id__,
+                "title": $storage.title,
+                "type": $storage.type,
+                "softwares": $software_titles,
+                "volume": $storage.volume,
+                "protocols": $storage.protocols,
+                "networks": $network_titles ~> $join(", ")
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка хранилища
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      details:
+        title: Атрибуты
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Поле
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            [
+              {"field": "Название", "value": $obj.title}
+            ]
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

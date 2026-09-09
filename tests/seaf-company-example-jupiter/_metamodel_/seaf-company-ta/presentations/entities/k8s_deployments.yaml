@@ -1,0 +1,299 @@
+entities:
+  seaf.company.ta.services.k8s_deployments:
+    presentations:
+      list:
+        title: Kubernetes deployments
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: cluster
+            text: Кластер
+            link: cluster_link
+          - value: namespace
+            text: Namespace
+            link: namespace_link
+          - value: containers
+            text: Контейнеры
+          - value: id
+            text: ID
+        origin:
+          deployments: seaf.company.ds.ta.k8s_deployments
+          k8s: seaf.company.ds.ta.k8s
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+        source: >
+          (
+            $deployments := deployments;
+            $k8s := k8s;
+            $namespaces := namespaces;
+            $deployments.*@$dep.(
+              $cluster := $lookup($k8s, $dep.cluster);
+              $namespace := $lookup($namespaces, $dep.namespace);
+              {
+                "id": $dep.__id__,
+                "link": "/entities/" & $dep.__entity_id__ & "/card?id=" & $dep.__id__,
+                "title": $dep.title,
+                "cluster": $cluster.title,
+                "cluster_link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null,
+                "namespace": $namespace.title,
+                "namespace_link": $exists($namespace) ? "/entities/" & $namespace.__entity_id__ & "/card?id=" & $namespace.__id__ : null,
+                "containers": $exists($dep.containers) ? ($count($dep.containers) & " шт.") : "-"
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка deployment
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: k8s_deployment_details
+            align: "v"
+            order: 10
+          topology:
+            title: Размещение
+            presentation: k8s_deployment_topology
+            align: "v"
+            order: 20
+          apps:
+            title: Приложения/компоненты
+            presentation: k8s_deployment_apps
+            align: "v"
+            order: 30
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      k8s_deployment_details:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          deployments: seaf.company.ds.ta.k8s_deployments
+          k8s: seaf.company.ds.ta.k8s
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+        source: >
+          (
+            $dep := $lookup(deployments, $params.id);
+            $cluster := $exists($dep) ? $lookup(k8s, $dep.cluster) : {};
+            $namespace := $exists($dep) ? $lookup(namespaces, $dep.namespace) : {};
+            $container_rows := $exists($dep.containers)
+              ? $dep.containers[].(
+                  {
+                    "field": "Контейнер",
+                    "value": $.name & " (" & $.image & ")"
+                  }
+                )
+              : [];
+            $exists($dep)
+            ? [
+                {"field": "ID", "value": $dep.__id__},
+                {"field": "Название", "value": $dep.title},
+                {"field": "Описание", "value": $dep.description},
+                {
+                  "field": "Кластер",
+                  "value": $cluster.title,
+                  "link": $exists($cluster) ? "/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ : null
+                },
+                {
+                  "field": "Namespace",
+                  "value": $namespace.title,
+                  "link": $exists($namespace) ? "/entities/" & $namespace.__entity_id__ & "/card?id=" & $namespace.__id__ : null
+                }
+              ] ~> $append($container_rows)
+            : []
+          )
+
+      k8s_deployment_apps:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: table
+        headers:
+          - value: title
+            text: Объект
+            link: link
+          - value: id
+            text: ID
+        origin:
+          deployments: seaf.company.ds.ta.k8s_deployments
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $dep := $lookup(deployments, $params.id);
+            $objects := objects;
+            $app_ids := $exists($dep.app_components) ? $dep.app_components : [];
+            $app_ids := $type($app_ids) = "array" ? $app_ids : ($exists($app_ids) ? [$app_ids] : []);
+            $app_ids.(
+              $o := $lookup($objects, $);
+              {
+                "title": $exists($o.title) ? $o.title : $,
+                "link": $exists($o.__entity_id__) ? "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__ : null,
+                "id": $
+              }
+            )
+          )
+
+      k8s_deployment_topology:
+        params:
+          type: object
+          properties:
+            id: {type: string}
+          required: [id]
+        type: plantuml
+        template: ../widgets/templates/server_location.puml
+        origin:
+          deployments: seaf.company.ds.ta.k8s_deployments
+          k8s: seaf.company.ds.ta.k8s
+          namespaces: seaf.company.ds.ta.k8s_namespaces
+          dcs: seaf.company.ds.ta.dcs
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $deployments := deployments;
+            $k8s := k8s;
+            $namespaces := namespaces;
+            $dcs := dcs;
+            $azs := azs;
+            $regions := regions;
+            $dep := $lookup($deployments, $params.id);
+            $cluster := $exists($dep) ? $lookup($k8s, $dep.cluster) : {};
+            $namespace := $exists($dep) ? $lookup($namespaces, $dep.namespace) : {};
+            $sanitize := function($value){ $replace($value, /[^A-Za-z0-9_]/, "_") };
+
+            $dc_ids := $exists($cluster.location)
+              ? ($type($cluster.location) = "array" ? $cluster.location : [$cluster.location])
+              : [];
+
+            $region_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__)
+                ? "node \"Регион: [[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_" & $sanitize($region.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_nodes := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__)
+                ? "node \"ЦОД: [[/entities/" & $dc.__entity_id__ & "/card?id=" & $dc.__id__ & " " & $dc.title & "]]\" as dc_" & $sanitize($dc.__id__) & " #bbdefb\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_node := $exists($cluster.__id__)
+              ? "node \"K8s: [[/entities/" & $cluster.__entity_id__ & "/card?id=" & $cluster.__id__ & " " & $cluster.title & "]]\" as k8s_" & $sanitize($cluster.__id__) & " #d1c4e9\n"
+              : "";
+            $ns_node := $exists($namespace.__id__)
+              ? "node \"Namespace: [[/entities/" & $namespace.__entity_id__ & "/card?id=" & $namespace.__id__ & " " & $namespace.title & "]]\" as ns_" & $sanitize($namespace.__id__) & " #ffecb3\n"
+              : "";
+            $dep_node := $exists($dep.__id__)
+              ? "node \"Deployment: [[/entities/" & $dep.__entity_id__ & "/card?id=" & $dep.__id__ & " " & $dep.title & "]]\" as dep_" & $sanitize($dep.__id__) & " #d1c4e9\n"
+              : "";
+
+            $region_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $az := $exists($dc.availabilityzone) ? $lookup($azs, $dc.availabilityzone) : {};
+              $region := $exists($az) ? $lookup($regions, $az.region) : {};
+              $exists($region.__id__) and $exists($dc.__id__)
+                ? "region_" & $sanitize($region.__id__) & " --> dc_" & $sanitize($dc.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $dc_edges := $dc_ids.(
+              $dc := $lookup($dcs, $);
+              $exists($dc.__id__) and $exists($cluster.__id__)
+                ? "dc_" & $sanitize($dc.__id__) & " --> k8s_" & $sanitize($cluster.__id__) & "\n"
+                : ""
+            ) ~> $distinct() ~> $join("");
+
+            $k8s_ns_edge := $exists($cluster.__id__) and $exists($namespace.__id__)
+              ? "k8s_" & $sanitize($cluster.__id__) & " --> ns_" & $sanitize($namespace.__id__) & "\n"
+              : "";
+            $ns_dep_edge := $exists($namespace.__id__) and $exists($dep.__id__)
+              ? "ns_" & $sanitize($namespace.__id__) & " --> dep_" & $sanitize($dep.__id__) & "\n"
+              : "";
+
+            $diagram :=
+              $exists($dep.__id__)
+                ? (
+                    "@startuml\n" &
+                    "left to right direction\n" &
+                    "skinparam nodesep 60\n" &
+                    "skinparam ranksep 60\n" &
+                    "skinparam backgroundColor #ffffff\n" &
+                    "skinparam defaultTextAlignment center\n" &
+                    "skinparam shadowing false\n" &
+                    "skinparam node {\n" &
+                    "  BackgroundColor #fdfdfd\n" &
+                    "  BorderColor #4d6bf0\n" &
+                    "  FontColor #111318\n" &
+                    "}\n" &
+                    "skinparam arrowColor #4d6bf0\n" &
+                    "skinparam arrowFontColor #111318\n" &
+                    $region_nodes & $dc_nodes & $k8s_node & $ns_node & $dep_node &
+                    $region_edges & $dc_edges & $k8s_ns_edge & $ns_dep_edge &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Deployment не найден\" as no_obj\n@enduml";
+            { "diagram": $diagram }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

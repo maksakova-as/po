@@ -1,0 +1,5 @@
+docs:
+  seaf.ta.docs.schema_r41_seaf1:
+    description: Схема Р41 (SEAF1 only)
+    type: seaf2drawio
+    source: seaf.company.ds.ta.schema_r41_seaf1_compat

@@ -1,0 +1,56 @@
+entities:
+  seaf.company.ba.clients:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          metrics:
+            title: Метрики по клиентам
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: metrics
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      metrics:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: metric
+            text: Метрика
+          - value: value
+            text: Значение
+          - value: units
+            text:  Ед. измерения
+
+        origin:
+          objects: seaf.company.ds.ba.clients
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          $obj2present.count_metrics#$i.{
+                                      "number": $i+1,
+                                      "metric": $.metric,
+                                      "value": $.value,
+                                      "units": $.units
+                                   }[];
+          )

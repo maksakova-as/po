@@ -1,0 +1,73 @@
+entities:
+  seaf.company.ta.services.network_segments:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.network_segments";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сетевые сегменты", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сетевые сегменты/Изменение сегментов", $root_menu);
+        $legacy_id := "seaf.ta.services.network_segment";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 140
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.networks:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.networks";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сети", $root_menu);
+        $lan_menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сети/Изменение сетей/LAN", $root_menu);
+        $wan_menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сети/Изменение сетей/WAN", $root_menu);
+        $legacy_id := "seaf.ta.services.network";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 150
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.network_links:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.network_links";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сетевые связанности", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Сеть/Сетевые связанности/Изменение связанных сетей", $root_menu);
+        $legacy_id := "seaf.ta.services.network_links";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 195
+            })
+          : $items;
+        $items
+      )

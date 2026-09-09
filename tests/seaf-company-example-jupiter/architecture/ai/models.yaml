@@ -1,0 +1,363 @@
+seaf.company.ai.models:
+  jupiter.ai_model.deepseek_general_llm:
+    title: Deepseek LLM локальная модель
+    description: Модель для экспериментов и сравнения с другими LLM
+    class: GenAI
+    lifecycle_stage: Используется
+    criticality_level: Office Productivity
+    stakeholders:
+      - name: Иванов И.
+        role: Владелец от бизнеса
+      - name: Петров И.И.
+        role: Владелец от департамента ИИ
+    realized_in: jupiter.app_system.aihub_model_ds1
+    input_modalities:
+      - Текст
+      - Изображения
+    output_modalities:
+      - Текст
+    purposes:
+      - general language understanding
+      - conversational AI
+      - recommendation systems
+    vendor: Deepseek
+    version: "2.1"
+    delivery_type: On-prem
+    architecture: transformer
+    tags:
+      - ИИ тег 1
+      - ИИ тег 2
+
+  jupiter.ai_model.abcd:
+    title: ABCD локальная модель
+    description: Локальная опенсорс LLM модель
+    class: GenAI
+    lifecycle_stage: Тестируется
+    criticality_level: Business Operational
+    stakeholders:
+      - name: Иванов И.
+        role: Владелец от бизнеса
+      - name: Петров И.И.
+        role: Владелец от департамента ИИ
+    realized_in: jupiter.app_system.aihub_model_ds1
+    input_modalities:
+      - Текст
+    output_modalities:
+      - Текст
+    purposes:
+      - general language understanding
+      - conversational AI
+      - recommendation systems
+    vendor: qwen
+    version: "4_1"
+    delivery_type: On-prem
+    architecture: transformer
+    tags:
+      - ИИ Помощник Сбера
+
+# ИИ-модели производства Сбер, установленные локально
+  jupiter.ai_model.gigachat_lite_private_cloud:
+    title: GigaChat Lite в частном облаке
+    description: |
+      Быстрая и легкая модель для простых повседневных задач.
+      Развернута в частном облаке
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - fast_interactive_responses
+      - lightweight_generations
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - LITRES_CORPUS
+      - WIKIPEDIA_RU
+    hyperparameters:
+      context_window_tokens: 128000
+
+  jupiter.ai_model.gigachat_pro_private_cloud:
+    title: GigaChat Pro в частном облаке
+    description: |
+      Усовершенствованная модель для ресурсоемких задач, обеспечивающая максимальную эффективность
+      в обработке данных, креативности и соблюдении инструкций.
+      Развернута в частном облаке
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - advanced_dialogues
+      - multi-domain_task_performance
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - Q&A_CORPUS
+      - CODE_SNIPPET_COLLECTION
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.03.15
+
+  jupiter.ai_model.gigachat_max_private_cloud:
+    title: GigaChat Max в частном облаке
+    description: |
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+      Развернута в частном облаке
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+
+  jupiter.ai_model.gigachat_embeddings_private_cloud:
+    title: GigaChat Embeddings в частном облаке
+    description: |
+      Модель предназначена для формирования высококачественных представлений текста в виде численных векторов
+      (эмбеддингов), используемых для расчёта сходства документов и анализа семантической близости.
+      Развернута в частном облаке
+    class: ClassicML
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+    purposes:
+      - text_vector_representation
+      - similarity_calculation
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - TEXT_SIMILARITY_CORPUS
+      - DOCUMENT_COLLECTION
+    hyperparameters:
+      context_window_tokens: 512
+    created_at: 2023.04.01
+
+  jupiter.ai_model.gigachat_embeddings_gigar_private_cloud:
+    title: GigaChat EmbeddingsGigaR в частном облаке
+    description: |
+      Усовершенствованная версия предыдущей модели с увеличенными ресурсами обработки больших объемов данных и
+      повышенной точностью вычисления семантического соответствия.
+      Развернута в частном облаке
+    class: ClassicML
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+    purposes:
+      - advanced_embedding_generation
+      - large-scale_semantic_analysis
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: Private SaaS
+    architecture: transformer
+    training_datasets:
+      - BIG_WEB_CORPUS
+      - SCIENTIFIC_PAPERS
+    hyperparameters:
+      context_window_tokens: 4096
+    created_at: 2023.05.15
+
+  jupiter.ai_model.gigachat_lite_on_prem:
+    title: GigaChat Lite локальная
+    description: |
+      Быстрая и легкая модель для простых повседневных задач.
+      Развернута в периметре компании
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - fast_interactive_responses
+      - lightweight_generations
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - LITRES_CORPUS
+      - WIKIPEDIA_RU
+    hyperparameters:
+      context_window_tokens: 128000
+
+  jupiter.ai_model.gigachat_pro_on_prem:
+    title: GigaChat Pro локальная
+    description: |
+      Усовершенствованная модель для ресурсоемких задач, обеспечивающая максимальную эффективность
+      в обработке данных, креативности и соблюдении инструкций.
+      Развернута в периметре компании
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - advanced_dialogues
+      - multi-domain_task_performance
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - Q&A_CORPUS
+      - CODE_SNIPPET_COLLECTION
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.03.15
+
+  jupiter.ai_model.gigachat_max_on_prem:
+    title: GigaChat Max локальная
+    description: |
+      Мощная модель для самых сложных и масштабных задач, требующих высочайшего уровня креативности
+      и качества исполнения.
+      Развернута в периметре компании
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+      - Аудио
+      - Изображения
+      - Документы
+      - Ссылки на сайты
+      - Ссылки на видео
+    output_modalities:
+      - Текст
+      - Изображения
+      - Аудио
+      - Документы
+    purposes:
+      - large_scale_generation
+      - high_precision_results
+    vendor: Сбер Салют для бизнеса
+    version: 2.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - WEB_DOCUMENTS_RU
+      - BOOK_SUMMARIES
+    hyperparameters:
+      context_window_tokens: 128000
+    created_at: 2023.06.01
+
+  jupiter.ai_model.gigachat_embeddings_on_prem:
+    title: GigaChat Embeddings локальная
+    description: |
+      Модель предназначена для формирования высококачественных представлений текста в виде численных векторов
+      (эмбеддингов), используемых для расчёта сходства документов и анализа семантической близости.
+      Развернута в периметре компании
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+    purposes:
+      - text_vector_representation
+      - similarity_calculation
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - TEXT_SIMILARITY_CORPUS
+      - DOCUMENT_COLLECTION
+    hyperparameters:
+      context_window_tokens: 512
+    created_at: 2023.04.01
+
+  jupiter.ai_model.gigachat_embeddings_gigar_on_prem:
+    title: GigaChat EmbeddingsGigaR локальная
+    description: |
+      Усовершенствованная версия предыдущей модели с увеличенными ресурсами обработки больших объемов данных и
+      повышенной точностью вычисления семантического соответствия.
+      Развернута в периметре компании
+    class: GenAI
+    lifecycle_stage: Используется
+    realized_in: jupiter.app_system.aihub
+    input_modalities:
+      - Текст
+    purposes:
+      - advanced_embedding_generation
+      - large-scale_semantic_analysis
+    vendor: Сбер Салют для бизнеса
+    version: 1.0
+    delivery_type: On-prem
+    architecture: transformer
+    training_datasets:
+      - BIG_WEB_CORPUS
+      - SCIENTIFIC_PAPERS
+    hyperparameters:
+      context_window_tokens: 4096
+    created_at: 2023.05.15

@@ -1,0 +1,79 @@
+# Назначение: Облегченный агрегат ключевых TA-объектов для быстрых виджетов и проверок.
+# Используется: internal_docs, app.
+datasets:
+  seaf.company.ds.ta.all_objects_light:
+    description: |
+      Облегченный индекс TA-объектов для быстрых связок в датасетах и карточках.
+    origin:
+      compute_services: seaf.company.ds.ta.compute_services
+      cluster_virtualizations: seaf.company.ds.ta.cluster_virtualizations
+      servers: seaf.company.ds.ta.servers
+      storages: seaf.company.ds.ta.storages
+      hw_storages: seaf.company.ds.ta.hw_storages
+      k8s: seaf.company.ds.ta.k8s
+      k8s_namespaces: seaf.company.ds.ta.k8s_namespaces
+      k8s_deployments: seaf.company.ds.ta.k8s_deployments
+      k8s_hpas: seaf.company.ds.ta.k8s_hpas
+      k8s_nodes: seaf.company.ds.ta.k8s_nodes
+      backup: seaf.company.ds.ta.backup
+      monitoring: seaf.company.ds.ta.monitoring
+      kb: seaf.company.ds.ta.kb
+      network_components: seaf.company.ds.ta.network_components
+      user_devices: seaf.company.ds.ta.user_devices
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $project := function($obj){
+          $exists($obj.__id__)
+            ? {
+                "__id__": $obj.__id__,
+                "__entity_id__": $obj.__entity_id__,
+                "__entity_title__": $obj.__entity_title__,
+                "__link_to_card__": $obj.__link_to_card__,
+                "title": $obj.title,
+                "description": $obj.description,
+                "type": $obj.type,
+                "service_type": $obj.service_type,
+                "app_components": $to_list($obj.app_components),
+                "availabilityzone": $to_list($obj.availabilityzone),
+                "location": $to_list($obj.location),
+                "network_connection": $to_list($obj.network_connection),
+                "management_networks": $to_list($obj.management_networks),
+                "monitoring": $to_list($obj.monitoring),
+                "backup": $to_list($obj.backup),
+                "storage": $to_list($obj.storage),
+                "hw_storage": $to_list($obj.hw_storage),
+                "cluster": $to_list($obj.cluster),
+                "clusters": $to_list($obj.clusters),
+                "cluster_ref": $to_list($obj.cluster_ref),
+                "subnets": $to_list($obj.subnets),
+                "segment": $obj.segment,
+                "is_part_of": $to_list($obj.is_part_of),
+                "protected_services": $to_list($obj.protected_services)
+              }
+            : {}
+        };
+        $merge([
+          compute_services,
+          cluster_virtualizations,
+          servers,
+          storages,
+          hw_storages,
+          k8s,
+          k8s_namespaces,
+          k8s_deployments,
+          k8s_hpas,
+          k8s_nodes,
+          backup,
+          monitoring,
+          kb,
+          network_components,
+          user_devices
+        ]).$spread().(
+          $id := $keys()[0];
+          $obj := $.*[0];
+          { $id: $project($obj) }
+        ) ~> $merge()
+      )

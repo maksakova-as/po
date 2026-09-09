@@ -1,0 +1,174 @@
+entities:
+  kadzo.v2023.criticality_passport:
+    title: Паспорт критичности
+    description: Оценка критичности простоя ИТ-услуги или простоя автоматизированной части процесса
+    schema:
+      $defs:
+        kadzo.v2023.criticality_passport.client_type:
+          title: Типы клиентов
+          type: object
+          properties:
+            object_consumers_type:
+              title: Тип клиента
+              enum:
+                - Физические лица (Внешние клиенты)
+                - Микро/малый бизнес (Внешние клиенты)
+                - Крупный и средний бизнес (Внешние клиенты)
+                - Крупнейшие клиенты и финансовые институты (Внешние клиенты)
+                - Физические лица канала Сбербанк Первый (Внешние клиенты)
+                - Private Banking (Внешние клиенты)
+                - Сотрудники компаний Группы (Внутренние клиенты)
+            clients_affected:
+              title: Тип клиента
+              enum:
+                - Физические лица (Внешние клиенты)
+                - Микро/малый бизнес (Внешние клиенты)
+                - Крупный и средний бизнес (Внешние клиенты)
+                - Крупнейшие клиенты и финансовые институты (Внешние клиенты)
+                - Физические лица канала Сбербанк Первый (Внешние клиенты)
+                - Private Banking (Внешние клиенты)
+                - Сотрудники компаний Группы (Внутренние клиенты)
+        kadzo.v2023.criticality_passport.outage_type:
+          title: Типы клиентов
+          type: object
+          properties:
+            object_outage_impact:
+              title: Тип влияния на клиентов при недоступности обьекта
+              enum:
+                - Клиент не смог узнать необходимую информацию (Внутренние и внешние клиенты)
+                - Не оказана услуга в ожидаемый срок, без нарушения SLA (Внутренние и внешние клиенты)
+                - Не оказана услуга в заявленный SLA срок (Внутренние и Внешние клиенты)
+                - Клиент не смог получить кредитные средства от Банка в заявленный срок (Внешние клиенты)
+                - Не получен доступ к своим средствам на счетах и/или не смог осуществить сделку (Внешние клиенты)
+                - Клиент понес прямой убыток из-за некорректной работы сервиса (Внешние клиенты)
+                - Сотрудники Банка и компаний Группы
+            clients_outage_impact:
+              title: Тип влияния на клиентов при недоступности обьекта
+              enum:
+                - Клиент не смог узнать необходимую информацию (Внутренние и внешние клиенты)
+                - Не оказана услуга в ожидаемый срок, без нарушения SLA (Внутренние и внешние клиенты)
+                - Не оказана услуга в заявленный SLA срок (Внутренние и Внешние клиенты)
+                - Клиент не смог получить кредитные средства от Банка в заявленный срок (Внешние клиенты)
+                - Не получен доступ к своим средствам на счетах и/или не смог осуществить сделку (Внешние клиенты)
+                - Клиент понес прямой убыток из-за некорректной работы сервиса (Внешние клиенты)
+                - Сотрудники Банка и компаний Группы
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          anyOf:
+            - $ref: "#/$defs/kadzo.v2023.criticality_passport.client_type"
+            - $ref: "#/$defs/kadzo.v2023.criticality_passport.outage_type"
+          properties:
+            evaluated_object:
+              title: ID ИТ-услуги или  автоматизированной части процесса
+              $ref: "#/$rels/kadzo.v2023.systems.systems"
+            object_workload:
+              title: Число обслуживаемых клиентов за час пиковой нагрузки
+              type: integer
+            object_sla:
+              title: Допустимое время простоя (SLA), мин.
+              type: integer
+            object_criticality_estimation:
+              title: Оценка критичности простоя
+              enum:
+                - Mission critical +
+                - Mission critical
+                - Business critical
+                - Business operational
+                - Office productivity
+            object_criticality_calculated:
+              title: Расчетная оценка критичности простоя
+              type: string
+            object_criticality_passport_source:
+              title: Ссылка на документ Р34-2 Паспорт оценки критичности
+              type: string
+            object_outage_scenarios:
+              title: 'Простой - Детальная оценка (Cценарии недоступности)'
+              type: array
+              items:            
+                type: object              
+                properties:
+                  id:
+                    title: Cценарий недоступности услуги (id)
+                    description: Cценарий недоступности услуги
+                    type: string
+                  description:
+                    title: Cценарий недоступности услуги (описание)
+                    description: Cценарий недоступности услуги
+                    type: string
+                  clients_impact:
+                    type: array
+                    items:
+                      type: object
+                      anyOf:
+                        - $ref: "#/$defs/kadzo.v2023.criticality_passport.client_type"
+                        - $ref: "#/$defs/kadzo.v2023.criticality_passport.outage_type"
+                      properties:
+                        clients_num_affected:
+                          title: Количество клиентов (Среднее кол-во пользователей системой за час)
+                          type: integer
+                        comments:
+                          title: Комментарий
+                          type: string
+                  financial_impact:
+                    type: object
+                    properties:
+                      low:
+                        title: Незначительный ущерб (в часах)
+                        type: integer
+                      medium:
+                        title: Средний ущерб (в часах)
+                        type: integer
+                      high:
+                        title: Высокий ущерб (в часах)
+                        type: integer
+                      critical:
+                        title: Критичный ущерб (в часах)
+                        type: integer
+                      comments:
+                        title: Комментарий
+                        type: string
+                  reputational_impact:
+                    type: object
+                    properties:
+                      low:
+                        title: Незначительный ущерб (в часах)
+                        type: integer
+                      medium:
+                        title: Средний ущерб (в часах)
+                        type: integer
+                      high:
+                        title: Высокий ущерб (в часах)
+                        type: integer
+                      critical:
+                        title: Критичный ущерб (в часах)
+                        type: integer
+                      comments:
+                        title: Комментарий
+                        type: string
+                  legal_impact:
+                    type: object
+                    properties:
+                      low:
+                        title: Незначительный ущерб (в часах)
+                        type: integer
+                      medium:
+                        title: Средний ущерб (в часах)
+                        type: integer
+                      high:
+                        title: Высокий ущерб (в часах)
+                        type: integer
+                      critical:
+                        title: Критичный ущерб (в часах)
+                        type: integer
+                      comments:
+                        title: Комментарий
+                        type: string
+          required:
+            - object_criticality_estimation
+            - object_sla
+            - object_outage_impact
+            - object_consumers_type
+            - object_workload
+            - evaluated_object

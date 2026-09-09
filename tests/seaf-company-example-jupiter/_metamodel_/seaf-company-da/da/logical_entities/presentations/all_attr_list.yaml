@@ -1,0 +1,62 @@
+entities:
+  seaf.company.da.logical_entities:
+
+    presentations:
+      all_attr_list:
+        title: Список всех атрибутов
+        type: table
+
+        headers:
+          - value: le
+            text:  Сущность
+            link: le_link
+            align: left
+          - value: attr
+            text:  Атрибут
+            align: left
+          - value: attr_title
+            text:  Название
+            align: left
+          - value: description
+            text: Описание
+            align: left
+          - value: business_term
+            text: Бизнес-термин
+            link: business_term_link
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+          - value: pdn_flag
+            text: ПДн
+          - value: cde_flag
+            text: КритДн
+
+        origin:
+          objects: seaf.company.ds.da.logical_entities
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $result := $each($objects, function($le_val, $le_key) {(
+              $le := $seaf_fn_get_object_info($le_key, $all_objects);
+              $each($le_val.attributes, function($val, $key) {(
+                  $attr := $seaf_fn_get_object_info($val.business_term, $all_objects);
+                  $bt := $exists($val.business_term) ? $seaf_fn_get_object_info($val.business_term, $all_objects);
+                  {
+                    "le": $le.title,
+                    "le_link": $le.link_to_card,
+                    "attr": $key,
+                    "attr_title": $val.title,
+                    "description": $val.description,
+                    "business_term": $bt.title,
+                    "business_term_link": $bt.link_to_card,
+                    "lifecycle_stage": $val.lifecycle_stage,
+                    "pdn_flag": $val.pdn_flag ? "ДА" : "НЕТ",
+                    "cde_flag": $val.cde_flag ? "ДА" : "НЕТ"
+                  }
+              )})[];
+          )})[];
+          /* превращаем массив массивов в плоский массив */
+          $result := $result@$i.$append($a, $i);
+          $result;
+          )

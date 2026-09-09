@@ -1,0 +1,84 @@
+# Проверяет, что в массивах объектов озера данных нет пустых элементов.
+# Нужен дополнительно к schema_validation, чтобы ловить пустые элементы в массивах
+# даже для сущностей/атрибутов без явной схемы; это влияет на построение R41
+# схемы в плагине, поэтому правило сохранено специально для этой цели.
+rules:
+  validators:
+    seaf.validation.ta.common.empty_list_items:
+      uid: SEAF-TA-COMMON-EMPTY-LIST-001
+      title: Проверка на пустые элементы в списках объектов озера данных
+      description: |
+        Проверяет, что в любых массивах объектов озера данных отсутствуют пустые
+        элементы (null или пустая строка).
+      correction: |
+        Удалите пустые элементы из массивов. Каждый элемент должен содержать
+        корректное значение.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.common.empty_list_items";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              /* Рекурсивная функция поиска пустых элементов в массивах */
+              $check := function($v, $path, $entity, $id, $title) {
+                $type($v) = "array" ? (
+                  $v.(
+                    $item := $;
+                    $idx := $index;
+                    ($item = null or $item = "") ? {
+                      "uid": $entity & "." & $id & "." & $path & "." & $idx,
+                      "entity": $entity,
+                      "id": $id,
+                      "title": $title,
+                      "attr_id": $path,
+                      "index": $idx
+                    } : $check($item, $path & "[" & $idx & "]", $entity, $id, $title)
+                  )
+                ) : $type($v) = "object" ? (
+                  $v.$spread().(
+                    $k := $keys()[0];
+                    /* Пропускаем системные поля */
+                    $not($substring($k, 0, 2) = "__") ? $check(*, $path ? $path & "." & $k : $k, $entity, $id, $title)
+                  )
+                )
+              };
+
+              /* Итерируемся по всем ключам, похожим на сущности (содержат точку) */
+              $entity_ids := $keys($)[$contains($, ".")];
+              
+              $errors := $entity_ids.(
+                $entity_id := $;
+                $objs := $lookup($$, $entity_id);
+                $objs.$spread().(
+                  $obj_id := $keys()[0];
+                  $obj := *;
+                  $check($obj, "", $entity_id, $obj_id, $obj.title)
+                )
+              )[];
+
+              $count($errors) = 0 ? [] : [ $errors.(
+                {
+                  "uid": "seaf.validation.ta.common.empty_list_items." & uid,
+                  "title": "Пустые элементы в массиве '" & attr_id & "' у объекта '" & ($title ? $title : id) & "'.",
+                  "correction": "ID: " & id & ". Удалите пустые элементы из массива `" & attr_id & "`.",
+                  "description": "Элемент с индексом " & index & " является пустым (null или пустая строка).",
+                  "link": "/entities/" & entity & "/card?id=" & id
+                }
+              ) ]
+            )
+            : []
+        )

@@ -1,0 +1,59 @@
+# Назначение: Нормализованные связи сервисов КБ с защищаемыми объектами TA.
+# Используется: presentations, auto_tests, ta, internal_docs.
+datasets:
+  seaf.company.ds.ta.kb_links:
+    description: |
+      ????? KB ? ??????????? ????????? (reverse lookup)
+    origin:
+      kb: seaf.company.ds.ta.kb
+      compute_services: seaf.company.ds.ta.compute_services
+      cluster_virtualizations: seaf.company.ds.ta.cluster_virtualizations
+      k8s: seaf.company.ds.ta.k8s
+      backup: seaf.company.ds.ta.backup
+      monitoring: seaf.company.ds.ta.monitoring
+      storages: seaf.company.ds.ta.storages
+      network_components: seaf.company.ds.ta.network_components
+      servers: seaf.company.ds.ta.servers
+      user_devices: seaf.company.ds.ta.user_devices
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $resolve_obj := function($id){
+          $lookup(compute_services, $id) ? $lookup(compute_services, $id) :
+            ($lookup(cluster_virtualizations, $id) ? $lookup(cluster_virtualizations, $id) :
+              ($lookup(k8s, $id) ? $lookup(k8s, $id) :
+                ($lookup(backup, $id) ? $lookup(backup, $id) :
+                  ($lookup(monitoring, $id) ? $lookup(monitoring, $id) :
+                    ($lookup(storages, $id) ? $lookup(storages, $id) :
+                      ($lookup(network_components, $id) ? $lookup(network_components, $id) :
+                        ($lookup(servers, $id) ? $lookup(servers, $id) : $lookup(user_devices, $id))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+        };
+        "seaf2" in $sources_enabled
+          ? (
+              $kb := kb;
+              $kb_list := $kb.*;
+              $result := $kb_list.(
+                $k := $;
+                $prot := $k.protected_services;
+                $prot_list := $type($prot) = "array" ? $prot : ($exists($prot) ? [$prot] : []);
+                $prot_list.(
+                  $o := $resolve_obj($);
+                  {
+                    "kb": $k.__id__,
+                    "title": $o.title,
+                    "link": "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__,
+                    "type": "?????????? ??????"
+                  }
+                )
+              );
+              $result ~> $reduce($append, [])
+            )
+          : []
+      )

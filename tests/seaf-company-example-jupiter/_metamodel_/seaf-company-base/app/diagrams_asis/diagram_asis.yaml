@@ -1,0 +1,8 @@
+seaf.company.app.diagrams.asis:
+  seaf.app_diagram.asis_full:
+    title: AS-IS Все системы компании
+    menu_location: Диаграммы/AS-IS Все системы
+    menu_order: 1000
+    filter_systems:
+      - "**"  # все системы
+

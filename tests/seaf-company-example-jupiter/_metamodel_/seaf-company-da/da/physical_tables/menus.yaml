@@ -1,0 +1,35 @@
+entities:
+  seaf.company.da.physical_tables:
+
+    menu: >
+      (
+      $entity_id := "seaf.company.da.physical_tables";
+      $domain_id := "seaf.company.da";
+      $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+      $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+      $menu := [];
+      /*  Список сущностей  */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Физическая Модель Данных/Таблицы", $root_menu);
+          $menu_item_order := $root_menu_order + 300;
+          $exists($.$lookup($entity_id)) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu_item_name,
+              "order": $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      /*  Диаграмма ФМД  */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Физическая Модель Данных/Диаграмма", $root_menu);
+          $menu_item_order := $root_menu_order + 400;
+          $exists($.$lookup($entity_id)) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/diagram",
+              "location": $menu_item_name,
+              "order": $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      )

@@ -1,0 +1,52 @@
+seaf.company.ba.channels:
+  jupiter.channel.website:
+    title: "Вебсайт компании"
+    description: >
+      Основной цифровой канал компании
+    type: Цифровой
+    lifecycle_stage: Тестируется
+    serves_clients:
+      - jupiter.client.young_person
+      - jupiter.client.mature_person
+    realization:
+      - system: jupiter.app_system.website
+        description: Основной вебсайт
+
+  jupiter.channel.digital4clients:
+    title: "Цифровой канал клиентов"
+    description: >
+      Основной цифровой канал для клиентов компании
+    type: Цифровой
+    lifecycle_stage: Используется и развивается
+    serves_clients:
+      - jupiter.client.young_person
+      - jupiter.client.mature_person
+    realization:
+      - system: jupiter.app_system.mp_favorite_client
+        description: Мобильное приложение
+
+  jupiter.channel.shopping_centre:
+    title: "Магазин компании"
+    description: Физическая площадка по торговле товарами и живому взаимодействию с клиентами
+    type: Физический
+    lifecycle_stage: Используется и развивается
+    realization:
+      - system: jupiter.app_system.efs
+        description: Фронтальное приложение для сотрудников
+    serves_clients:
+      - jupiter.client.mature_person
+      - jupiter.client.elderly_person
+
+  jupiter.channel.company_office:
+    title: "Офис компании"
+    description: Площадка работы и общения сотрудников
+    type: Физический
+    lifecycle_stage: Используется и развивается
+    realization:
+      - system: jupiter.app_system.efs
+        description: Фронтальное приложение для сотрудников
+    serves_clients:
+      - jupiter.client.young_person
+      - jupiter.client.employee
+    comments:
+      - комментарий к каналу офис компании

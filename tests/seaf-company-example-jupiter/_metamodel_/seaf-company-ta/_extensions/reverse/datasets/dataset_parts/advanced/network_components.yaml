@@ -1,0 +1,104 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.network_components` (network components) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.network_components:
+    description: |
+      Extracts VPCs/Subnets as generic network components (routers/switches) from `seaf.ta.reverse.cloud_ru.advanced.vpcs` and `subnets`.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $to_list := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $vpcs := data_lake."seaf.ta.reverse.cloud_ru.advanced.vpcs".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $subnets := data_lake."seaf.ta.reverse.cloud_ru.advanced.subnets".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vpc_objects := $vpcs.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $comp_id := "reverse.netcomp.vpc." & $normalize($raw_id);
+          $dc_refs := $distinct($to_list($record.secondary_cidr_domains).($dc_ref($))[$ != null]);
+          $card := "/entities/seaf.company.ta.components.networks/card?id=" & $comp_id;
+          {
+            ($comp_id): {
+              "__id__": $comp_id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "VPC Router (reverse import)",
+              "__company_id__": $record.tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : ("VPC " & $raw_id),
+              "description": $join([
+                $record.cidr ? "CIDR: " & $record.cidr : "",
+                $record.status ? "Status: " & $record.status : "",
+                $record.tenant ? "Tenant: " & $record.tenant : ""
+              ][ $ != "" ], "\n"),
+              "type": "Router (VPC)",
+              "location": $dc_refs,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vpcs",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        );
+        $subnet_objects := $subnets.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $comp_id := "reverse.netcomp.subnet." & $normalize($raw_id);
+          $vpc_ref := $record.vpc_id ? ["reverse.netcomp.vpc." & $normalize($record.vpc_id)] : [];
+          $az_refs := $record.availability_zone ? [$az_ref($record.availability_zone)] : [];
+          $card := "/entities/seaf.company.ta.components.networks/card?id=" & $comp_id;
+          {
+            ($comp_id): {
+              "__id__": $comp_id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "Subnet Switch (reverse import)",
+              "__company_id__": $record.tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : ("Subnet " & $raw_id),
+              "description": $join([
+                $record.cidr ? "CIDR: " & $record.cidr : "",
+                $record.gateway_ip ? "Gateway: " & $record.gateway_ip : "",
+                $record.status ? "Status: " & $record.status : "",
+                $record.vpc_id ? "VPC ID: " & $record.vpc_id : ""
+              ][ $ != "" ], "\n"),
+              "type": "Switch (Subnet)",
+              "availabilityzone": $az_refs,
+              "network_connection": $vpc_ref,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.subnets",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        );
+        [$vpc_objects, $subnet_objects][] ~> $merge()
+      )
+

@@ -1,0 +1,45 @@
+datasets:
+  test_1:
+    source: >
+      ({"test_1": "OK"})
+  test_2:
+    source: >
+      ({"test_2": "OK"})
+  test_3:
+    origin:
+      ds_1: test_1
+      ds_2: test_4
+    source: >
+      ({"test_2": "OK"})
+      
+
+  test_e_1:
+    origin:
+      ds_err: test_e_2
+    source: >
+      ({"test_e_1": "OK"})
+  test_e_2:
+    origin:
+      ds_err: test_error
+    source: >
+      ({"test_e_2": "OK"})
+  test_error:
+    source: >
+      (asd3[}}]})
+
+  test_5:
+    origin:
+      ds_3: test_1
+      ds_e: test_e_1
+    source: >
+      ({"test_5": "OK"})
+
+  test_6:
+    origin: test_5
+    source: >
+      ({"test_6": "OK"})  
+      
+  test_7:
+    type: manifest
+    source: ./manifest.yaml
+      

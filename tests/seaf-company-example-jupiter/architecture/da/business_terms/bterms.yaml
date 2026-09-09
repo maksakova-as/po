@@ -1,0 +1,56 @@
+seaf.company.da.business_terms:
+  jupiter.bt.model:
+    title: Модель изделия
+    description: уникальное кодовое название модели одежды
+    creation_date: 2025.10.22
+    owner: Иванов И.И.
+    lifecycle_stage: Используется
+  jupiter.bt.material:
+    title: Материал изделия
+    description: уникальное кодовое название материала для изготовления одежды
+    creation_date: 2025.10.22
+    owner: Иванов И.И.
+    lifecycle_stage: Используется
+  jupiter.bt.color:
+    title: Основной цвет изделия
+    description: название цвета с кодом RGB
+    creation_date: 2025.10.22
+    owner: Иванов И.И.
+    lifecycle_stage: Используется
+  jupiter.bt.size:
+    title: Размер изделия
+    description: российский размер одежды с соответствующим буквенным международным обозначением
+    creation_date: 2025.10.22
+    owner: Иванов И.И.
+    lifecycle_stage: Используется
+
+  jupiter.bt.employee:
+    title: Сотрудник Компании
+    description: сотрудник компании, в любой должности
+    creation_date: 2025.10.22
+    owner: Петров П.П.
+    lifecycle_stage: Используется
+  jupiter.bt.full_name:
+    title: ФИО сотрудника
+    description: Фамилия Имя Отчество сотрудника полносью
+    creation_date: 2025.10.22
+    owner: Петров П.П.
+    lifecycle_stage: Используется
+  jupiter.bt.designer:
+    title: Дизайнер
+    description: сотрудник компании, исполняющий обязанности дизайнера
+    creation_date: 2025.10.22
+    owner: Петров П.П.
+    lifecycle_stage: Используется
+  jupiter.bt.lead_technician:
+    title: Ведущий Технолог
+    description: сотрудник компании, работающий на должности ведущего технолога
+    creation_date: 2025.10.22
+    owner: Петров П.П.
+    lifecycle_stage: Используется
+  jupiter.bt.senior_technician:
+    title: Старший Технолог
+    description: сотрудник компании, работающий на должности старшего технолога
+    creation_date: 2025.10.22
+    owner: Петров П.П.
+    lifecycle_stage: Используется

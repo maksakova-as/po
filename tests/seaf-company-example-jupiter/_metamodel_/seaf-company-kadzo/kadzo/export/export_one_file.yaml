@@ -1,0 +1,15 @@
+docs:
+  to_kadzo.exporter_1file:
+    location: /КА ДЗО/Экспорт данных SEAF -> КА ДЗО (одним файлом)
+    type: arch-formater
+    origin:
+      data: seaf.company.ds.kadzo
+      
+    components:
+      - id: seaf2kadzo_export
+        path: exported
+        source: >
+          (
+          $data := data;
+          { "seaf2kadzo.export": $data }
+          )

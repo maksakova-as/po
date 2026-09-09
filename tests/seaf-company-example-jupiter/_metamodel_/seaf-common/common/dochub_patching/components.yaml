@@ -1,0 +1,12 @@
+entities:
+  components:
+#    Патчим формирование меню, чтобы пустые п.м. не появлялись
+    menu: >
+      (
+        [
+          $exists($.components) ? {
+            "link": "/entities/components/tree",
+            "location": entities.components.config.root_menu
+          }
+        ]
+      )

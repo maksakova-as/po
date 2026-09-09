@@ -1,0 +1,1157 @@
+{
+  "type": "object",
+  "properties": {
+    "functions": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "title": "Идентификатор сущности",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "title": "Описание функции"
+            },
+            "params": {
+              "type": "array",
+              "title": "Параметры функции",
+              "items": {
+                "$ref": "#/$defs/$jsonschema"
+              }
+            },
+            "code": {
+              "title": "JSONata код функции",
+              "type": "string"
+            },
+            "result": {
+              "title": "Схема результата",
+              "$ref": "#/$defs/$jsonschema"
+            }
+          },
+          "required": [
+            "code"
+          ]
+        }
+      }
+    },
+    "entities": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[0-9a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название сущности",
+              "type": "string"
+            },
+            "description": {
+              "title": "Описание сущности",
+              "type": "string"
+            },
+            "schema": {
+              "$ref": "#/$defs/$jsonschema"
+            },
+            "menu": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/$jsonata"
+                },
+                {
+                  "$ref": "#/$defs/$menu"
+                }
+              ]
+            },
+            "presentations": {
+              "type": "object",
+              "patternProperties": {
+                "^[0-9a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+                  "$ref": "#/$defs/$doc-profile",
+                  "properties": {
+                    "title": {
+                      "title": "Название",
+                      "type": "string"
+                    },
+                    "params": {
+                      "title": "Схема параметров",
+                      "$ref": "#/$defs/$params"
+                    },
+                    "$constructor": {
+                      "title": "Конструктор презентации",
+                      "$ref": "#/$defs/$jsonata"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "seaf.company.app.services": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes"
+            },
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.lifecycle_stage"
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "$ref": "#/$rels/seaf.company.app.services.service"
+            },
+            "type": {
+              "title": "Тип сервиса",
+              "enum": [
+                "UI",
+                "API",
+                "AI Agent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "seaf.company.ba.processes": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes"
+            },
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.lifecycle_stage"
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "$ref": "#/$rels/seaf.company.ba.processes.process"
+            },
+            "produces": {
+              "title": "Производит",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.ba.products.product"
+              }
+            },
+            "uses_it_services": {
+              "title": "Использует",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.app.services.service"
+              }
+            }
+          }
+        }
+      }
+    },
+    "seaf.company.ba.products": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes"
+            },
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.lifecycle_stage"
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "$ref": "#/$rels/seaf.company.ba.products.product"
+            },
+            "distributed_via": {
+              "title": "Распространяется через",
+              "description": "Каналы распространения продукта",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.ba.channels.channel"
+              }
+            },
+            "target_clients": {
+              "title": "Целевые клиенты",
+              "description": "Клиенты, на которых нацелен продукт",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.ba.clients.client"
+              }
+            }
+          }
+        }
+      }
+    },
+    "seaf.company.ba.channels": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes"
+            },
+            {
+              "$ref": "#/$defs/seaf.company.shared.defs.lifecycle_stage"
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "$ref": "#/$rels/seaf.company.ba.channels.channel"
+            },
+            "type": {
+              "title": "Тип канала",
+              "enum": [
+                "Цифровой",
+                "Физический",
+                "Phygital"
+              ]
+            },
+            "serves_clients": {
+              "title": "Обслуживает клиентов",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.ba.clients.client"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "serves_clients"
+          ]
+        }
+      }
+    },
+    "seaf.company.ba.clients": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes",
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "$ref": "#/$rels/seaf.company.ba.clients.client"
+            },
+            "type": {
+              "title": "Тип клиента",
+              "enum": [
+                "Физические лица",
+                "Микро/Малый бизнес",
+                "Крупный и средний бизнес",
+                "Крупнейшие клиенты и финансовые институты",
+                "Сотрудники компании"
+              ]
+            },
+            "count": {
+              "title": "Количественная оценка",
+              "type": "integer"
+            },
+            "measure": {
+              "title": "Ед. измерения количественной оценки клиентов",
+              "type": "string"
+            },
+            "uses_it_services": {
+              "title": "Использует ИТ-сервисы",
+              "type": "array",
+              "items": {
+                "$ref": "#/$rels/seaf.company.app.services.service"
+              }
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      }
+    },
+    "seaf.company.shared.defs": {
+      "$defs": {
+        "seaf.company.shared.defs.basic_attributes": {
+          "title": "Базовые атрибуты для всех сущностей",
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Краткое название",
+              "type": "string",
+              "description": "Используется в качестве названия объекта в схемах и отчетах"
+            },
+            "description": {
+              "title": "Описание",
+              "type": "string",
+              "description": "Описание объекта в несколько предложений"
+            },
+            "external_id": {
+              "title": "Внешний идентификатор",
+              "type": "string",
+              "description": "Идентификатор объекта во внешней системе"
+            },
+            "comments": {
+              "title": "Комментарии",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "title"
+          ]
+        },
+        "seaf.company.shared.defs.lifecycle_stage": {
+          "title": "Этапы жизненного цикла объекта",
+          "type": "object",
+          "properties": {
+            "lifecycle_stage": {
+              "title": "Этап ЖЦ",
+              "type": "string",
+              "enum": [
+                "Идея",
+                "Создается",
+                "Используется и развивается",
+                "Используется",
+                "Выводится из эксплуатации",
+                "В архиве"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "seaf.toolkit.mm_viewer.mm_maps": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название",
+              "type": "string"
+            },
+            "location": {
+              "title": "Пункт меню",
+              "type": "string"
+            },
+            "nodes": {
+              "title": "Виртуальные ноды",
+              "patternProperties": {
+                "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "title": "Название"
+                    },
+                    "symbol": {
+                      "type": "string",
+                      "title": "Символ"
+                    }
+                  },
+                  "required": [
+                    "title"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "domains": {
+              "title": "Выборка доменов",
+              "type": "array",
+              "items": {
+                "title": "Фильтр доменов",
+                "type": "string"
+              }
+            },
+            "hooks": {
+              "type": "object",
+              "title": "Обработчики данных",
+              "properties": {
+                "after": {
+                  "title": "Пост обработчик",
+                  "type": "string"
+                },
+                "before": {
+                  "title": "Предобработчик",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "required": [
+            "title",
+            "domains"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "docs": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название документа",
+              "type": "string"
+            },
+            "location": {
+              "title": "Место расположения в меню",
+              "type": "string"
+            },
+            "icon": {
+              "title": "Иконка в меню",
+              "type": "string"
+            },
+            "type": {
+              "title": "Тип документа",
+              "type": "string"
+            },
+            "subjects": {
+              "title": "Принадлежит объектам",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "template": {
+              "title": "Путь к файлу шаблона",
+              "type": "string"
+            },
+            "source": {
+              "title": "Источник данных (документ, объект, запрос или dataset)",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "title": "Идентификатор dataset",
+                  "pattern": "^[0-9a-zA-Z][a-zA-Z0-9 ]*(\\.[a-zA-Z][a-zA-Z0-9\\_]*)*$"
+                },
+                {
+                  "type": "string",
+                  "title": "JSONata запрос",
+                  "pattern": "\\s*\\((.|\\s)*\\)\\s*"
+                },
+                {
+                  "title": "Ссылка на документ",
+                  "$ref": "#/$defs/$res-uri-reference"
+                },
+                {
+                  "title": "Объект",
+                  "type": "object"
+                },
+                {
+                  "title": "Массив",
+                  "type": "array"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "contexts": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название контекста",
+              "type": "string"
+            },
+            "location": {
+              "title": "Место расположения в меню",
+              "type": "string"
+            },
+            "icon": {
+              "title": "Иконка в меню",
+              "type": "string"
+            },
+            "components": {
+              "title": "Компоненты контекста",
+              "type": "array",
+              "items": {
+                "type": "string",
+                "title": "Идентификатор компонента или маска",
+                "pattern": "^[0-9a-zA-Z][a-zA-Z0-9\\_]*(\\.([a-zA-Z0-9][a-zA-Z0-9\\_]*|\\*))*$"
+              }
+            },
+            "extra-links": {
+              "title": "Отображать компоненты ближайших связей",
+              "type": "boolean"
+            },
+            "presentation": {
+              "title": "Принудительно определяет презентацию",
+              "type": "string",
+              "enum": [
+                "plantuml",
+                "smartants"
+              ]
+            },
+            "uml": {
+              "title": "Кастомизация контекста",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "title": "Путь к файлу PlantUML"
+                },
+                {
+                  "type": "object",
+                  "title": "Дополнительные параметры",
+                  "properties": {
+                    "$before": {
+                      "title": "Код встраиваемый до сгенерированного",
+                      "type": "string"
+                    },
+                    "$after": {
+                      "title": "Код встраиваемый после сгенерированного",
+                      "type": "string"
+                    }
+                  }
+                }
+              ]
+            },
+            "api": {
+              "type": "object",
+              "title": "Переопределяемые API",
+              "properties": {
+                "fetchComponents": {
+                  "type": "string",
+                  "title": "Возвращает список компонентов в кормате ключ-значение"
+                },
+                "fetchLinks": {
+                  "type": "string",
+                  "title": "Возвращает список связей компонентов"
+                }
+              }
+            },
+            "source": {
+              "title": "Источник данный (запрос или dataset)",
+              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "title": "Идентификатор dataset",
+                  "pattern": "^[0-9a-zA-Z][a-zA-Z0-9 ]*(\\.[a-zA-Z][a-zA-Z0-9\\_]*)*$"
+                },
+                {
+                  "type": "string",
+                  "title": "JSONata запрос",
+                  "pattern": "\\s*\\((.|\\s)*\\)\\s*"
+                }
+              ]
+            }
+          },
+          "required": [
+            "title"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "aspects": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название аспекта",
+              "type": "string"
+            }
+          },
+          "required": [
+            "title"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "components": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z0-9][a-zA-Z0-9_-]*)*$": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "title": "Название компонента",
+              "type": "string"
+            },
+            "entity": {
+              "title": "Представление компонента",
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "entity"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "$jsonschema": {
+      "title": "JSONSchema",
+      "definitions": {
+        "schemaArray": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/$jsonschema"
+          }
+        },
+        "nonNegativeInteger": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nonNegativeIntegerDefault0": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/$jsonschema/definitions/nonNegativeInteger"
+            },
+            {
+              "default": 0
+            }
+          ]
+        },
+        "simpleTypes": {
+          "enum": [
+            "array",
+            "boolean",
+            "integer",
+            "null",
+            "number",
+            "object",
+            "string"
+          ]
+        },
+        "stringArray": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "default": []
+        }
+      },
+      "type": [
+        "object",
+        "boolean"
+      ],
+      "properties": {
+        "$id": {
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "$schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "$ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri-reference"
+            },
+            {
+              "$ref": "#/$defs/$defs"
+            }
+          ]
+        },
+        "$comment": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "default": true,
+        "readOnly": {
+          "type": "boolean",
+          "default": false
+        },
+        "examples": {
+          "type": "array",
+          "items": true
+        },
+        "multipleOf": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "maximum": {
+          "type": "number"
+        },
+        "exclusiveMaximum": {
+          "type": "number"
+        },
+        "minimum": {
+          "type": "number"
+        },
+        "exclusiveMinimum": {
+          "type": "number"
+        },
+        "maxLength": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeInteger"
+        },
+        "minLength": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeIntegerDefault0"
+        },
+        "pattern": {
+          "type": "string",
+          "format": "regex"
+        },
+        "additionalItems": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/$jsonschema"
+            },
+            {
+              "$ref": "#/$defs/$jsonschema/definitions/schemaArray"
+            }
+          ],
+          "default": true
+        },
+        "maxItems": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeInteger"
+        },
+        "minItems": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeIntegerDefault0"
+        },
+        "uniqueItems": {
+          "type": "boolean",
+          "default": false
+        },
+        "contains": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "maxProperties": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeInteger"
+        },
+        "minProperties": {
+          "$ref": "#/$defs/$jsonschema/definitions/nonNegativeIntegerDefault0"
+        },
+        "required": {
+          "$ref": "#/$defs/$jsonschema/definitions/stringArray"
+        },
+        "additionalProperties": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "definitions": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/$jsonschema"
+          },
+          "default": {}
+        },
+        "properties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/$jsonschema"
+          },
+          "default": {}
+        },
+        "patternProperties": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/$jsonschema"
+          },
+          "propertyNames": {
+            "format": "regex"
+          },
+          "default": {}
+        },
+        "dependencies": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/$jsonschema"
+              },
+              {
+                "$ref": "#/$defs/$jsonschema/definitions/stringArray"
+              }
+            ]
+          }
+        },
+        "propertyNames": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "const": true,
+        "enum": {
+          "type": "array",
+          "items": true,
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "type": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/$jsonschema/definitions/simpleTypes"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/$jsonschema/definitions/simpleTypes"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          ]
+        },
+        "format": {
+          "type": "string"
+        },
+        "contentMediaType": {
+          "type": "string"
+        },
+        "contentEncoding": {
+          "type": "string"
+        },
+        "if": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "then": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "else": {
+          "$ref": "#/$defs/$jsonschema"
+        },
+        "allOf": {
+          "$ref": "#/$defs/$jsonschema/definitions/schemaArray"
+        },
+        "anyOf": {
+          "$ref": "#/$defs/$jsonschema/definitions/schemaArray"
+        },
+        "oneOf": {
+          "$ref": "#/$defs/$jsonschema/definitions/schemaArray"
+        },
+        "not": {
+          "$ref": "#/$defs/$jsonschema"
+        }
+      },
+      "default": true
+    },
+    "$jsonata": {
+      "title": "JSONata запрос",
+      "type": "string",
+      "pattern": "(\\s+|)\\(((.*|\\d|\\D)+?)(\\)(\\s+|))$"
+    },
+    "$menu-item": {
+      "title": "Элемент меню",
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Название",
+          "type": "string"
+        },
+        "location": {
+          "title": "Размещение",
+          "type": "string"
+        },
+        "icon": {
+          "title": "Иконка",
+          "type": "string"
+        },
+        "link": {
+          "title": "Ссылка",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "location"
+      ]
+    },
+    "$menu": {
+      "title": "Меню",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/$menu-item"
+      },
+      "minLength": 1
+    },
+    "$res-uri": {
+      "title": "URI ресурса",
+      "type": "string",
+      "format": "uri"
+    },
+    "$res-uri-reference": {
+      "title": "URI-REFERENCE ресурса",
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "$data-source": {
+      "title": "Источник данных",
+      "anyOf": [
+        {
+          "$ref": "#/$defs/$jsonata"
+        },
+        {
+          "$ref": "#/$defs/$res-uri-reference"
+        },
+        {
+          "title": "Структура данных",
+          "type": [
+            "object",
+            "array"
+          ]
+        },
+        {
+          "$ref": "#/$defs/$dataset"
+        }
+      ]
+    },
+    "$params": {
+      "$ref": "#/$defs/$jsonschema"
+    },
+    "$source-profile": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "title": "Источник данных / ресурс",
+          "type": "string",
+          "$ref": "#/$defs/$data-source"
+        },
+        "origin": {
+          "title": "Базовый источник данных",
+          "anyOf": [
+            {
+              "$ref": "#/$defs/$data-source",
+              "default": true
+            },
+            {
+              "type": "object",
+              "patternProperties": {
+                ".*": {
+                  "$ref": "#/$defs/$data-source"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "$doc-profile": {
+      "type": "object",
+      "$ref": "#/$defs/$source-profile",
+      "properties": {
+        "type": {
+          "title": "Тип документа",
+          "$ref": "#/$defs/$doc-types"
+        },
+        "template": {
+          "title": "Шаблон документа",
+          "$ref": "#/$defs/$res-uri-reference"
+        }
+      }
+    },
+    "seaf.company.shared.defs.basic_attributes": {
+      "title": "Базовые атрибуты для всех сущностей",
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Краткое название",
+          "type": "string",
+          "description": "Используется в качестве названия объекта в схемах и отчетах"
+        },
+        "description": {
+          "title": "Описание",
+          "type": "string",
+          "description": "Описание объекта в несколько предложений"
+        },
+        "external_id": {
+          "title": "Внешний идентификатор",
+          "type": "string",
+          "description": "Идентификатор объекта во внешней системе"
+        },
+        "comments": {
+          "title": "Комментарии",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "title"
+      ]
+    },
+    "seaf.company.shared.defs.lifecycle_stage": {
+      "title": "Этапы жизненного цикла объекта",
+      "type": "object",
+      "properties": {
+        "lifecycle_stage": {
+          "title": "Этап ЖЦ",
+          "type": "string",
+          "enum": [
+            "Идея",
+            "Создается",
+            "Используется и развивается",
+            "Используется",
+            "Выводится из эксплуатации",
+            "В архиве"
+          ]
+        }
+      }
+    },
+    "$dataset": {
+      "type": "string",
+      "enum": [
+        "seaf.toolkit.ds.datasets_links"
+      ]
+    },
+    "$defs": {
+      "type": "string",
+      "enum": [
+        "\"#/$defs/$jsonschema\"",
+        "\"#/$defs/$jsonata\"",
+        "\"#/$defs/$menu-item\"",
+        "\"#/$defs/$menu\"",
+        "\"#/$defs/$res-uri\"",
+        "\"#/$defs/$res-uri-reference\"",
+        "\"#/$defs/$data-source\"",
+        "\"#/$defs/$params\"",
+        "\"#/$defs/$source-profile\"",
+        "\"#/$defs/$doc-profile\"",
+        "\"#/$defs/seaf.company.shared.defs.basic_attributes\"",
+        "\"#/$defs/seaf.company.shared.defs.lifecycle_stage\"",
+        "\"#/$defs/$dataset\"",
+        "\"#/$rels/seaf.company.app.services.service\"",
+        "\"#/$rels/seaf.company.ba.processes.process\"",
+        "\"#/$rels/seaf.company.ba.products.product\"",
+        "\"#/$rels/seaf.company.ba.channels.channel\"",
+        "\"#/$rels/seaf.company.ba.clients.client\"",
+        "\"#/$rels/aspects.aspect\"",
+        "\"#/$rels/aspects.test\"",
+        "\"#/$rels/components.component\""
+      ]
+    },
+    "$doc-types": {
+      "type": "string",
+      "enum": [
+        "asyncapi",
+        "openapi",
+        "plantuml",
+        "markdown",
+        "table",
+        "mermaid",
+        "network",
+        "smartants",
+        "html",
+        "mkr-grid",
+        "mkr-select",
+        "mkr-tree",
+        "chart-radar",
+        "chart-bar",
+        "chart-bubble",
+        "chart-doughnut",
+        "chart-line",
+        "chart-pie",
+        "chart-polararea",
+        "chart-scatter",
+        "devtool",
+        "svg",
+        "bpmnjs",
+        "drawio",
+        "editable-table",
+        "arch-formater",
+        "meta-import",
+        "meta-export",
+        "excel-export",
+        "excel-import"
+      ]
+    }
+  },
+  "$rels": {
+    "seaf.company.app.services.service": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "ru.jupiter.app_service.api_news_publish",
+        "ru.jupiter.app_service.news_management",
+        "ru.jupiter.app_service.ai_news_summary",
+        "ru.jupiter.app_service.lk_news_editor",
+        "ru.jupiter.app_service.news_feed"
+      ]
+    },
+    "seaf.company.ba.processes.process": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "ru.jupiter.process.news_production",
+        "ru.jupiter.process.merch_production"
+      ]
+    },
+    "seaf.company.ba.products.product": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "ru.jupiter.product.digital_content",
+        "ru.jupiter.product.news",
+        "ru.jupiter.product.marketing_goods",
+        "ru.jupiter.product.merch"
+      ]
+    },
+    "seaf.company.ba.channels.channel": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "ru.jupiter.channel.website",
+        "ru.jupiter.channel.shopping_centre",
+        "ru.jupiter.channel.company_office"
+      ]
+    },
+    "seaf.company.ba.clients.client": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "ru.jupiter.client.natural_person",
+        "ru.jupiter.client.young_person",
+        "ru.jupiter.client.mature_person",
+        "ru.jupiter.client.elderly_person",
+        "ru.jupiter.client.employee",
+        "ru.jupiter.client.employee.news_editor"
+      ]
+    },
+    "aspects.aspect": {
+      "type": "string",
+      "minLength": 1,
+      "enum": []
+    },
+    "aspects.test": {
+      "type": "string",
+      "minLength": 1,
+      "enum": []
+    },
+    "components.component": {
+      "type": "string",
+      "minLength": 1,
+      "enum": []
+    }
+  }
+}

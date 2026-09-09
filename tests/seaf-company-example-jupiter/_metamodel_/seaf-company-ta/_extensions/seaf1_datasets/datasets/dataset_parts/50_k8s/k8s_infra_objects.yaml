@@ -1,0 +1,64 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.k8s_infra_objects` (k8s infra objects) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.k8s_infra_objects
+datasets:
+  seaf.company.ds.ta.k8s_infra_objects:
+    description: |
+      Инфраструктура кластера Kubernetes (Storage/Backup/Monitoring/Security)
+    origin:
+      objects: seaf.company.ds.ta.all_objects
+      k8s: seaf.company.ds.ta.k8s
+      kb: seaf.company.ds.ta.kb
+      backup: seaf.company.ds.ta.backup
+      monitoring: seaf.company.ds.ta.monitoring
+    source: >
+      (
+        $objects := objects;
+        $k8s := k8s;
+        $kb := kb;
+        $backup := backup;
+        $monitoring := monitoring;
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $mk_rows := function($ids, $type, $cluster_id){
+          $to_list($ids).(
+            $o := $lookup($objects, $);
+            $exists($o.__id__)
+              ? {
+                  "cluster": $cluster_id,
+                  "title": $o.title,
+                  "link": "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__,
+                  "type": $type
+                }
+              : {}
+          )
+        };
+        $k8s.*.(
+          $cid := __id__;
+          $kb_services := $kb.*[$cid in $to_list(protected_services)];
+          $kb_rows := $kb_services.{
+              "cluster": $cid,
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type": "Security"
+          };
+          $backup_services := $backup.*[$cid in $to_list(backed_up_services)];
+          $backup_rows := $backup_services.{
+              "cluster": $cid,
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type": "Backup"
+          };
+          $monitoring_services := $monitoring.*[$cid in $to_list(monitored_services)];
+          $monitoring_rows := $monitoring_services.{
+              "cluster": $cid,
+              "title": title,
+              "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+              "type": "Monitoring"
+          };
+          [
+            $mk_rows(storage, "Storage", $cid),
+            $mk_rows(backup, "Backup", $cid),
+            $mk_rows(monitoring, "Monitoring", $cid)
+          ] ~> $append($kb_rows) ~> $append($backup_rows) ~> $append($monitoring_rows)
+        )[] ~> $filter(function($v){ $exists($v.title) }) ~> $distinct
+      )

@@ -1,0 +1,24 @@
+docs:
+  tabs-demo:
+    type: mkr-tabs
+    location: Тестирование заморозки строк и столбцов/Таблицы в табах
+    source: >
+      (
+        [
+          {
+            "id": "tab-rows",
+            "title": "Заморозка строк",
+            "src": "@document/freeze-rows-example"
+          },
+          {
+            "id": "tab-columns",
+            "title": "Заморозка столбцов",
+            "src": "@document/freeze-columns-example"
+          },
+          {
+            "id": "tab-both",
+            "title": "Заморозка строк и столбцов",
+            "src": "@document/freeze-both-example"
+          }
+        ]
+      )

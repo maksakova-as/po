@@ -1,0 +1,82 @@
+entities:
+  seaf.company.change.activities:
+    title: &entity_title Change-активности
+    description: &entity_description |
+      Инициативы, проекты, действия компании, направленные на изменения, трансформацию.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n <компания>.activity.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+
+          properties:
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры активностей
+              $ref: "#/$rels/seaf.company.change.activities.activity"
+
+            type:
+              title: Тип
+              description: Тип (форма реализации) активности
+              enum:
+                - Стратегическая инициатива
+                - Бизнес инициатива
+                - ИИ-инициатива
+                - Технологическая инициатива
+                - Программа
+                - Проект
+                - Иная деятельность
+
+            realizes:
+              title: Реализует
+              description: Цели компании, реализуемые инициативой
+              type: array
+              items:
+                $ref: "#/$rels/seaf.company.change.goals.goal"
+
+            status:
+              title: Статус
+              description: Текущее состояние данной активности
+              enum:
+                - Новая
+                - Запланирована
+                - В процессе
+                - Завершена
+                - Отменена
+
+            planned_start_date:
+              title: Планируемая дата начала
+              $ref: "#/$defs/seaf.def.type.date"
+
+            planned_finish_date:
+              title: Планируемая дата завершения
+              $ref: "#/$defs/seaf.def.type.date"
+
+          required:
+            - type
+
+
+    objects:
+      activity:
+        route: "/"
+        title: Активность
+        symbol: "activity"

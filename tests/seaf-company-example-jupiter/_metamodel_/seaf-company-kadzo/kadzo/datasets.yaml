@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.kadzo:
+    title: Сводный датасет - все объекты КАДЗО
+
+    source: |
+      (
+      $each($, function ($v, $k) {(
+          { $k: $v }
+      )})[] ~> $merge();
+      )

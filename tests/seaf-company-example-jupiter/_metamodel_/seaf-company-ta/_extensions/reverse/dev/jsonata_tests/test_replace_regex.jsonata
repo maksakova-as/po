@@ -1,0 +1,6 @@
+(
+  {
+    "regex_literal_test": $replace("a.b.c", /[^a-z]/, "_"),
+    "regex_dot_test": $replace("a.b.c", /\./, "_")
+  }
+)

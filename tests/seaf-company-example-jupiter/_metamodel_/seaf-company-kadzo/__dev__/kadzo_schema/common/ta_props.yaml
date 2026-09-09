@@ -1,0 +1,152 @@
+entities:
+  kadzo.ta_props:
+    title: Набор свойств для объектов ТА
+    schema:
+      $defs:
+        kadzo.includes.softwares:
+          title: Программное обеспечение
+          type: object
+          properties:
+            softwares:
+              title: Используемое ПО
+              type: array
+              minItems: 1
+              items:
+                oneOf:
+                  - $ref: "#/$rels/kadzo.softwares.software"
+        kadzo.tech_component.type:
+          title: Тип компонента
+          type: object
+          properties:
+            type:
+              title: Тип компонента
+              type: string
+              enum:
+                - Фронт (web-приложение)
+                - Фронт (мобильное приложение)
+                - Фронт (десктопное приложение)
+                - Шлюз
+                - Proxy
+                - Балансировщик
+                - Распределенный кеш
+                - Web сервер
+                - Серверное приложение
+                - Микросервис
+                - Функция (serverless function)
+                - Консольное приложение
+                - Shell-скрипт
+                - ETL
+                - Интеграционный компонент
+                - Очередь сообщений (message queue)
+                - База данных
+                - Файловый ресурс
+                - Облачное хранилище
+                - Прочее
+
+        kadzo.ta_props.ha:
+          title: Параметры отказоустойчивости
+          type: object
+          properties:
+            high_availability:
+              title: Параметры отказоустойчивости
+              type: object
+              properties:
+                type:
+                  title: Высокая доступность компонента (HA)
+                  enum:
+                    - Да
+                    - Нет
+                capacity_reservation_type:
+                  title: "Тип резервирования \nв пределах одной зоны доступности"
+                  enum:
+                    - Отсутствует
+                    - StandBy
+                    - Active
+                capacity_management:
+                  title: "Полнота резервирования \nв пределах одной зоны доступности"
+                  enum:
+                    - Отсутствует
+                    - Частичное
+                    - Полное
+              required:
+                - type
+                - capacity_reservation_type
+                - capacity_management
+
+        kadzo.ta_props.dr:
+          title: Параметры катастрофоустойчивости
+          type: object
+          properties:
+            disaster_recovery:
+              title: Катастрофоустойчивость
+              type: object
+              properties:
+                type:
+                  title: Резервирование компонента (DR)
+                  enum:
+                    - Да
+                    - Нет
+                capacity_reservation_type:
+                  title: "Тип резервирования \nв резервных зонах доступности"
+                  enum:
+                    - Отсутствует
+                    - StandBy
+                    - Active
+                capacity_management:
+                  title: "Полнота резервирования \nв резервных зонах доступности"
+                  enum:
+                    - Отсутствует
+                    - Частичное
+                    - Полное
+              required:
+                - type
+                - capacity_reservation_type
+                - capacity_management
+
+        kadzo.ta_props.scalability:
+          title: Параметры масштабируемости
+          type: object
+          properties:
+            scalability:
+              title: Масштабируемость
+              enum:
+                - Нет
+                - Вертикальная
+                - Горизонтальная
+                - Вертикальная и горизонтальная
+#          required:
+#            - scalability
+
+        kadzo.ta_props.backup:
+          title: Параметры бекапирования
+          type: object
+          properties:
+            backup:
+              type: object
+              title: Бекапирование
+              properties:
+                placement:
+                  title: "Резервное копирование \n(место хранение бекапа)"
+                  enum:
+                    - Отсутствует
+                    - ЦОД
+                    - Резервный ЦОД
+                    - Offsite
+                backup_placement:
+                  title: "Резервное копирование дубликата \n(место хранения дубликата резервной копии)"
+                  enum:
+                    - Отсутствует
+                    - ЦОД
+                    - Резервный ЦОД
+                    - Offsite
+              required:
+                - placement
+                - backup_placement
+
+        kadzo.ta_props.monitoring:
+          title: Мониторинг
+          type: object
+          properties:
+            monitoring:
+              title: Мониторинг
+              type: string

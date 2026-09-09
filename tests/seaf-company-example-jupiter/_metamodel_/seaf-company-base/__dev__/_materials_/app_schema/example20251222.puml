@@ -1,0 +1,284 @@
+'!pragma layout elk
+
+'Общее позиционирование
+allowmixing
+top to bottom direction
+'left to right direction
+hide circle
+hide empty members
+!pragma horizontalLineBetweenDifferentPackageAllowed
+set namespaceSeparator none
+
+'Стили общие
+skinparam {
+    titleFontSize 30
+	'maxMessageSize 200
+	'hide stereotype
+	tabSize 5
+	defaultfontname Arial
+	linetype ortho
+	'linetype polyline
+	nodesep 20
+	ranksep 20
+	shadowing false
+	stereotypefontsize 8
+	'padding 10
+    'hyperlinkColor black
+    'hyperlinkUnderline false
+}
+
+'Стили регионов
+skinparam rectangle {
+	borderthickness 1
+	shadowing true
+	fontstyle bold
+	attributefontsize 11
+	'sameClassWidth true
+	'padding 200
+	'ranksep 10
+	'bordercolor transparent
+	'backgroundcolor #f0f0f0
+	'bordercolor<<External-сеть>> transparent
+	'backgroundcolor<<External-сеть>> #ddd5e4
+	'bordercolor<<Internal-сеть>> transparent
+	'backgroundcolor<<Internal-сеть>> #c5d7ef
+	'borderstyle<<Группа систем>> dashed
+	'bordercolor<< ДБ/ДЗО >> transparent
+	'backgroundcolor<< ДБ/ДЗО >> #f0f0f0
+	'bordercolor<<Каналы>> transparent
+	'backgroundcolor<<Каналы>> #84b5f5
+	'bordercolor<<Банк>> transparent
+	'backgroundcolor<<Банк>> #e9f6dc
+	'bordercolor<<ОЭ>> transparent
+	'backgroundcolor<<ОЭ>> #a1f1dc
+	'bordercolor<<Cloud>> transparent
+	'backgroundcolor<<Cloud>> #a1f1dc
+	'backgroundcolor<<Платформа>> #ffcc66
+}
+
+<style>
+    classDiagram {
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 10
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            linecolor #4e4948
+
+            'stereotypefontsize 9
+            header {
+                fontstyle bold
+                fontsize 11
+            }
+            .Внешняя ПРОМ {
+                linecolor gray
+                header {
+                    backgroundcolor lightblue/%lighten("#lightblue", 40)
+                }
+            }
+            .Внутренняя ПРОМ {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+            .УДАЛЕНА {
+                'linestyle 4
+                backgroundcolor #fcfcee
+                header {
+                    backgroundcolor #fcfcee
+                }
+            }
+            .В РАЗРАБОТКЕ {
+                linestyle 4
+                backgroundcolor #fcfcee
+                header {
+                    backgroundcolor #fcfcee
+                }
+            }
+            .Нецелевая {
+                linecolor gray
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600-%lighten("#006600", 40)
+                }
+            }
+    	}
+
+        node {
+            fontstyle bold
+            fontsize 14
+            linestyle 2
+            shadowing false
+            linethickness 1
+            backgroundcolor #GreenYellow/LightGoldenRodYellow
+            'backgroundcolor #84b5f5
+        }
+
+        frame {
+            fontstyle bold
+            fontsize 11
+            linestyle 1
+            linethickness 1.5
+            'backgroundColor #ffcc66
+        }
+
+        file {
+            backgroundcolor transparent
+            'borderColor transparent
+            linethickness 2
+            textcolor white
+            fontcolor transparent
+            fontsize 0
+        }
+
+        component {
+            .Person {
+                backgroundcolor transparent
+                lineColor transparent
+                linethickness 1
+                fontsize 14
+                fontstyle Bold
+            }
+        }
+    }
+</style>
+
+hide <<>> stereotype
+hide <<Person>> stereotype
+
+'***** НАЧАЛО ДИАГРАММЫ *****
+title Прикладная архитектура AS-IS, весь ландшафт
+
+@startuml
+
+'*** КЛИЕНТЫ ***
+
+'*** КАНАЛЫ ***
+
+'*** СИСТЕМЫ ***
+
+    '*** система: АС ECM Новости ***
+        class "АС ECM Новости" as jupiter.app_system.ecm_news << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.ecm_news]] {
+            {field} <color:black><size:8>1. Публикация новостей</size></color>
+            {field} <color:black><size:8>2. Ведение новостей</size></color>
+            {field} <color:gray><size:8><strike>3. Доставка</strike></size></color>
+        }
+
+    '*** система: Внешняя АС ИИ Агенты создания новостей ***
+        class "Внешняя АС ИИ Агенты создания новостей" as jupiter.app_system.news_summary << Внешняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.news_summary]] {
+            {field} <color:black><size:8>1. ИИ-агент Сводка новостей</size></color>
+        }
+
+    '*** система: АС MES Одежда ***
+        class "АС MES Одежда" as jupiter.app_system.mes_clothing << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.mes_clothing]] {
+            {field} <color:gray><size:8>1. Управление производством одежды</size></color>
+        }
+
+    '*** система: АС 1С ERP ***
+        class "АС 1С ERP" as jupiter.app_system.1c_erp << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.1c_erp]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: МП Любимый клиент ***
+        class "МП Любимый клиент" as jupiter.app_system.mp_favorite_client << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.mp_favorite_client]] {
+            {field} <color:black><size:8>1. Мобильный ЛК</size></color>
+        }
+
+    '*** система: АС Веб-сайт ***
+        class "АС Веб-сайт" as jupiter.app_system.website << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.website]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: АС TMS ***
+        class "АС TMS" as jupiter.app_system.tms << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.tms]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: ФП Логистика ***
+        class "ФП Логистика" as jupiter.app_system.tms_logistics << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.tms_logistics]] {
+            {field} <color:black><size:8>1. Доставка</size></color>
+            {field} <color:black><size:8>2. Доставка для ФЛ</size></color>
+        }
+
+    '*** система: ФП Маршртуты ***
+        class "ФП Маршртуты" as jupiter.app_system.tms_routes << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.tms_routes]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: АС Единый Фронт Сотрудника ***
+        class "АС Единый Фронт Сотрудника" as jupiter.app_system.efs << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.efs]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: ФП Технолог производства ***
+        class "ФП Технолог производства" as jupiter.app_system.efs_prod_expert << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.efs_prod_expert]] {
+            {field} <color:gray><size:8>1. Кабинет технолога производства</size></color>
+        }
+
+    '*** система: ФП Редактор новостей ***
+        class "ФП Редактор новостей" as jupiter.app_system.efs_news_editor << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.efs_news_editor]] {
+            {field} <color:black><size:8>1. Кабинет редактора новостей</size></color>
+        }
+
+    '*** система: АС ИИ Хаб Юпитер ***
+        class "АС ИИ Хаб Юпитер" as jupiter.app_system.aihub << В РАЗРАБОТКЕ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.aihub]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: ФП Модель DeepSeek ***
+        class "ФП Модель DeepSeek" as jupiter.app_system.aihub_model_ds1 << В РАЗРАБОТКЕ >> [[/entities/seaf.company.app.systems/card?id=jupiter.app_system.aihub_model_ds1]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: АС КСШ ***
+        class "АС КСШ" as jupiter.tech_system.esb << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.tech_system.esb]] {
+            {field} <color:black><size:8>1. Транспорт сообщений</size></color>
+        }
+
+    '*** система: АС Kafka ***
+        class "АС Kafka" as jupiter.tech_system.kafka << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.tech_system.kafka]] {
+            {field} <color:black><size:8>1. Транспорт сообщений</size></color>
+        }
+
+    '*** система: АС ШПУ Ворона ***
+        class "АС ШПУ Ворона" as jupiter.tech_system.vorona << Внутренняя ПРОМ >> [[/entities/seaf.company.app.systems/card?id=jupiter.tech_system.vorona]] {
+            {field} <color:black><size:8>1. Шлюз сообщений</size></color>
+        }
+
+    '*** система: АСкб АВПО Касперский ***
+        class "АСкб АВПО Касперский" as jupiter.cs_system.avpo_kasper << Внутренняя ПРОМ >> [[/entities/seaf.company.cybersec.systems/card?id=jupiter.cs_system.avpo_kasper]] {
+            {field} <color:black><size:8>1. Антивирусная защита</size></color>
+        }
+
+    '*** система: АСкб ЭЦП ***
+        class "АСкб ЭЦП" as jupiter.cs_system.esign << Внутренняя ПРОМ >> [[/entities/seaf.company.cybersec.systems/card?id=jupiter.cs_system.esign]] {
+            {field} <color:black><size:8>1. ЭЦП</size></color>
+        }
+
+    '*** система: ФПкб Удостоверяющий центр ЭЦП ***
+        class "ФПкб Удостоверяющий центр ЭЦП" as jupiter.cs_system.esign_uc << Внутренняя ПРОМ >> [[/entities/seaf.company.cybersec.systems/card?id=jupiter.cs_system.esign_uc]] {
+            {field}<size:8></size>
+        }
+
+    '*** система: ФПкб Управление сертификатами ЭЦП ***
+        class "ФПкб Управление сертификатами ЭЦП" as jupiter.cs_system.esign_serts << Внутренняя ПРОМ >> [[/entities/seaf.company.cybersec.systems/card?id=jupiter.cs_system.esign_serts]] {
+            {field}<size:8></size>
+        }
+
+'*** ИНТЕГРАЦИИ СИСТЕМ ***
+    "jupiter.app_system.ecm_news" --> "jupiter.app_system.news_summary" #black;text:black : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.ecm_news__news_summary__i001 1 (ШПУ 11)]]
+    "jupiter.app_system.1c_erp" --> "jupiter.app_system.tms_logistics" #gray;text:gray : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 2 (MQ 03, ШПУ 17)]]
+    "jupiter.app_system.1c_erp" --> "jupiter.cs_system.esign" #black;text:black : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.1c_erp__esign__i02 3]]
+    "jupiter.app_system.mp_favorite_client" --> "jupiter.app_system.ecm_news" #black;text:black : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 4 (Kafka, ШПУ 17)]]
+    "jupiter.app_system.efs_prod_expert" --> "jupiter.app_system.mes_clothing" #black;text:black : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.efs_prod_expert__mes_clothing__i234 5 (MQ 03)]]
+    "jupiter.app_system.efs_news_editor" --> "jupiter.app_system.ecm_news" #gray;text:gray : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 6 (Kafka, ШПУ 17)]]
+    "jupiter.app_system.efs_news_editor" --> "jupiter.app_system.news_summary" #black;text:black : [[/entities/seaf.company.systems.integrations/card?id=jupiter.integration.efs_news_editor__news_summary__i024 7 (ШПУ 11)]]
+
+'*** связи КЛИЕНТЫ-КАНАЛЫ ***
+
+'*** связи КАНАЛЫ-СИСТЕМЫ ***
+
+@enduml

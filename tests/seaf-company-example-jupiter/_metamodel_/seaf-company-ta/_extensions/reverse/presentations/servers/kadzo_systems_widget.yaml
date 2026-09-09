@@ -1,0 +1,14 @@
+entities:
+  seaf.company.ta.components.servers:
+    presentations:
+      card:
+        widgets:
+          kadzo_systems:
+            title: Прикладные системы (КА ДЗО)
+            presentation: server_kadzo_systems
+            align: "v"
+            order: 16
+            style:
+              margin: 4px
+              padding: 0px
+              border: true

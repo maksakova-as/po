@@ -1,0 +1,47 @@
+# Назначение: Проекция инфраструктурных объектов, привязанных к кластерам виртуализации.
+# Используется: internal_docs, presentations, auto_tests, ta.
+datasets:
+  seaf.company.ds.ta.cluster_virtualization_infra_objects:
+    description: |
+      Инфраструктура кластеров виртуализации (Storage/Backup/Monitoring/Security)
+    origin:
+      objects: seaf.ds.objects
+      virtualizations: seaf.company.ds.ta.cluster_virtualizations
+      kb_idx: seaf.company.ds.ta._idx.kb_by_protected_service
+      backup_idx: seaf.company.ds.ta._idx.backup_by_service
+      monitoring_idx: seaf.company.ds.ta._idx.monitoring_by_service
+    source: >
+      (
+        $objects := objects;
+        $virtualizations := virtualizations;
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        $as_rows := function($v){
+          $type($v) = "array" ? $v : ($exists($v) ? [$v] : [])
+        };
+        $mk_rows := function($ids, $type, $cluster_id){
+          $to_list($ids).(
+            $o := $lookup($objects, $);
+            $exists($o.__id__)
+              ? {
+                  "cluster": $cluster_id,
+                  "title": $o.title,
+                  "link": "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__,
+                  "type": $type
+                }
+              : {}
+          )
+        };
+        $virtualizations.*.(
+          $cid := __id__;
+          $kb_rows := $as_rows($lookup(kb_idx, $cid)).($merge([$, {"cluster": $cid}]));
+          $backup_rows := $as_rows($lookup(backup_idx, $cid)).($merge([$, {"cluster": $cid}]));
+          $monitoring_rows := $as_rows($lookup(monitoring_idx, $cid)).($merge([$, {"cluster": $cid}]));
+          [
+            $mk_rows(storage, "Storage", $cid),
+            $mk_rows(hw_storage, "HW Storage", $cid),
+            $mk_rows(backup, "Backup", $cid),
+            $mk_rows(monitoring, "Monitoring", $cid),
+            $mk_rows(policy, "Security", $cid)
+          ] ~> $append($kb_rows) ~> $append($backup_rows) ~> $append($monitoring_rows)
+        )[] ~> $filter(function($v){ $exists($v.title) }) ~> $distinct
+      )

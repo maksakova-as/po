@@ -1,0 +1,15 @@
+# Назначение: Реестр Kubernetes node объектов.
+# Используется: presentations, ta, auto_tests, internal_docs, rules.
+datasets:
+  seaf.company.ds.ta.k8s_nodes:
+    description: |
+      Kubernetes ????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.components.k8s_nodes";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

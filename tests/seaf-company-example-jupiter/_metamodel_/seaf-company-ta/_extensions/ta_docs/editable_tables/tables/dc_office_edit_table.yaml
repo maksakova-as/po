@@ -1,0 +1,95 @@
+docs:
+  seaf.company.ta.docs.dc_offices.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Локации/Офисы/Изменение офисов
+    description: Редактирование офисов из architecture/ta/dc_office.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      dc_offices: seaf.company.ds.ta.dc_offices
+
+    headers:
+      - value: id
+        text: ID
+        width: 220px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_office.yaml
+
+      - value: description
+        text: Описание
+        width: 280px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_office.yaml
+
+      - value: address
+        text: Адрес
+        width: 260px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_office.yaml
+
+      - value: region
+        text: Регион
+        width: 230px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_office.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_office.yaml
+
+    source: >
+      (
+        $offices := $exists(dc_offices) ? dc_offices : {};
+        $rows := $map($keys($offices), function($office_id){(
+          $office := $lookup($offices, $office_id);
+          {
+            $office_id: {
+              "id": $office_id,
+              "title": $office.title,
+              "description": $office.description,
+              "address": $office.address,
+              "region": $office.region,
+              "external_id": $office.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $rows := $map($keys($table), function($office_id){(
+          $row := $lookup($table, $office_id);
+          {
+            $office_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "address": $row.address,
+              "region": $row.region,
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.dc_offices": $rows
+        }
+      )

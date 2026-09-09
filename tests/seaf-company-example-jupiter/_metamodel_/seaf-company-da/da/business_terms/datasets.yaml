@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.da.business_terms:
+    description: >
+      Датасет формирует коллекцию всех объектов данного вида
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.da.business_terms";
+      )

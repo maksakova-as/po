@@ -1,0 +1,32 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      card:
+        widgets:
+          ta_services:
+            title: Технические сервисы
+            presentation: ta_services
+            align: "v"
+            order: 4000
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+          k8s_deployments:
+            title: Kubernetes deployments
+            presentation: k8s_deployments
+            align: "v"
+            order: 4025
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+          ta_services_graph:
+            title: Граф технических зависимостей
+            presentation: resource_map_graph
+            align: "v"
+            order: 4050
+            style:
+              margin: 4px
+              padding: 0px
+              border: true

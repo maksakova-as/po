@@ -1,0 +1,70 @@
+entities:
+  seaf.company.app.systems:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          technologies:
+            title: Использует технологии
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: technologies
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 340
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      technologies:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: obj_id
+            text: Идентификатор
+            link: path_to_object
+          - value: obj_title
+            text: Название
+            link: path_to_object
+          - value: type
+            text: Тип технологии
+          - value: description
+            text: Описание
+
+        origin:
+          objects: seaf.company.ds.app.systems
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.uses_technologies;
+          $exists($data2present) and  $data2present != null
+          ? $map($data2present, function($val, $i) {(
+              $t := $all_objects.$lookup($val.technology);
+              {
+                "number": $i+1,
+                "obj_id": $t.__id__,
+                "obj_title": $t.title,
+                "path_to_object": $t.__link_to_card__,
+                "type": $t.type ~> $join(",\n"),
+                "description": $val.description
+              }
+            )})[];
+          )

@@ -1,0 +1,96 @@
+entities:
+  seaf.company.ta.services.dc_regions:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.dc_regions";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Регионы ЦОДов", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Регионы ЦОДов/Изменение регионов", $root_menu);
+        $legacy_id := "seaf.ta.services.dc_region";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 100
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.dc_azs:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.dc_azs";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Зоны доступности", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Зоны доступности/Изменение зон", $root_menu);
+        $legacy_id := "seaf.ta.services.dc_az";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 110
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.dcs:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.dcs";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Локации/ЦОДы", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Локации/ЦОДы/Изменение ЦОДы", $root_menu);
+        $legacy_id := "seaf.ta.services.dc";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 120
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.dc_offices:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.dc_offices";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Офисы", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Локации/Офисы/Изменение офисов", $root_menu);
+        $legacy_id := "seaf.ta.services.office";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 130
+            })
+          : $items;
+        $items
+      )

@@ -1,0 +1,39 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.compute_services` (compute services) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+datasets:
+  seaf.company.ds.ta.compute_services:
+    description: |
+      Список вычислительных сервисов
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.services.compute_services") ? by_entities."seaf.company.ta.services.compute_services" : {};
+        $to_entries := function($list){
+          $exists($list)
+            ? $each($list, function($val, $key) {
+                {
+                  $key: {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.services.compute_services",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.services.compute_services",
+                    "title": $val.title,
+                    "description": $val.description,
+                    "service_type": $val.service_type,
+                    "external_id": $val.external_id,
+                    "availabilityzone": $val.availabilityzone,
+                    "location": $val.location,
+                    "network_connection": $val.network_connection,
+                    "stand": $val.stand,
+                    "app_components": $val.app_components
+                  }
+                }
+              }) ~> $merge()
+            : {}
+        };
+        $seaf1_compute := $to_entries(data_lake."seaf.ta.services.compute_service");
+        $seaf1_clusters := $to_entries(data_lake."seaf.ta.services.cluster");
+        $merge([$seaf2, $seaf1_compute, $seaf1_clusters])
+      )

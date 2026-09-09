@@ -1,0 +1,15 @@
+# Назначение: Единый реестр пользовательских устройств.
+# Используется: presentations, ta, auto_tests, widgets, internal_docs, rules.
+datasets:
+  seaf.company.ds.ta.user_devices:
+    description: |
+      ???????????????? ??????????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.components.user_devices";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

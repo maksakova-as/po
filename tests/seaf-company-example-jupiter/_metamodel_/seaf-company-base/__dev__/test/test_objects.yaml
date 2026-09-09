@@ -1,0 +1,40 @@
+seaf.test_entities:
+  test.te.01:
+    title: Продукт 01
+
+  test.te.02:
+    title: Продукт 02
+
+  test.te.02_01:
+    title: Продукт 02_01
+    is_part_of: test.te.02
+
+  test.te.02_02:
+    title: Продукт 02_02
+    is_part_of: test.te.02
+
+  test.te.02_02_01:
+    title: Тестовый продукт 02_02_01
+    is_part_of: test.te.02_02
+
+  test.te.02_02_02:
+    title: Продукт 02_02_02
+    is_part_of: test.te.02_02
+
+  test.te.02_02_02_01:
+    title: Продукт 02_02_02_01
+    is_part_of: test.te.02_02_02
+
+  test.te.02_02_02_02:
+    title: Продукт 02_02_02_02
+    is_part_of: test.te.02_02_02
+
+  test.te.02_02_03:
+    title: Продукт 02_02_03
+    is_part_of: test.te.02_02
+
+  test.te.03:
+    title: Продукт 03
+
+  test.te.04:
+    title: Продукт 04

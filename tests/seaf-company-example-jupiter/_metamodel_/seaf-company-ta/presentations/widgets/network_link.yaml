@@ -1,0 +1,194 @@
+entities:
+  seaf.company.ta.services.network_links:
+
+    presentations:
+      network_link_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          links: seaf.company.ds.ta.network_links
+          networks: seaf.company.ds.ta.networks
+        source: >
+          (
+            $links := links;
+            $networks := networks;
+            $link := $lookup($links, $params.id);
+            $resolve_network := function($id){
+              (
+                $net := $lookup($networks, $id);
+                {
+                  "title": $exists($net) ? $net.title : $id,
+                  "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null
+                }
+              )
+            };
+            $network_rows := $exists($link.network_connection)
+              ? $link.network_connection[].(
+                  $net := $resolve_network($);
+                  {
+                    "field": "Сеть",
+                    "value": $net.title,
+                    "link": $net.link
+                  }
+                )
+              : [];
+            $exists($link)
+              ? [
+                  {"field": "ID", "value": $link.__id__},
+                  {"field": "Название", "value": $link.title},
+                  {"field": "Описание", "value": $link.description},
+                  {"field": "L1", "value": $link.typeL1},
+                  {"field": "L2", "value": $link.typeL2},
+                  {"field": "Маршрутизация", "value": $link.routing},
+                  {"field": "Шифрование", "value": $link.encryption},
+                  {"field": "Инкапсуляция", "value": $link.encapsulation},
+                  {"field": "Технология", "value": $link.technology},
+                  {"field": "SLA", "value": $link.sla}
+                ] ~> $append($network_rows)
+              : []
+          )
+
+      network_link_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          links: seaf.company.ds.ta.network_links
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+        source: >
+          (
+            $is_present := function($val){ $val != null and $val != "" };
+            $links := links;
+            $networks := networks;
+            $segments := segments;
+            $link := $lookup($links, $params.id);
+            $has_link := $exists($link.__id__);
+            $linked_networks := $has_link and $exists($link.network_connection)
+              ? $link.network_connection[].($lookup($networks, $))
+              : [];
+            $linked_networks := $linked_networks[$exists(__id__)];
+            $has_networks := $exists($linked_networks[0].__id__);
+            $segment_nodes :=
+              $has_networks
+                ? (
+                    $linked_networks.(
+                      $segments_for_net := $type(segment) = "array" ? segment : ($exists(segment) ? [segment] : []);
+                      $segments_for_net.(
+                        $seg_obj := $lookup($segments, $);
+                        $exists($seg_obj.__id__)
+                          ? "node \"Сегмент: [[/entities/" & $seg_obj.__entity_id__ & "/card?id=" & $seg_obj.__id__ & " " & $seg_obj.title & "]]\" as seg_" & $replace($seg_obj.__id__,/[^A-Za-z0-9_]/,"_") & " #ffecb3\n"
+                          : null
+                      )
+                    )[] ~> $distinct() ~> $join("")
+                  )
+                : "";
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              (
+                $has_link
+                  ? "rectangle \"Связанность: [[/entities/" & $link.__entity_id__ & "/card?id=" & $link.__id__ & " " & $link.title & "]]\" as link_node #d1c4e9\n"
+                  : ""
+              );
+            $network_nodes :=
+              $has_networks
+                ? (
+                    $linked_networks.(
+                      "node \"Сеть: [[/entities/" & __entity_id__ & "/card?id=" & __id__ & " " & title & "]]" &
+                      ($is_present(ipnetwork) ? "\\n" & ipnetwork : "") &
+                      ($is_present(wan_ip) ? "\\n" & wan_ip : "") &
+                      "\" as net_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & " #c8e6c9\n"
+                    ) ~> $distinct() ~> $join("")
+                  )
+                : "";
+            $edges_from_link :=
+              $has_link and $has_networks
+                ? ($linked_networks.("link_node --> net_" & $replace(__id__,/[^A-Za-z0-9_]/,"_") & "\n") ~> $distinct() ~> $join(""))
+                : "";
+            $edges_network_segments :=
+              $has_networks
+                ? (
+                    $linked_networks.(
+                      $net_id := $replace(__id__,/[^A-Za-z0-9_]/,"_");
+                      $segments_for_net := $type(segment) = "array" ? segment : ($exists(segment) ? [segment] : []);
+                      $segments_for_net.("net_" & $net_id & " --> seg_" & $replace($,/[^A-Za-z0-9_]/,"_") & "\n") ~> $distinct() ~> $join("")
+                    ) ~> $join("")
+                  )
+                : "";
+            $diagram :=
+              $has_link
+                ? (
+                    $base &
+                    $network_nodes &
+                    $segment_nodes &
+                    $edges_from_link &
+                    $edges_network_segments &
+                    "@enduml"
+                  )
+                : "@startuml\nnote \"Связанность не найдена\" as no_link\n@enduml";
+            {
+              "diagram": $diagram
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

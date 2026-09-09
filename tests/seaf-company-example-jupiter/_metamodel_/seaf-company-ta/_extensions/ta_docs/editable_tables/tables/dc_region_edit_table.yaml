@@ -1,0 +1,77 @@
+docs:
+  seaf.company.ta.docs.dc_regions.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Локации/Регионы ЦОДов/Изменение регионов
+    description: Редактирование регионов из architecture/ta/dc_region.yaml
+    page_size: 10
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      dc_regions: seaf.company.ds.ta.dc_regions
+
+    headers:
+      - value: id
+        text: ID
+        width: 220px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_region.yaml
+
+      - value: description
+        text: Описание
+        width: 280px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_region.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_region.yaml
+
+    source: >
+      (
+        $regions := $exists(dc_regions) ? dc_regions : {};
+        $rows := $map($keys($regions), function($region_id){(
+          $region := $lookup($regions, $region_id);
+          {
+            $region_id: {
+              "id": $region_id,
+              "title": $region.title,
+              "description": $region.description,
+              "external_id": $region.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $rows := $map($keys($table), function($region_id){(
+          $row := $lookup($table, $region_id);
+          {
+            $region_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.dc_regions": $rows
+        }
+      )

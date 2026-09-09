@@ -1,0 +1,68 @@
+datasets:
+  seaf.company.ds.kadzo:
+    # дополняем origin сводного датасета
+    origin:
+      kadzo.v2023.functions: seaf.company.ds.kadzo.functions
+
+  seaf.company.ds.kadzo.functions:
+    title: Функциональность КАДЗО
+    description: Датасет-трансформатор данных из формата SEAF в формат КАДЗО
+    origin:
+      obj_in: seaf.company.ds.functions
+      objects_links: seaf.ds.objects_links
+      objects: seaf.ds.objects
+      kadzo_status_enum:
+        "Эскиз": Планируется
+        "В разработке / приобретение": Разрабатывается или модифицируется
+        "Внедрение / Не введена в эксплуатацию": Разрабатывается или модифицируется
+        "Опытная эксплуатация": Используется
+        "Промышленная эксплуатация": Используется
+        "Архивная": Удаляется
+        "Отменена": Удаляется
+      kadzo_target_enum:
+        "Целевая": Целевое
+        "Нецелевая": Нецелевое
+
+
+    # Принятые допущения:
+    #    - значение target для функции берем из первой системы, реализующей данную функцию
+    #    - значение status для функции берем из первой системы, реализующей данную функцию
+    #    - если одна АС реализует несколько одинаковых функций - берем первую из них
+
+    source: >
+      (
+      $obj_in := obj_in;
+      $objects_links := objects_links;
+      $objects := objects;
+      $kadzo_status_enum := kadzo_status_enum;
+      $kadzo_target_enum := kadzo_target_enum;
+      
+      $obj_out := $each($obj_in, function ($val, $key) {(
+          /* готовим данные */
+          /* Ищем все системы, реализующие данную функцию */
+          $systems_arr := [$objects_links.$lookup($key)[link_attr="realizes_functions.function" and link_dir="reverse"].linked_id];
+          /* берем первую систему, реализующую функцию */
+          $sys1 := $objects.$lookup($systems_arr[0]);
+          /* берем инфо о реализции нашей функции */
+          $sys1_f := $sys1.realizes_functions[function=$key][0];
+      
+          /* формируем объект КАДЗО */
+          { $key: {
+              "title": $val.title,
+              "description": $val.description,
+              "comments": $val.comments,
+              "systems": $systems_arr != [] ? $systems_arr,
+              "target": (
+                $attr_val := $sys1_f.target_status;
+      /*$log("$sys1_f.target_status=" & $attr_val, $key);*/
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_target_enum, $attr_val, [$key, "система "&$sys1.__id__, "атрибут target_status", $attr_val])
+              ),
+              "status": (
+                $attr_val := $sys1_f.lifecycle_stage;
+      /*$log("$sys1_f.lifecycle_stage=" & $attr_val, $key);*/
+                $exists($attr_val) and $attr_val != null ? $seaf_company_fn_kadzo_convert_enum($kadzo_status_enum, $attr_val, [$key, "система "&$sys1.__id__, "атрибут lifecycle_stage", $attr_val])
+              )
+          }}
+      )})[] ~> $merge();
+      $obj_out
+      )

@@ -1,0 +1,4 @@
+seaf.configs:
+  seaf.company.artefacts:
+    root_menu: "Развитие компании/Артефакты"
+

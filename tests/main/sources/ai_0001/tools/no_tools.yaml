@@ -1,0 +1,12 @@
+docs:
+  ai_001.tools.notools:
+    type: ai-chat
+    location: AI / TOOLS / NO TOOLS
+
+    scenarios:
+       notools:
+         title: NO TOOLS
+         type: gigachat
+         model: GigaChat-2
+         system_prompt: |
+           Ты ИИ - ассистент.

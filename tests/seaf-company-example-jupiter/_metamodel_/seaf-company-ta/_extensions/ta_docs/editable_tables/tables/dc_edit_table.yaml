@@ -1,0 +1,160 @@
+docs:
+  seaf.company.ta.docs.dcs.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Локации/ЦОДы/Изменение ЦОДы
+    description: Редактор примера architecture/ta/dc.yaml
+    page_size: 10
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      dcs: seaf.company.ds.ta.dcs
+      azs: seaf.company.ds.ta.dc_azs
+
+    headers:
+      - value: id
+        text: ID
+        width: 220px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: description
+        text: Описание
+        width: 260px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: vendor
+        text: Вендор
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: ownership
+        text: Тип владения
+        width: 160px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: type
+        text: Тип ЦОДа
+        width: 150px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: address
+        text: Адрес
+        width: 240px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: rack_qty
+        text: Кол-во стоек
+        width: 130px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: tier
+        text: Tier
+        width: 90px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: availabilityzone
+        text: Зона доступности
+        width: 230px
+        type: select
+        options: >
+          (
+            $azs := $exists(azs) ? azs : {};
+            $map($keys($azs), function($az_id){(
+              $az := $lookup($azs, $az_id);
+              {
+                "value": $az_id,
+                "text": $az.title ? $az.title : $az_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 150px
+        editable: true
+        save:
+          path: architecture/ta/dc.yaml
+
+    source: >
+      (
+        $dcs := $exists(dcs) ? dcs : {};
+        $rows := $map($keys($dcs), function($dc_id){(
+          $dc := $lookup($dcs, $dc_id);
+          {
+            $dc_id: {
+              "id": $dc_id,
+              "title": $dc.title,
+              "description": $dc.description,
+              "vendor": $dc.vendor,
+              "ownership": $dc.ownership,
+              "type": $dc.type,
+              "address": $dc.address,
+              "rack_qty": $dc.rack_qty,
+              "tier": $dc.tier,
+              "availabilityzone": $dc.availabilityzone,
+              "external_id": $dc.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $prepare := function($row){(
+          $rack := $row.rack_qty;
+          {
+            "title": $row.title,
+            "description": $row.description,
+            "vendor": $row.vendor,
+            "ownership": $row.ownership,
+            "type": $row.type,
+            "address": $row.address,
+            "rack_qty":
+              ($exists($rack) and $rack != "")
+              ? $number($rack)
+              : $rack,
+            "tier": $row.tier,
+            "availabilityzone": $row.availabilityzone,
+            "external_id": $row.external_id
+          }
+        )};
+        $rows := $map($keys($table), function($dc_id){(
+          $row := $lookup($table, $dc_id);
+          {
+            $dc_id: $prepare($row)
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.dcs": $rows
+        }
+      )

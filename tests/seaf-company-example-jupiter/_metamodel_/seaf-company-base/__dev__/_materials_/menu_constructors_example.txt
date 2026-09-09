@@ -1,0 +1,40 @@
+Основной блок формирования меню
+entities:
+  seaf.company.services:
+    menu: >
+      (
+      $context := $;
+      $entity_id := "seaf.company.services";
+      $menu_constructors := $.entities.$lookup($entity_id).menu_constructors;
+      /* Собираем меню сущности, запуская на выполнение элементы массива menu_constructors */
+      $result_menu := $map($menu_constructors, function($mc){(
+          $eval($mc, $context);
+      )});
+      /* превращаем массив массивов в плоский массив */
+      $result_menu := $result_menu@$i.$append($a, $i);
+      $result_menu;
+      )
+
+блок расширения меню:
+entities:
+  seaf.company.services:
+    menu_constructors:
+      # добавляем код по генерации меню для данной подсущности в общий массив
+      - >
+        (
+        $entity_id := "seaf.company.services";
+        $domain_id := "seaf.company.app";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu_order := 100;
+        $menu := $seaf_fn_generate_menu_item("Сервисы (функциональность) АС", $root_menu);
+        $list_presentation := "app_srv_list";
+        [
+        $exists($.$lookup($entity_id))
+        ?   {
+            "link": "/entities/" & $entity_id & "/" & $list_presentation,
+            "location": $menu,
+            "order": $root_menu_order + $menu_order
+            }
+        ]
+        )

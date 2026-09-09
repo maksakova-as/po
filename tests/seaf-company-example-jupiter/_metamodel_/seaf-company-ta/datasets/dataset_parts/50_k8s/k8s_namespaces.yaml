@@ -1,0 +1,41 @@
+# Назначение: Реестр Kubernetes namespace объектов.
+# Используется: internal_docs, rules, presentations, auto_tests, app, ta.
+datasets:
+  seaf.company.ds.ta.k8s_namespaces:
+    description: |
+      Namespace'? Kubernetes
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.components.k8s_namespaces";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.components.k8s_namespace";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: $merge([
+                    $obj,
+                    {
+                      "__id__": $new_id,
+                      "__entity_id__": "seaf.company.ta.components.k8s_namespaces",
+                      "__object_type": "seaf.company.ta.components.k8s_namespaces"
+                    }
+                  ])
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $merge([
+          "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {},
+          $seaf1_data
+        ])
+      )

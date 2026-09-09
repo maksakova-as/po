@@ -1,0 +1,14 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - comments.yaml
+  - header.yaml
+  - summary.yaml
+  - tree.yaml
+  - tech_params.yaml
+  - functions.yaml
+  - stakeholders.yaml
+  - categories.yaml
+  - integrations_out.yaml
+  - integrations_in.yaml
+  - technologies.yaml

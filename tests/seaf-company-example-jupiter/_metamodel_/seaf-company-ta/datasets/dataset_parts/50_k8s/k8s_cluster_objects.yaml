@@ -1,0 +1,56 @@
+# Назначение: Агрегированные объекты, работающие внутри кластеров Kubernetes.
+# Используется: internal_docs, widgets, presentations, auto_tests, ta.
+datasets:
+  seaf.company.ds.ta.k8s_cluster_objects:
+    description: |
+      Kubernetes ??????? (????/??????????/???????????/HPA) ? ????????? ? ????????
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        "seaf2" in $sources_enabled
+          ? (
+              $nodes := objects."seaf.company.ta.components.k8s_nodes";
+              $namespaces := objects."seaf.company.ta.components.k8s_namespaces";
+              $deployments := objects."seaf.company.ta.services.k8s_deployments";
+              $hpas := objects."seaf.company.ta.components.k8s_hpa";
+              $first_id := function($v){
+                (
+                  $type($v) = "array" ? $v : ($exists($v) ? [$v] : [])
+                ).(
+                  $type($) = "object"
+                    ? ($exists($.id) ? $.id : ($exists($.__id__) ? $.__id__ : $))
+                    : $
+                )[0]
+              };
+              [
+                $nodes.*.{
+                  "cluster": $first_id(cluster),
+                  "title": title,
+                  "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+                  "type": "Node"
+                },
+                $namespaces.*.{
+                  "cluster": $first_id(cluster),
+                  "title": title,
+                  "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+                  "type": "Namespace"
+                },
+                $deployments.*.{
+                  "cluster": $first_id(cluster),
+                  "title": title,
+                  "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+                  "type": "Deployment"
+                },
+                $hpas.*.{
+                  "cluster": $first_id(cluster),
+                  "title": title,
+                  "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+                  "type": "HPA"
+                }
+              ][]
+            )
+          : []
+      )

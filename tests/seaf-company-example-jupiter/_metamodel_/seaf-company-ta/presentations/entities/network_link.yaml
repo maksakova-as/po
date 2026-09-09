@@ -1,0 +1,118 @@
+entities:
+  seaf.company.ta.services.network_links:
+    presentations:
+      list:
+        title: Сетевые связанности
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: networks
+            text: Сети
+          - value: technology
+            text: Технология
+          - value: routing
+            text: Маршрутизация
+          - value: encryption
+            text: Шифрование
+        origin:
+          links: seaf.company.ds.ta.network_links
+          networks: seaf.company.ds.ta.networks
+        source: >
+          (
+            $links := links;
+            $networks := networks;
+            $resolve_network := function($id){
+              (
+                $net := $lookup($networks, $id);
+                {
+                  "title": $exists($net) ? $net.title : $id,
+                  "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null
+                }
+              )
+            };
+            $links.*@$link.(
+              $network_titles := $exists($link.network_connection)
+                ? $link.network_connection[].($resolve_network($).title)
+                : [];
+              {
+                "id": $link.__id__,
+                "link": "/entities/" & $link.__entity_id__ & "/card?id=" & $link.__id__,
+                "title": $link.title,
+                "networks": $network_titles ~> $join(" ↔ "),
+                "technology": $link.technology,
+                "routing": $link.routing,
+                "encryption": $link.encryption
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сетевой связанности
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: network_link_card_details
+            align: "v"
+            order: 10
+          topology:
+            title: Сети и сегменты
+            presentation: network_link_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          core_objects: seaf.ds.objects
+          all_ta_objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(core_objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : (
+                  $obj_all := $lookup(all_ta_objects, $params.id);
+                  $exists($obj_all.__id__)
+                    ? $seaf_fn_combine_widgets($self, $obj_all.__entity_id__, $obj_all.__id__)
+                    : { "type": "rows", "items": [] }
+                )
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

@@ -1,0 +1,6 @@
+imports:
+  - clients.yaml
+  - channels.yaml
+  - products.yaml
+  - processes.yaml
+

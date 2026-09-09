@@ -1,0 +1,57 @@
+entities:
+  seaf.company.categories:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          systems:
+            title: Системы, отнесенные к данной категории
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: systems
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 210
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      systems:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: path_to_object
+          - value: linked_title
+            text: Название
+            link: path_to_object
+
+        origin:
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $objects_links := objects_links;
+          $id := $params.id;
+          $data2present := $lookup($objects_links, $id)[link_attr="categories" and link_dir="reverse"];
+          $data2present#$i.{
+                          "number": $i+1,
+                          "linked_id": linked_id,
+                          "path_to_object": linked_object_link_to_card,
+                          "linked_title": linked_title
+                        }[];
+          )

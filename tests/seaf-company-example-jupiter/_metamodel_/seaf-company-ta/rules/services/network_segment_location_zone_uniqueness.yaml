@@ -1,0 +1,81 @@
+rules:
+  validators:
+    seaf.validation.ta.services.network_segment_location_zone_uniqueness:
+      uid: SEAF-TA-NETWORK-SEGMENT-UNIQUE-001
+      title: Проверка уникальности зоны сетевого сегмента в локации
+      description: |
+        Проверяет, что в пределах одной локации (ЦОД/офис) определен
+        только один Сетевой сегмент (`seaf.company.ta.services.network_segments`)
+        для каждой зоны `zone`.
+      correction: |
+        Убедитесь, что для каждой пары `location + zone` существует только один
+        объект типа `seaf.company.ta.services.network_segments`. Лишние сегменты
+        удалите или смените им `zone`, а связанные сети/сервисы/компоненты
+        перепривяжите к корректному сегменту.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.services.network_segment_location_zone_uniqueness";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $segments_map := $."seaf.company.ta.services.network_segments";
+                  $dcs := $."seaf.company.ta.services.dcs" ? $."seaf.company.ta.services.dcs" : {};
+                  $offices := $."seaf.company.ta.services.dc_offices" ? $."seaf.company.ta.services.dc_offices" : {};
+                  $locations := $merge([$dcs, $offices]);
+                  $segments := $each($segments_map, function($segment, $segment_key) {
+                    $exists($segment.location) and $exists($segment.zone) ? {
+                      "id": $segment_key,
+                      "title": $segment.title ? $segment.title : $segment_key,
+                      "location": $segment.location,
+                      "zone": $segment.zone
+                    }
+                  });
+                  $pair_keys := $distinct($segments.(location & "|" & zone));
+                  $pair_keys.(
+                    $pair_key := $;
+                    $location_id := $substringBefore($pair_key, "|");
+                    $zone := $substringAfter($pair_key, "|");
+                    $duplicates := $filter($segments, function($segment) {
+                      $segment.location = $location_id and $segment.zone = $zone
+                    });
+                    $count($duplicates) > 1 ? (
+                      $location_obj := $lookup($locations, $location_id);
+                      $location_title := $exists($location_obj.title) ? $location_obj.title : $location_id;
+                      {
+                        "uid": "seaf.validation.ta.network_segment_location_zone_uniqueness." & $location_id & "." & $zone,
+                        "title": "В локации '" & $location_title & "' найдено несколько сетевых сегментов с зоной '" & $zone & "'.",
+                        "correction": "Локация: " & $location_id & ". Зона: " & $zone & ". Оставьте один корректный сегмент и перепривяжите зависимые объекты. Конфликтующие ID: " & $join($duplicates.id, ", "),
+                        "description": "Для пары location='" & $location_id & "', zone='" & $zone & "' найдено " & $string($count($duplicates)) & " сегмента(-ов): " & $join($duplicates.id, ", ") & ". Названия: " & $join($duplicates.title, ", ")
+                      }
+                    ) : []
+                  ) ~> $reduce(function($curr, $acc){
+                    (
+                      $seq :=
+                        ($type($curr) = "array") ? $curr :
+                        ($type($curr) = "object") ? [$curr] :
+                        [];
+                      $seq ~> $reduce(function($value, $inner){
+                        $inner ~> $append($value)
+                      }, $acc)
+                    )
+                  }, [])
+                )
+              ])
+            )
+            : []
+        )

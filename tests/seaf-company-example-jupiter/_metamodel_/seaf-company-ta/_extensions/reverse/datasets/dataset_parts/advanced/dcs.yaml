@@ -1,0 +1,71 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.dcs` (dcs) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.dcs:
+    description: |
+      Builds one datacenter per availability zone (similar to adv_reverse2seaf converters) and links it to `reverse.dc_az.*`.
+    source: |
+      (
+        $normalize := function($text){
+          (
+            $str := $type($text) = "string" ? $lowercase($text) : "";
+            $chars := $split($str, "");
+            $converted := $chars.(
+              $ch := $;
+              (
+                ($ch >= "a" and $ch <= "z") or ($ch >= "0" and $ch <= "9")
+              )
+                ? $ch
+                : (
+                    $ch = "-"
+                      ? "-"
+                      : "."
+                  )
+            );
+            $joined := $join($converted, "");
+            $trimmed := $replace($joined, "^(\\.)|(\\.)$", "");
+            $replace($trimmed, "\\.{2,}", ".")
+          )
+        };
+        $servers := $eval(datasets."seaf.ta.reverse.servers_list".source);
+        $az_entries := $servers.(
+          $az_value := $type(az) = "string" ? $trim(az) : "";
+          $tenant_value := $type(tenant) = "string" ? $trim(tenant) : null;
+          $dc_title := $type(dc) = "string" ? $trim(dc) : "";
+          $az_value != ""
+            ? {
+                "az": $az_value,
+                "tenant": $tenant_value,
+                "title": $dc_title != "" ? $dc_title & " (" & $az_value & ")" : $az_value
+              }
+            : null
+        )[ $ != null ];
+        $az_index := $merge($az_entries.{ $.az: $ });
+        $unique_az := $keys($az_index);
+        $az_nodes := $unique_az.(
+          $az_value := $;
+          $row := $lookup($az_index, $az_value);
+          $tenant := $row.tenant;
+          $title := $row.title;
+          $suffix := $normalize($az_value);
+          $dc_id := "reverse.dc." & ($suffix != "" ? $suffix : $az_value);
+          $card_link := "/entities/seaf.company.ta.services.dcs/card?id=" & $dc_id;
+          {
+            ($dc_id): {
+              "__id__": $dc_id,
+              "__entity_id__": "seaf.company.ta.services.dcs",
+              "__entity_title__": "Datacenter (reverse import)",
+              "__company_id__": $tenant,
+              "title": $title,
+              "external_id": $az_value,
+              "availabilityzone": ["reverse.dc_az." & $az_value],
+              "__link_to_card__": $card_link,
+              "link": $card_link,
+              "source_key": $az_value,
+              "reverse_source": "seaf.ta.reverse.servers_list"
+            }
+          }
+        );
+        $az_nodes[] ~> $merge()
+      )
+

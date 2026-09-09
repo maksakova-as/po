@@ -1,0 +1,77 @@
+seaf.company.systems:
+  jupiter.app_system.efs:
+    title: АС Единый Фронт Сотрудника
+    description: Платформа для реализации фронтальных приложений предприятия
+    class: Каналы обслуживания клиентов (фронтальные решения)
+    categories:
+      - jupiter.fo.news_production
+      - jupiter.fo.clothing_production
+      - jupiter.sys_group.internal_dc
+    criticality_level: Business Operational
+    ownership: Владеем исходным кодом
+    target_status: Целевая
+    lifecycle_stage: Опытная эксплуатация
+    location: Внутренняя
+
+  jupiter.app_system.efs_prod_expert:
+    title: ФП Технолог производства
+    class: Каналы обслуживания клиентов (фронтальные решения)
+    lifecycle_stage: Опытная эксплуатация
+    location: Внутренняя
+    categories:
+      - jupiter.fo.clothing_production
+      - jupiter.sys_group.internal_dc
+    is_part_of: jupiter.app_system.efs
+    criticality_level: Business Operational
+    realizes_functions:
+      - function: jupiter.function.lk_production_expert
+        lifecycle_stage: Внедрение / Не введена в эксплуатацию
+        target_status: Целевая
+        service: jupiter.srv.lk_production_expert
+    integrations:
+      i234:
+        title: ИП - управление производством
+        service: jupiter.srv.clothing_production_control
+        lifecycle_stage: Опытная эксплуатация
+        protection_methods:
+          - RSA
+
+  jupiter.app_system.efs_news_editor:
+    title: ФП Редактор новостей
+    class: Каналы обслуживания клиентов (фронтальные решения)
+    lifecycle_stage: Опытная эксплуатация
+    location: Внутренняя
+    categories:
+      - jupiter.fo.news_production
+      - jupiter.sys_group.internal_dc
+    is_part_of: jupiter.app_system.efs
+    criticality_level: Business Operational
+    realizes_functions:
+      - function: jupiter.function.lk_news_editor
+        lifecycle_stage: Опытная эксплуатация
+        target_status: Целевая
+        service: jupiter.srv.lk_news_editor
+    integrations:
+      i023:
+        title: ИП - публикация новостей
+        lifecycle_stage: В разработке / приобретение
+        service: jupiter.srv.news_publish
+      i024:
+        title: ИП - ai сводка новостей
+        lifecycle_stage: Опытная эксплуатация
+        service: jupiter.srv.ai_news_summary
+
+
+# Сервисы системы
+seaf.company.services:
+  jupiter.srv.lk_production_expert:
+    title: UI ЛК технолога производства
+    description: Сервис личного кабинета технолога производства
+    integration_type: UI
+    lifecycle_stage: Используется
+
+  jupiter.srv.lk_news_editor:
+    title: UI ЛК редактора новостей
+    description: Сервис личного кабинета редактора новостей
+    integration_type: UI
+    lifecycle_stage: Используется

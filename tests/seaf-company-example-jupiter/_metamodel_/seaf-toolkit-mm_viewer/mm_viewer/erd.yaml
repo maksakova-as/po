@@ -1,0 +1,74 @@
+seaf.toolkit.mm_viewer.erds:
+  erd_all_domains:
+    title: ER-диаграмма - все домены
+    location: SEAF/Инструменты/MM Viewer/ER-диаграмма (все домены)
+    order: 92000
+    show_subentities: false
+    entities:
+      - "**" # Отражаем все домены
+
+  erd_seaf_domains:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/ER-диаграмма SEAF
+    order: 92100
+    show_subentities: true
+    entities:
+      - "seaf.**"
+
+    entity_patterns_formats:
+      - pattern: "seaf.company.ba.**" # бизнес-архитектура
+        object_format: "#header:FFFF88"
+        link_format: "#line:CCCC00;line.bold"
+
+      - pattern: "seaf.company.app.**" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.functions" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.cybersec.**" # КБ архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.sys_components" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.services" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.categories" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.ta.**" # техническая(инфра)-архитектура
+        object_format: "#header:99FF99"
+        link_format: "#line:60FF60;line.bold"
+
+      - pattern: "seaf.company.technologies" # техническая(инфра)-архитектура
+        object_format: "#header:99FF99"
+        link_format: "#line:60FF60;line.bold"
+
+      - pattern: "seaf.company.change.**" # домен change
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.artefacts.**" # домен change
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.artefacts" # домен change
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.da.**" # домен архитектура данных
+        object_format: "#header:FFD040"
+        link_format: "#line:CCA633"
+
+      - pattern: "seaf.company.ai.**" # домен ИИ-архитектура
+        object_format: "#header:FF66FF"
+        link_format: "#line:FF66FF"
+

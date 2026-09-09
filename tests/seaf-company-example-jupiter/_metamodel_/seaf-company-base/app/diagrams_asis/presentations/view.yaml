@@ -1,0 +1,201 @@
+entities:
+  seaf.company.app.diagrams.asis:
+
+    presentations:
+      view:
+        title: Диаграмма
+        type: plantuml
+        template: ../templates/app_diagram.puml
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+          diagrams_systems_arr: seaf.company.ds.app.diagrams.asis.systems_arr
+          diagrams_integrations_arr: seaf.company.ds.app.diagrams.asis.integrations_arr
+          data_lake: ($)
+          categories: seaf.company.ds.categories
+          lcs2notation:
+            "Эскиз": "В РАЗРАБОТКЕ"
+            "В разработке / приобретение": "В РАЗРАБОТКЕ"
+            "Внедрение / Не введена в эксплуатацию": "В РАЗРАБОТКЕ"
+            "Опытная эксплуатация": "ПРОМ"
+            "Промышленная эксплуатация": "ПРОМ"
+            "Архивная": "УДАЛЕНА"
+            "Отменена": "УДАЛЕНА"
+
+        source: >
+          (
+          $objects := objects;
+          $diagrams_systems_arr := diagrams_systems_arr;
+          $diagrams_integrations_arr := diagrams_integrations_arr;
+          $categories := categories;
+          $lcs2notation := lcs2notation;
+          
+          /* Входные параметры для построения диаграммы */
+          $diagram := $lookup(data_lake."seaf.company.app.diagrams.asis", $params.id);
+          $filter_systems := $diagram.filter_systems;
+          $filter_system_classes := $diagram.filter_system_classes;
+          $filter_lifecycle_stages := $diagram.filter_lifecycle_stages;
+          $filter_categories := $diagram.filter_categories;
+          $root_category := $diagram.group_by;
+          
+          /* Вспомог. функции */
+          $strike := function($s) { "<strike>"& $s &"</strike>" }; /* зачеркивание строки */
+          $get_category_tree := function($cat_id) {(
+              $cat := $categories.$lookup($cat_id);
+              $exists($cat) 
+              ? (
+                  $cat.is_part_of = $cat.root_category
+                  ? ( /* дошли до начала иерархии категории */
+                      { "group_id": $cat.__id__, "group_title": $cat.title }
+                  ) : (
+                      $append({ "group_id": $cat.__id__, "group_title": $cat.title }, $get_category_tree($cat.is_part_of));
+                  ) 
+              )
+          )}[];
+          
+          $is_lcs_allowed := function($f) {(
+              $exists($filter_lifecycle_stages) and $filter_lifecycle_stages != null and $filter_lifecycle_stages != [] and $filter_lifecycle_stages != ""
+              ? (
+                $exists($f) and $f != null and $f != ""
+                ? $f in $filter_lifecycle_stages
+                : false
+                ) 
+              : (true)
+          )};
+          
+          /* готовим данные */
+          /* Первичный отбор систем по фильтру filter_systems */
+          $sys_filtered_arr := [(
+              $sys_arr := $exists($filter_systems) and $filter_systems != null and $filter_systems != [] and $filter_systems != ""
+              ? (
+                $filter($diagrams_systems_arr, function ($val) {(
+                    $matched := $filter($filter_systems, function($p) { $wcard($val.__id__, $p) });
+                    $matched != null and $matched != [] and $count($matched) > 0 ? true : false
+                )})[];
+                )
+              : ([]);
+              $sys_arr
+          )];
+          
+          /* Фильтруем системы по дополнительным фильтрам */
+          $sys_filtered_arr := [(
+              $sys_arr := $filter($sys_filtered_arr, function ($val) {(
+                  /* Фильтруем системы по классам */
+                  $f_classes := $exists($filter_system_classes) and $filter_system_classes != null and $filter_system_classes != [] and $filter_system_classes != ""
+                  ? (
+                    $f := $val.class;
+                    $exists($f) and $f != null and $f != ""
+                    ? $f in $filter_system_classes
+                    : false
+                    ) 
+                  : (true);
+                  /* Фильтруем системы по этапам ЖЦ */
+                  $f_lcs := $is_lcs_allowed($val.lifecycle_stage);
+                  /* Фильтруем системы по категориям */
+                  $f_categories := $exists($filter_categories) and $filter_categories != null and $filter_categories != [] and $filter_categories != ""
+                  ? (
+                    $f := [$filter($val.categories.category, function ($c) { $c in $filter_categories })];
+                    $exists($f) and $f != null and $f != [] ? true : false
+                    ) 
+                  : (true);
+                  $f_classes and $f_lcs and $f_categories
+              )})[];
+              $sys_arr;
+          )];
+          
+          $sys_filtered_list := [$sys_filtered_arr.__id__];
+          
+          $sys2show := [(
+              $map($sys_filtered_arr, function ($val) {(
+                  /* готовим данные */
+                  $status := $lcs2notation.$lookup($val.lifecycle_stage);
+                  $functions_arr := [(
+                      $f_arr := $val.functions;
+                      $exists($f_arr) and $f_arr != null
+                      ? $map($f_arr, function($fval) {(
+                          $fstatus := $lcs2notation.$lookup($fval.lifecycle_stage);
+                          $ftitle := $fval.number &". "& $fval.title;
+                          $is_lcs_allowed($fval.lifecycle_stage) 
+                          ? {
+                            "title": $fstatus = "УДАЛЕНА" ? $strike($ftitle) : $ftitle,
+                            "color": $fstatus = "ПРОМ" ? "black" : "gray"
+                            }
+                      )});
+                  )];
+                  
+                  $groups_arr := (
+                      $exists($root_category) and $root_category != null and $root_category != ""
+                      ? (
+                          $c := $val.categories[root_category=$root_category][0];
+                          $get_category_tree($c.category) ~> $reverse();
+                      ) 
+                      : []
+                  );          
+                  
+                  /* формируем запись*/
+                  {
+                    "__id__": $val.__id__,
+                    "__link_to_card__": $val.__link_to_card__,
+                    "title": $status = "УДАЛЕНА" ? $strike($val.title) : $val.title,
+                    "notation": $status = "ПРОМ" ? $val.location &" "& $status : $status,
+                    /*TODO!!!*/
+                    "has_functions": $count($functions_arr) > 0 ? 1 : 0,
+                    "functions": $functions_arr,
+                    "groups": $groups_arr,
+                    "has_subsystems": 0,
+                    "subsystems": []
+                  }
+              )});
+          )];
+          
+          $intgr2show := [(
+              $map($diagrams_integrations_arr, function ($val) {(
+                  $val.system1 in $sys_filtered_list or $val.system2 in $sys_filtered_list
+                  ? (
+                    /* готовим данные */
+                    $status := $lcs2notation.$lookup($val.lifecycle_stage);
+                    $ss := $val.supporting_services;
+                    $gates := $exists($ss) and $ss != null and $ss != [] ? "\\n"& $join($ss.service_title, ",\\n") : "";
+                    $label := $gates != "" ? $val.code &" "& $gates : $val.code;
+                    $color := $status = "ПРОМ" ? "black" : "gray";
+                    $line := $status = "ПРОМ" ? "" : "line.dashed";
+                    $is_lcs_allowed($val.lifecycle_stage)  
+                    ? /* формируем запись*/
+                      {
+                        "__id__": $val.__id__,
+                        "__link_to_card__": $val.__link_to_card__,
+                        "from": $val.system1,
+                        "to": $val.system2,
+                        "direction": $val.direction,
+                        "label": $status = "УДАЛЕНА" ? "\u274C " & $label : $label,
+                        "style": "#" & $color & ";text:" & $color & ";" & $line
+                      }
+                    )
+              )});
+          )];
+          
+          /*  Формируем объект для визуализации */          
+          $result := {
+              "title": $diagram.title,
+              "config": {
+                "elk": true
+              },
+              "systems": $sys2show,
+              "integrations": $intgr2show,
+              /*   TODO: визуализация каналов */
+              "has_channels": 0,
+              "channels": [
+              ],
+              "channels_links": [],
+              /*   TODO: визуализация клиентов */
+              "clients": [],
+              "clients_links": []
+          };
+          $result
+          )

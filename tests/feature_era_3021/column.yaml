@@ -1,0 +1,90 @@
+docs:
+  freeze-columns-example:
+    location: Тестирование заморозки строк и столбцов/Пример 2 (только столбцы)
+    type: editable-table
+    show_data_error: true
+    new_row_allowed: true
+    selection: true
+    row_remove_allowed: true
+    excel_export_filter: true
+    update_index_file: root.yaml
+
+    yaml:
+      null_replace_string: ""
+
+    origin:
+      table_data: freeze_columns.yaml
+    freeze:
+      rows: 0
+      columns: 2
+
+    page_size: 10
+    headers:
+      - value: ID
+        width: 100px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: name
+        width: 300px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: age
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: city
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: department
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: position
+        width: 200px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: salary
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+      - value: experience
+        width: 150px
+        sortable: true
+        filterable: true
+        editable: true
+        save:
+          path: freeze_columns.yaml
+
+    source: >
+      (
+        {"body": table_data}
+      )

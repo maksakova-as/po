@@ -1,0 +1,54 @@
+entities:
+  kadzo.v2023.functions:
+    title: Функциональность автоматизированных систем Компании
+    description: Набор возможностей автоматизированной системы, обеспечивающее реализацию бизнес-процессов Компании
+    schema:
+      $defs:
+        kadzo.v2023.functions.lifestage:
+          title: Управление жизненным циклом объекта
+          type: object
+          properties:
+            target:
+              title: Целевое размещение функциональности
+              enum:
+                - Целевое
+                - Нецелевое
+            status:
+              title: Статус
+              enum:
+                - Планируется
+                - Разрабатывается или модифицируется
+                - Используется
+                - Удаляется
+          required:
+            - target
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          $ref: "#/$defs/kadzo.v2023.functions.lifestage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            systems:
+              title: Системы, в которых реализована (планируется к реализации)
+              type: array
+              items:
+                $ref: "#/$rels/kadzo.v2023.systems.systems"
+            comments:
+              title: Комментарии, риски, проблемы
+              type: string
+          required:
+            - title
+            - description
+            - systems
+    objects:
+      functions:
+        route: "/"
+        title: Функциональность
+        symbol: "functions"

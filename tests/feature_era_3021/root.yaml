@@ -1,0 +1,11 @@
+imports:
+  - row.yaml
+  - column.yaml
+  - rowAndColumn.yaml
+  - mkr-tabs.yaml
+
+docs:
+  description:
+    location: Тестирование заморозки строк и столбцов
+    type: markdown
+    source: freeze_tests.md

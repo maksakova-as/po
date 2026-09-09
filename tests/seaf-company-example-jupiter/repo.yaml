@@ -1,0 +1,35 @@
+imports:
+  - architecture/domains.yaml
+
+# Карточка компании - основная информация
+seaf.configs:
+  global:
+    metamodel_core: seaf2
+    repo_mode: single_company
+    repo_owner: jupiter
+
+  repo_companies:
+    jupiter:
+      title: Юпитер
+      description: >
+        ООО Юпитер, вымышленная компания для целей примера SEAF.
+        Компания входит в Группу компаний "Солнечная система"
+      aliases:
+        - Юпитер, ООО
+        - Jupiter
+      legal_entities:
+        - inn: 12345678
+          name: ООО Юпитер - лучшая компания
+      urls:
+        - www.jupiter.su
+
+    sber:
+      title: Сбер
+      urls:
+        - www.sberbank.ru
+
+  # УСТАРЕВШИЕ ПАРАМЕТРЫ - будут удалены в ближайших релизах
+#      company_id_segments_number: 1
+  company:
+    jupiter:
+      title: Юпитер

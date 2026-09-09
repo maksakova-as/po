@@ -1,0 +1,57 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.nat_gateways` (nat gateways) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.nat_gateways:
+    description: Converts Cloud.ru NAT Gateways into network components.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : "" 
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $nats := data_lake."seaf.ta.reverse.cloud_ru.advanced.nat_gateways".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $nats.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $comp_id := "reverse.netcomp.nat." & $normalize($raw_id);
+          $vpc_ref := $record.vpc_id ? ["reverse.netcomp.vpc." & $normalize($record.vpc_id)] : [];
+          $subnet_ref := $record.subnet_id ? ["reverse.netcomp.subnet." & $normalize($record.subnet_id)] : [];
+          $dc_refs := $record.DC ? [$dc_ref($record.DC)] : [];
+          $connections := $distinct([$vpc_ref[], $subnet_ref[]]);
+          $card := "/entities/seaf.company.ta.components.networks/card?id=" & $comp_id;
+          {
+            ($comp_id): {
+              "__id__": $comp_id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "NAT Gateway (reverse import)",
+              "__company_id__": $record.tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : ("NAT " & $raw_id),
+              "description": $join([
+                $record.spec ? "Spec: " & $record.spec : "",
+                $record.status ? "Status: " & $record.status : "",
+                $record.admin_state_up != null ? "Admin State: " & ($record.admin_state_up ? "Up" : "Down") : ""
+              ][ $ != "" ], "\n"),
+              "type": "NAT Gateway",
+              "location": $dc_refs,
+              "network_connection": $connections,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.nat_gateways",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )
+

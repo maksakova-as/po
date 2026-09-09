@@ -1,0 +1,104 @@
+entities:
+  seaf.company.da.logical_links:
+    title: &entity_title Логические связи
+    description: &entity_description >
+      Обеспечивает связь между двумя Логическими сущностями,
+      для каждой из которых должен быть определен мета атрибут «Множественность».
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.ll.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор объекта данного типа
+
+    objects:
+      logical_link:
+        route: "/"
+        symbol: "ll"
+        title: Логическая связь
+
+    schema:
+      title: *entity_title
+      description: *entity_description
+      type: object
+      additionalProperties: false
+
+      patternProperties:
+        "^([a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_-]+)+$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+
+          allOf:
+            - $ref: "#/$defs/seaf.def.basic_attributes"
+            - $ref: "#/$defs/seaf.def.lifecycle_stage"
+
+          properties:
+            entity_a:
+              title: Сущность А
+              description: Связанная логическая сущность А
+              anyOf:
+                - $ref: "#/$rels/seaf.company.da.logical_entities.logical_entity"
+                # TODO: потенциально здесь придется делать связь с сущностью КА ДЗО через anyOf
+
+            entity_b:
+              title: Сущность В
+              description: Связанная логическая сущность В
+              anyOf:
+                - $ref: "#/$rels/seaf.company.da.logical_entities.logical_entity"
+                # TODO: потенциально здесь придется делать связь с сущностью КА ДЗО через anyOf
+
+            type:
+              title: Тип связи
+              description: Указание типа связи. Обязательное свойство
+              type: string
+              enum:
+              - ассоциация
+              - наследование
+              - зависимость
+
+            multiplicity_a:
+              title: Множественность A
+              type: string
+              description: |
+                Определяет сколько объектов А, могут быть связаны с одним объектом В.
+                Записывается в виде N:M
+              enum:
+                - 0:1
+                - 0:N
+                - 1:1
+                - 1:N
+
+            multiplicity_b:
+              title: Множественность B
+              type: string
+              description: |
+                Определяет сколько объектов В, могут быть связаны с одним объектом А.
+                Записывается в виде N:M
+              enum:
+                - 0:1
+                - 0:N
+                - 1:1
+                - 1:N
+
+            visual_style:
+              title: Направления связи
+              type: string
+              enum:
+                - "-"
+                - "<->"
+                - "->"
+                - "<-"
+              default: "-"
+              description: |
+                Стиль отображения направления связи на диаграмме:
+                - "-"   : ненаправленная
+                - "<->" : двунаправленная
+                - "->"  : направленная от Сущности A к Сущности B
+                - "<-"  : направленная от Сущности B к Сущности A
+
+          # Сообщаем, что перечисленные поля обязательны
+          required:
+            - entity_a
+            - entity_b
+            - type

@@ -1,0 +1,25 @@
+entities:
+  seaf.company.app.systems:
+    presentations:
+      resource_map_graph:
+        title: Карта технических зависимостей
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор системы
+              type: string
+          required:
+            - id
+
+        type: plantuml
+        template: templates/resource_map_graph.puml
+        origin:
+          graph: seaf.company.ds.app.systems_dependency_graph
+        source: >
+          (
+            $graph := $lookup(graph, $params.id);
+            $exists($graph)
+              ? { "graph": $graph }
+              : { "graph": { "nodes": [], "edges": [] } }
+          )

@@ -1,0 +1,97 @@
+entities:
+  seaf.company.ta.services.dc_azs:
+    presentations:
+      list:
+        title: Зоны доступности
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: description
+            text: Описание
+          - value: id
+            text: ID
+          - value: region_title
+            text: Регион
+          - value: vendor
+            text: Провайдер
+        origin:
+          az: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $az := az;
+            $regions := regions;
+            $az.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "description": $val.description,
+              "vendor": $val.vendor,
+              "region_title": $lookup($regions, $val.region).title
+            }[];
+          )
+
+      card:
+        title: Карточка зоны доступности
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: dc_az_card_details
+            align: "v"
+            order: 10
+          topology:
+            title: Расположение AZ
+            presentation: dc_az_topology
+            align: "v"
+            order: 20
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

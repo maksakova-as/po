@@ -1,0 +1,5 @@
+seaf.configs:
+  seaf.company.change:
+    root_menu: "Развитие компании"
+    root_menu_order: 1000
+

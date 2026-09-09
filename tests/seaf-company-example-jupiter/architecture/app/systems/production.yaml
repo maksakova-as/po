@@ -1,0 +1,41 @@
+seaf.company.systems:
+  jupiter.app_system.mes_clothing:
+    title: АС MES Одежда
+    description: Система по управлению производством одежды
+    class: Продуктовая фабрика (основная деятельность)
+    categories:
+      - jupiter.fo.clothing_production
+      - jupiter.sys_group.internal_dc
+    criticality_level: Business Critical
+    location: Внутренняя
+    lifecycle_stage: Опытная эксплуатация
+    target_status: Целевая
+    ownership: Владеем экземпляром
+    stakeholders:
+      - role: Владелец от ИТ
+        name: Иванов Иван
+        department: ДИТ
+        position: CIO-1
+      - role: Архитектор
+        name: Петров Петр
+    rpo: 100
+    rto: 20
+    sla: 99.95
+    realizes_functions:
+      - function: jupiter.function.clothing_production_control
+        target_status: Целевая
+        service: jupiter.srv.clothing_production_control
+        description: Публикация функций управления производством в виде API сервиса
+        lifecycle_stage: Внедрение / Не введена в эксплуатацию
+
+# Сервисы системы
+seaf.company.services:
+  jupiter.srv.clothing_production_control:
+    title: API Управление производством одежды
+    description: Сервис управления производством одежды
+    supporting_services:
+      - service: jupiter.srv.mq_via_esb
+        type: Интеграционный транспорт
+    integration_type: API
+    lifecycle_stage: Используется
+

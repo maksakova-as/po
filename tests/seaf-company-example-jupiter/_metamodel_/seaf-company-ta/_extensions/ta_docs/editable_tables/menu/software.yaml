@@ -1,0 +1,16 @@
+entities:
+  seaf.company.ta.docs.software.edit_menu:
+    menu: >
+      (
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $target_menu := $seaf_fn_generate_menu_item("Сервисы/Инфраструктура/Программное обеспечение/Изменение программного обеспечения", $root_menu);
+        [
+          {
+            "link": "/docs/seaf.company.ta.docs.software.edit",
+            "location": $target_menu,
+            "order": $root_menu_order + 194
+          }
+        ]
+      )

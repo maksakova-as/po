@@ -1,0 +1,42 @@
+  row_1:
+    ID: "001"
+    name: "Иванов Иван Иванович"
+    age: 23
+    ice_cream: "vanilla"
+    subscription: true
+    color: ["blue", "white"]
+    pet: "dog"
+    breed: ["pug", "mastiff"]
+    link:
+      "href": "/"
+      "text": "Home"
+  row_2:
+    "ID": "002"
+    "name": "Семенов Семен Семенович"
+    "age": 17
+    "subscription": false
+    "color": ["red"]
+    "pet": "cat"
+    "breed": ["maine_coon"]
+    "link":
+      - "href": "https://www.google.ru/"
+        "text": "Google"
+      - "просто текст"
+      - "href": "url"
+        "text": "Невалидный URL"
+      - "href": "https://ya.ru/"
+        "text": "Яндекс"
+  row_3:
+    "ID": "003"
+    "name": "Петров Петр Петрович"
+    "age": 73
+    "ice_cream": "chocolate"
+    "subscription": true
+  row_4:
+    "ID": "004"
+    "name": "Александров Александр Александрович"
+    "age": 29
+    "color": ["green"]
+    "link": "https://www.google.ru/"
+    "pet": "cat"
+    "breed": ["maine_coon", "siamese", "siberian"]

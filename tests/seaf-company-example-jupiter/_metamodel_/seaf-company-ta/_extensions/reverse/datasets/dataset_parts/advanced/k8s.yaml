@@ -1,0 +1,114 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.k8s` (k8s) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.k8s:
+    description: Converts `seaf.ta.reverse.cloud_ru.advanced.cces` into Kubernetes clusters enriched with DC/AZ and network references.
+    origin:
+      data_lake: ($)
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $dc_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc." & $norm : null
+          )
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $network_ref := function($subnet_id){
+          (
+            $norm := $normalize($subnet_id);
+            $norm != "" ? "reverse.network." & $norm : null
+          )
+        };
+        $to_list := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $raw := data_lake."seaf.ta.reverse.cloud_ru.advanced.cces";
+        $entries := $exists($raw) and $type($raw) = "object"
+          ? $raw.$spread().{
+              "key": $keys()[0],
+              "value": $.*[0]
+            }
+          : [];
+        $entries.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $cluster_id := "reverse.k8s." & $normalize($raw_id);
+          $card := "/entities/seaf.company.ta.services.k8s/card?id=" & $cluster_id;
+          $tenant := $record.tenant;
+          $dc := $dc_ref($record.DC);
+          $az_refs := $distinct(
+            $to_list($record.masters_az).($az_ref($))[$ != null]
+          );
+          $location_refs := $distinct(
+            [
+              $dc,
+              $az_refs[]
+            ][ $ != null ]
+          );
+          $network := $network_ref($record.subnet_id);
+          $network_list := $network != null ? [$network] : [];
+          $addresses := $to_list($record.addresses);
+          $endpoints := $to_list($record.endpoints);
+          $endpoint_text := $endpoints.(
+            $url := $lookup($, "url");
+            $type := $lookup($, "type");
+            $parts := [
+              $url ? $url : "",
+              $type ? "(" & $type & ")" : ""
+            ][ $ != "" ];
+            $parts != [] ? $join($parts, " ") : null
+          )[ $ != null ];
+          $description_parts := [
+            $record.alias ? "Alias: " & $record.alias,
+            $record.flavor ? "Flavor: " & $record.flavor,
+            $record.platform_version ? "Platform: " & $record.platform_version,
+            $record.authentication ? "Auth: " & $record.authentication,
+            $record.supportistio ? "Supports Istio",
+            $record.container_network ? "Pod network: " & $record.container_network,
+            $record.service_network ? "Service network: " & $record.service_network,
+            $count($addresses) > 0 ? "Addresses: " & $join($addresses, ", "),
+            $count($endpoint_text) > 0 ? "Endpoints: " & $join($endpoint_text, "; ")
+          ][ $ != "" ];
+          $description := $description_parts != [] ? $join($description_parts, "\n") : null;
+          {
+            ($cluster_id): {
+              "__id__": $cluster_id,
+              "__entity_id__": "seaf.company.ta.services.k8s",
+              "__entity_title__": "Kubernetes Cluster (reverse import)",
+              "__company_id__": $tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : $raw_id,
+              "description": $description,
+              "external_id": $record.id,
+              "software": $record.version,
+              "network_connection": $network_list,
+              "location": $location_refs,
+              "availabilityzone": $az_refs,
+              "container_network": $record.container_network,
+              "service_network": $record.service_network,
+              "addresses": $addresses,
+              "monitoring": [],
+              "registries": [],
+              "management_networks": [],
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.cces",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )

@@ -1,0 +1,51 @@
+entities:
+  seaf.company.da.logical_entities:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: object_link
+          - value: title
+            text: Название
+            align: left
+            link: object_link
+          - value: description
+            text: Описание
+            align: left
+          - value: category
+            text: Категория
+            align: left
+          - value: aggregat
+            text: Агрегат
+            link: aggregat_link
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+
+        origin:
+          objects: seaf.company.ds.da.logical_entities
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $each($objects, function($val, $key) {(
+              $a := $seaf_fn_get_object_info($val.aggregat, $all_objects);
+              {
+                  "id": $val.__id__,
+                  "object_link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+                  "title": $val.title,
+                  "category": $val.category ~> $join(", "),
+                  "aggregat": $a.title,
+                  "aggregat_link": $a.link_to_card,
+                  "lifecycle_stage": $val.lifecycle_stage,
+                  "description": $val.description
+              }          
+          )})[];
+          )

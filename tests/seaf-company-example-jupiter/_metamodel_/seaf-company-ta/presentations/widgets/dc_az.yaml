@@ -1,0 +1,149 @@
+entities:
+  seaf.company.ta.services.dc_azs:
+
+    presentations:
+      dc_az_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $az := $lookup(azs, $params.id);
+            $regions := regions;
+            $region := $exists($az.region) ? $lookup($regions, $az.region) : {};
+            $exists($az)
+              ? [
+                  {"field": "ID", "value": $az.__id__},
+                  {"field": "Название", "value": $az.title},
+                  {"field": "Описание", "value": $az.description},
+                  {
+                    "field": "Регион",
+                    "value": $region.title,
+                    "link": $exists($region) ? "/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ : null
+                  },
+                  {"field": "Провайдер", "value": $az.vendor},
+                  {"field": "Внешний ID", "value": $az.external_id}
+                ]
+              : []
+          )
+
+      dc_az_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: templates/server_location.puml
+        origin:
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+          dcs: seaf.company.ds.ta.dcs
+        source: >
+          (
+            $is_present := function($val){ $val != null and $val != "" };
+            $az := $lookup(azs, $params.id);
+            $has_az := $exists($az.__id__);
+            $region := $has_az and $is_present($az.region) ? $lookup(regions, $az.region) : {};
+            $belongs_to_az := function($dc){
+              $exists($dc.availabilityzone)
+              and (
+                ($type($dc.availabilityzone) = "array" and $az.__id__ in $dc.availabilityzone)
+                or ($type($dc.availabilityzone) = "string" and $dc.availabilityzone = $az.__id__)
+              )
+            };
+            $dcs_for_az := $filter(dcs.*, function($dc){ $belongs_to_az($dc) });
+            $has_dcs := $exists($dcs_for_az[0].__id__);
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              (
+                $exists($region.__id__)
+                  ? "node \"Регион: [[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_az
+                  ? "node \"AZ: [[/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ & " " & $az.title & "]]\" as az_node #d1c4e9\n"
+                  : ""
+              ) &
+              "";
+            $dc_nodes := $dcs_for_az.(
+              "node \"ЦОД: [[/entities/" & $.__entity_id__ & "/card?id=" & $.__id__ & " " & $.title & "]]\" as dc_" & $replace($.__id__,/[^A-Za-z0-9_]/,"_") & " #bbdefb\n"
+            ) ~> $distinct();
+            $dc_edges := $dcs_for_az.(
+              "az_node --> dc_" & $replace($.__id__,/[^A-Za-z0-9_]/,"_") & "\n"
+            ) ~> $distinct();
+            $diagram_core :=
+              ($exists($region.__id__) ? "region_node --> az_node\n" : "") &
+              ($dc_nodes ~> $join("")) &
+              ($dc_edges ~> $join(""));
+            $diagram :=
+              $has_az
+                ? ($base & $diagram_core & "@enduml")
+                : (
+                    "@startuml\nnote \"Зона не найдена\" as no_az\n@enduml"
+                  );
+            {
+              "diagram": $diagram
+            }
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

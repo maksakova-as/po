@@ -1,0 +1,65 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.kb_links` (kb links) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.kb_links
+datasets:
+  seaf.company.ds.ta.kb_links:
+    description: |
+      Связи сервисов кибербезопасности (защищаемые объекты, потребители, мониторинг, бэкап)
+    origin:
+      objects: seaf.company.ds.ta.all_objects
+      kb: seaf.company.ds.ta.kb
+      k8s: seaf.company.ds.ta.k8s
+      monitoring: seaf.company.ds.ta.monitoring
+      backup: seaf.company.ds.ta.backup
+    source: >
+      (
+        $objects := objects;
+        $kb := kb;
+        $k8s := k8s;
+        $monitoring := monitoring;
+        $backup := backup;
+        $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+        
+        $rows := $kb.*.(
+          $k := $;
+          $kid := $.__id__;
+          
+          $protected_ids := $to_list($k.protected_services);
+          $protected_rows := $protected_ids.(
+            $o := $lookup($objects, $);
+            $exists($o) ? {
+              "kb": $kid,
+              "title": $o.title,
+              "link": "/entities/" & $o.__entity_id__ & "/card?id=" & $o.__id__,
+              "type": "Защищаемый объект"
+            } : {}
+          );
+
+          $consumer_k8s := $k8s.*[$kid in $to_list(registries)];
+          $consumer_rows := $consumer_k8s.{
+            "kb": $kid,
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Потребитель (K8s)"
+          };
+
+          $monitors := $monitoring.*[$kid in $to_list(monitored_services)];
+          $monitor_rows := $monitors.{
+            "kb": $kid,
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Мониторинг"
+          };
+
+          $backups := $backup.*[$kid in $to_list(backed_up_services)];
+          $backup_rows := $backups.{
+            "kb": $kid,
+            "title": title,
+            "link": "/entities/" & __entity_id__ & "/card?id=" & __id__,
+            "type": "Резервное копирование"
+          };
+
+          $protected_rows ~> $append($consumer_rows) ~> $append($monitor_rows) ~> $append($backup_rows)
+        );
+        $rows ~> $reduce($append, []) ~> $filter(function($v){ $exists($v.title) })
+      )

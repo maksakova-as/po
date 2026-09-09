@@ -1,0 +1,88 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_logging_service:
+      uid: SEAF-TA-P3-K8S-LOGGING-SVC
+      title: "[TACSA_4-P3-31-04] Централизованное логирование во внешней системе (monitoring)"
+      description: |
+        Проверяет, что для `seaf.company.ta.services.k8s` задана связь `monitoring` хотя бы с одним
+        сервисом мониторинга, имеющим роль "Журналирование".
+
+        Требование (цитата):
+        Журналы платформы контейнерной оркестрации должны централизованно храниться во внешней системе сбора и анализа логов (вне самой платформы).
+      correction: |
+        Укажите в `monitoring` кластеров k8s ссылку на сервис мониторинга с ролью "Журналирование".
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_logging_service";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $code := "TACSA_4-P3-31-04";
+                  $k8s_map := $."seaf.company.ta.services.k8s";
+                  $mon_map := $."seaf.company.ta.services.monitorings";
+
+                  $each($k8s_map, function($k, $k_key){
+                    (
+                      $mons := $k.monitoring;
+                      ($not($exists($mons)) or $count($mons)=0) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_logging_service.missing." & $k_key,
+                        "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_logging_service.missing." & $k_key,
+                        "title": "K8s '" & $k.title & "' не задана связь с сервисом логирования",
+                        "correction": "ID: " & $k_key & ". " & ("Укажите monitoring для кластера"),
+                        "description": "Отсутствует поле monitoring"
+                      } : (
+                        $issues := $map($mons, function($m, $i){
+                          (
+                            $ref := $lookup($mon_map, $m);
+                            $not($exists($ref)) ? {
+                              "uid": "seaf.validation.ta.p3.k8s_logging_service.notfound." & $k_key & "." & $string($i),
+                              "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_logging_service.notfound." & $k_key & "." & $string($i),
+                              "title": "K8s '" & $k.title & "' monitoring[" & $string($i) & "] указывает на несуществующий сервис",
+                              "correction": "ID: " & $k_key & ". " & ("Исправьте ключ в monitoring[" & $string($i) & "]"),
+                              "description": "Ключ='" & $m & "' отсутствует в seaf.company.ta.services.monitorings"
+                            } : (
+                              ($not($exists($ref.role)) or $count($ref.role)=0 or $count($filter($ref.role, function($r){ $lowercase($r) = "журналирование" }))=0) ? {
+                                "uid": "seaf.validation.ta.p3.k8s_logging_service.role." & $k_key & "." & $string($i),
+                                "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_logging_service.role." & $k_key & "." & $string($i),
+                                "title": "Сервис мониторинга '" & $ref.title & "' не имеет роли 'Журналирование'",
+                                "correction": "ID: " & $k_key & ". " & ("Укажите сервис с ролью 'Журналирование'"),
+                                "description": "Роли сервиса: " & $join($ref.role, ", ")
+                              }
+                            )
+                          )
+                        });
+                        $filter($issues, function($v){ $type($v) = 'object' })
+                      )
+                    )
+                  }) ~> $reduce(function($curr, $acc){
+                    (
+                      $seq :=
+                        ($type($curr) = "array") ? $curr :
+                        ($type($curr) = "object") ? [$curr] :
+                        [];
+                      $seq ~> $reduce(function($value, $inner){
+                        $inner ~> $append($value)
+                      }, $acc)
+                    )
+                  }, [])
+                )
+              ])
+            )
+            : []
+        )

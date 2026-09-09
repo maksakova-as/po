@@ -1,0 +1,9 @@
+table_data:
+  row_1:
+    col_1: "60"
+    col_2: "600"
+    col_3: "60"
+  row_2:
+    col_1: "60"
+    col_2: "50"
+    col_3: "670"

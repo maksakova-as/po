@@ -1,0 +1,7 @@
+imports:
+  - configs.yaml
+  - aggregats/_root.yaml
+  - business_terms/_root.yaml
+  - logical_entities/_root.yaml
+  - logical_links/_root.yaml
+  - physical_tables/_root.yaml

@@ -1,0 +1,95 @@
+entities:
+  seaf.company.ta.services.k8s:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.k8s";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Kubernetes", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Kubernetes/Изменение Kubernetes", $root_menu);
+        $legacy_id := "seaf.ta.services.k8s";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 165
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.k8s_deployments:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.k8s_deployments";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Kubernetes/Deployments", $root_menu);
+        $legacy_id := "seaf.ta.components.k8s_deployment";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 166
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.compute_services:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.compute_services";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Вычислительные сервисы", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Вычислительные сервисы/Изменение вычислительных сервисов", $root_menu);
+        $legacy_id := "seaf.ta.services.compute_service";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 160
+            })
+          : $items;
+        $items
+      )
+
+  seaf.company.ta.services.cluster_virtualizations:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.services.cluster_virtualizations";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Кластеры виртуализации", $root_menu);
+        $edit_menu := $seaf_fn_generate_menu_item("Сервисы/Платформа/Кластеры виртуализации/Изменение кластеров виртуализации", $root_menu);
+        $legacy_id := "seaf.ta.services.cluster_virtualization";
+        $legacy := $lookup($, $legacy_id);
+        $has_objects := $exists($lookup($, $entity_id));
+        $has_legacy := $exists($legacy) and $count($keys($legacy)) > 0;
+        $items := [];
+        $items := ($has_objects or $has_legacy)
+          ? $append($items, {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 180
+            })
+          : $items;
+        $items
+      )

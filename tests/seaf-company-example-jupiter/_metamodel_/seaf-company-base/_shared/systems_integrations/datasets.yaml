@@ -1,0 +1,92 @@
+datasets:
+  seaf.company.ds.systems.integrations:
+    title: Интеграции систем
+    description: |
+      Датасет - реестр интеграционных потоков уровня L1 (между системами)
+
+    origin:
+      objects: seaf.ds.objects
+      systems: seaf.company.ds.systems
+      services: seaf.company.ds.services
+      objects_links: seaf.ds.objects_links
+
+    #  Принятые допущения:
+    #  - За каждым сервисом есть хотя бы одна система-провайдер (даже если сервис внешний - д.б. внешняя система-провайдер)
+
+    source: >
+      (
+      $objects := objects;
+      $systems := systems;
+      $services := services;
+      $objects_links := objects_links;
+      /* сканируем каждую систему */
+      $integrations := $each($systems, function ($s1val, $s1key){(
+          /* сканиируем каждую интеграцию данной системы */
+          $each($s1val.integrations, function ($ival, $ikey){(
+              $srv := $services.$lookup($ival.service);
+              ($exists($srv) and $srv != null)
+              ? ( 
+                  $sys_providers_arr := [$objects_links.$lookup($srv.__id__)[link_attr="realizes_functions.service" and link_dir="reverse"].linked_id] ~> $distinct();
+                  /* сканируем каждую систему - поставщика сервиса */
+                  $map($sys_providers_arr, function ($s2id){(
+                      $s2 := $systems.$lookup($s2id);
+                      $exists($s2) and $s2 != null
+                      ? ( /* формируем интеграцию */
+                        $i_object_id := $s1val.__object_id__  &"__"& $s2.__object_id__ &"__"& $ikey;
+                        $i_id := $s1val.__company_id__ &".integration."& $i_object_id;
+                        /* выявляем движение данных внутри потока */
+                        $data_arr := $map($srv.data_flow, function($df, $i) {(
+                           $do := $seaf_fn_get_object_info($df.data_object, $objects);
+                           {
+                              "number": $i + 1,
+                              "data_object": $do.__id__,
+                              "data_object_title": $do.title,
+                              "data_direction": ($df.direction = "Вход" ? "Система1 -> Система2" : "Система1 <- Система2"),
+                              "description": $df.description
+                           }
+                        )})[];
+                        { $i_id : {
+                            "__id__": $i_id,
+                            "__entity_id__": "seaf.company.systems.integrations",
+                            "__entity_title__": "Интеграции систем",
+                            "__local_id__": $ikey,
+                            "__object_id__": $i_object_id,
+                            "__link_to_card__": "/entities/" & "seaf.company.systems.integrations/card?id=" & $i_id,
+                            "title": $ival.title,
+                            "description": $ival.description,
+                            "system1": $s1val.__id__,
+                            "system2": $s2.__id__,
+                            "service": $srv.__id__,
+                            "supporting_services": $srv.supporting_services,
+                            "data_flow": $data_arr != [] ? $data_arr,
+                            "protection_methods": $ival.protection_methods,
+                            "data_exchange_grounds": $ival.data_exchange_grounds,
+                            "lifecycle_stage": $ival.lifecycle_stage,
+                            "comments": $ival.comments
+                        }}
+                      )
+                  )}) ~>$merge() ; 
+              )
+          )}) ~>$merge();
+      )}) ~>$merge();
+      
+      )
+
+  seaf.company.ds.systems.integrations_by_systems:
+    title: Интеграции систем разрезе систем
+    description: |
+      Датасет - реестр интеграционных потоков уровня L1 (между системами) в разрезе систем 
+      с указанием входящих интеграций (система - поставщик сервиса) и исходящих интеграций (система - потребитель сервиса)
+
+    origin:
+      integrations: seaf.company.ds.systems.integrations
+
+    source: >
+      (
+      $integrations := integrations;
+      $i_arr := [$integrations.*];
+      $i_arr1 := $i_arr.($merge([$, {"__system_id__": $.system1, "__type__": "consumer"}]));
+      $i_arr2 := $i_arr.($merge([$, {"__system_id__": $.system2, "__type__": "provider"}]));
+      $a := $append($i_arr1, $i_arr2);
+      $a{ __system_id__: [$] }
+      )

@@ -1,0 +1,100 @@
+RXcWit5hHr6IPpoLcjqJ:
+  - id: jupiter.network_segment.internet
+    diff:
+      parent:
+        new: "003"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+  - id: jupiter.network_segment.dc.internet
+    diff:
+      parent:
+        new: "003"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+  - id: jupiter.network_segment.dc02.internet
+    diff:
+      parent:
+        new: "003"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+  - id: jupiter.network_segment.transport
+    diff:
+      parent:
+        new: "004"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+  - id: jupiter.network_segment.dc.transport
+    diff:
+      parent:
+        new: "004"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+  - id: jupiter.network_segment.dc02.transport
+    diff:
+      parent:
+        new: "004"
+        old: null
+      style:
+        new: group;noLabel=1;
+        old: null
+      value:
+        new: ""
+        old: null
+      vertex:
+        new: "1"
+        old: null
+jupiter.dc_office.hq_page: []
+jupiter.dc.moscow_dc01_page: []
+jupiter.dc.moscow_dc02_page:
+  - id: jupiter.network.lan.dc02.int.test
+    diff:
+      geometry_attr_key:
+        x:
+          new: "-15"
+          old: "-10"
+  - id: link_id:VK DC:generic:jupiter.kb.waf_1_jupiter.network.lan.dc02.inet_edge
+    diff:
+      geometry_attr_key:
+        pointsArray:
+          - - "705"
+            - "913"

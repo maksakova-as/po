@@ -1,0 +1,99 @@
+entities:
+  # Наборы атрибутов, используемых в сущностях метамодели
+  seaf.def.attributes:
+    title: Базовые атрибуты
+    schema:
+      $defs:
+
+        seaf.def.basic_attributes:
+          properties:
+            title:
+              title: Краткое название
+              type: string
+              description: Используется в качестве названия объекта в схемах и отчетах
+            description:
+              title: Описание
+              type: string
+              description: Описание объекта в несколько предложений
+            external_id:
+              title: Внешний идентификатор
+              type: [string, number]
+              description: |
+                Идентификатор объекта во внешней системе. Может использоваться для связи объектов в арх. репозитории
+                с объектами в других системах компании (например с CMDB)
+            comments:
+              title: Комментарии
+              description: |
+                Любая важная дополнительная информация по объекту.
+                Задается в виде массива строк
+              type: array
+              items:
+                type: string
+          required:
+            - title
+
+        seaf.def.lifecycle_stage:
+          properties:
+            lifecycle_stage:
+              title: Этап ЖЦ
+              type: string
+              description: Текущий этап жизненного цикла объекта
+              enum:
+                - Идея в проработке
+                - Создается
+                - Тестируется
+                - Используется и развивается
+                - Используется
+                - В архиве
+                - Выведен из эксплуатации
+
+        seaf.def.stakeholders:
+          type: object
+          properties:
+            stakeholders:
+              title: Стейкхолдеры
+              description: Лица, играющие существенную роль по отношению к данному объекту
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  role:
+                    title: Роль
+                    description: |
+                      Роль стейкхолдера для данного объекта.
+                      \nВыбирайте из справочника или вводите свой вариант названия роли
+                    anyOf:
+                      - type: string
+                        enum:
+                          - Владелец от бизнеса
+                          - Владелец от ИТ
+                          - Архитектор
+                          - Лидер разработки
+                          - Лидер сопровождения
+                          - Куратор от Кибербезопасности
+                      - type: string
+                        minLength: 3
+                  name:
+                    title: ФИО
+                    description: Фамилия Имя Отчество стейкхолдера
+                    type: string
+
+                  department:
+                    title: Подразделение
+                    description: Подразделение стейкхолдера
+                    type: string
+
+                  position:
+                    title: Позиция
+                    description: Позиция \ должностиь стейкхолдера
+                    type: string
+
+                  description:
+                    title: Описание
+                    description: Дополнительное описание роли стейкхолдера
+                    type: string
+
+                required:
+                  - role
+                  - name

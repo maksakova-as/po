@@ -1,0 +1,61 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.systems.integrations:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          summary:
+            title: Сводка
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: summary
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 210
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      summary:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.ds.objects
+          integrations: seaf.company.ds.systems.integrations
+        source: >
+          (
+          $objects := objects;
+          $integrations := integrations;
+          
+          $obj2present := $lookup($integrations, $params.id);
+          $sys1 := $lookup($objects, $obj2present.system1);
+          $sys2 := $lookup($objects, $obj2present.system2);
+          $srv := $lookup($objects, $obj2present.service);
+          
+          [
+              { "field_name": "Идентификатор объекта (сформирован динамически)", "field_content": { "value": $obj2present.__id__} },
+              { "field_name": "Идентификатор сущности (виртуальная сущность)", "field_content": { "value": $obj2present.__entity_id__ } },
+              { "field_name": "Локальный идентификатор интеграции (в карточке Cистемы 1)", "field_content": { "value": $obj2present.__local_id__ } },
+              { "field_name": "Название", "field_content": { "value":$obj2present.title } },
+              { "field_name": "Описание", "field_content": { "value": $obj2present.description } },
+              { "field_name": "Система 1 (потребитель сервиса)", "field_content": { "value": $sys1.title, "link": $sys1.__link_to_card__ } },
+              { "field_name": "Система 2 (поставщик сервиса)", "field_content": { "value": $sys2.title, "link": $sys2.__link_to_card__ } },
+              { "field_name": "Сервис", "field_content": { "value": $srv.title, "link": $srv.__link_to_card__ } },
+              { "field_name": "Этап ЖЦ объекта", "field_content": { "value": $obj2present.lifecycle_stage } },
+              { "field_name": "Средства защиты", "field_content": { "value": $obj2present.protection_methods ~> $join(", ") } },
+              { "field_name": "Основание для обмена данными", "field_content": { "value": $obj2present.data_exchange_grounds } }
+          ];
+          )

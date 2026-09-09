@@ -1,0 +1,23 @@
+entities:
+  seaf.company.systems.integrations:
+    menu: >
+      (
+      $entity_id := "seaf.company.systems.integrations"; /* виртуальная сущность */
+      $domain_id := "seaf.company.app";
+      $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+      $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+      $menu := [];
+      
+      /* Список интеграций */
+      $m := (
+          $menu_item_name := $seaf_fn_generate_menu_item("Интеграции систем", $root_menu);
+          $menu_item_order := 250;
+          $exists($.$lookup("seaf.company.app.systems")) or $exists($.$lookup("seaf.company.cybersec.systems")) 
+          ?   [{
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu_item_name,
+              "order": $root_menu_order + $menu_item_order
+              }]
+      );
+      $menu := $append($menu, $m);
+      )

@@ -1,0 +1,38 @@
+entities:
+  seaf.test_entities:
+    title: Тестовые продукты
+
+    schema:
+      type: object
+      additionalProperties: false
+      patternProperties:
+        "^[a-zA-Z0-9_]{3,}\\.(te)\\.[a-zA-Z0-9_]*$":
+          type: object
+
+          properties:
+            title:
+              title: Название
+              type: string
+            is_part_of:
+              title: Является частью
+              description: Используется для задания древовидной структуры объектов
+              $ref: "#/$rels/seaf.test_entities.te"
+
+    objects:
+      te:
+        route: "/"
+        title: TE
+        symbol: "te"
+
+    menu: >
+      (
+          $entity_id := "seaf.test_entities";
+          [
+          $exists($.$lookup($entity_id)) 
+          ?   {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": "Тестовые объекты",
+              "order": 300
+              }
+          ]  
+      )

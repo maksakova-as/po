@@ -1,0 +1,129 @@
+entities:
+  seaf.company.ta.services.stands:
+    presentations:
+      list:
+        title: Стенды
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: environment
+            text: Окружение
+            link: environment_link
+          - value: description
+            text: Описание
+        origin:
+          stands: seaf.company.ds.ta.stands
+          environments: seaf.company.ds.ta.environments
+        source: >
+          (
+            $stands := stands;
+            $envs := environments;
+            $stands.*@$stand.(
+              $env := $lookup($envs, $stand.env);
+              {
+                "id": $stand.__id__,
+                "link": "/entities/" & $stand.__entity_id__ & "/card?id=" & $stand.__id__,
+                "title": $stand.title,
+                "environment": $env.title,
+                "environment_link": $exists($env) ? "/entities/" & $env.__entity_id__ & "/card?id=" & $env.__id__ : null,
+                "description": $stand.description
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка стенда
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: stand_details
+            align: "v"
+            order: 10
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      stand_details:
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          stands: seaf.company.ds.ta.stands
+          environments: seaf.company.ds.ta.environments
+        source: >
+          (
+            $stand := $lookup(stands, $params.id);
+            $env := $exists($stand) ? $lookup(environments, $stand.env) : {};
+            $exists($stand)
+            ? [
+                {"field": "ID", "value": $stand.__id__},
+                {"field": "Название", "value": $stand.title},
+                {"field": "Описание", "value": $stand.description},
+                {
+                  "field": "Окружение",
+                  "value": $env.title,
+                  "link": $exists($env) ? "/entities/" & $env.__entity_id__ & "/card?id=" & $env.__id__ : null
+                },
+                {"field": "Внешний ID", "value": $stand.external_id}
+              ]
+            : []
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

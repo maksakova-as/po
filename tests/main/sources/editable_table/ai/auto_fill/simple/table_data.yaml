@@ -1,0 +1,12 @@
+editable_table.ai.auto_fill.simple.table.data:
+  row_1:
+    text: TEXT 1
+    fn: OK OK
+    checkbox: true
+    select: blue
+    multiple_select:
+      - blue
+      - white
+    link: http://google.com
+  row_2: {}
+  row_3: {}

@@ -1,0 +1,70 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_deployment_resource_limits:
+      uid: SEAF-TA-P3-K8S-DEP-LIMITS
+      title: "[TACSA_4-P3-32-04] Проверка лимитов CPU/RAM для контейнеров Deployment"
+      description: |
+        Проверяет, что в каждом `seaf.company.ta.services.k8s_deployments` для всех контейнеров
+        заполнены `resources.limits.cpu` и `resources.limits.ram`.
+        Требование: TACSA_4-P3-32-04 — В манифестах должны быть определены лимиты потребления CPU/RAM.
+        
+        Требование (цитата):
+        В платформе контейнерной оркестрации имеются механизмы и активированы настройки лимитов и запросов на ресурсы CPU/RAM.
+      correction: |
+        Для всех контейнеров Deployment заполните `resources.limits.cpu` и `resources.limits.ram`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_deployment_resource_limits";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.k8s_deployments";
+                  $deployments := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $each($deployments, function($d, $d_key){
+                    (
+                      $cs := $d.containers;
+                      ($not($exists($cs)) or $count($cs)=0) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_deployment_resource_limits.no_containers." & $d_key,
+                        "deviation_id": "TACSA_4-P3-32-04:" & "seaf.validation.ta.p3.k8s_deployment_resource_limits.no_containers." & $d_key,
+                        "title": "Deployment '" & $d.title & "' не содержит контейнеров",
+                        "correction": "ID: " & $d_key & ". " & ("Добавьте хотя бы один контейнер с лимитами ресурсов"),
+                        "description": "Deployment (" & $d_key & ") не имеет containers\n\nТребование (цитата):\nВ платформе контейнерной оркестрации имеются механизмы и активированы настройки лимитов и запросов на ресурсы CPU/RAM."
+                      } : (
+                        $viol := $map($cs, function($c, $idx){
+                          (
+                            $limits := $c.resources.limits;
+                            $cpu := $limits.cpu; $ram := $limits.ram;
+                            ($not($exists($limits)) or $not($exists($cpu)) or $cpu="" or $not($exists($ram)) or $ram="") ? {
+                              "uid": "seaf.validation.ta.p3.k8s_deployment_resource_limits.missing." & $d_key & "." & $string($idx),
+                              "deviation_id": "TACSA_4-P3-32-04:" & "seaf.validation.ta.p3.k8s_deployment_resource_limits.missing." & $d_key & "." & $string($idx),
+                              "title": "Deployment '" & $d.title & "' контейнер '" & $c.name & "' без лимитов CPU/RAM",
+                              "correction": "ID: " & $d_key & ". " & ("Заполните resources.limits.cpu и resources.limits.ram"),
+                              "description": "Отсутствуют или пустые limits для контейнера index=" & $string($idx) & "\n\nТребование (цитата):\nВ платформе контейнерной оркестрации имеются механизмы и активированы настройки лимитов и запросов на ресурсы CPU/RAM."
+                            }
+                          )
+                        });
+                        $filter($viol, function($v){ $exists($v) })
+                      )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

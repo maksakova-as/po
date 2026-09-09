@@ -1,0 +1,102 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_pam:
+      uid: SEAF-TA-P3-K8S-PAM
+      title: '[TACCS_1-P10-7-04] Привилегированный доступ (PAM)'
+      description: 'Требуем наличие PAM-сервиса (`tag=PAM`), где кластер указан в
+        `protected_services`, и
+
+        наличие пересекающихся сетей.
+
+        '
+      correction: 'Добавьте кластер в PAM и проверьте, что есть общие `network_connection`.
+
+        '
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_pam";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $code := "TACCS_1-P10-4-04";
+                  $kb_ds := $.datasets."seaf.company.ds.ta.kb";
+                  $kb := $eval($kb_ds.source, { "objects": $, "data_lake": $ });
+                  $k8s_ds := $.datasets."seaf.company.ds.ta.k8s";
+                  $k8s := $eval($k8s_ds.source, { "objects": $, "data_lake": $ });
+                  $pam_services :=
+                    $filter(
+                      $map($keys($kb), function($svc_key){
+                        (
+                          $svc := $lookup($kb, $svc_key);
+                          ($svc.tag = "PAM" and $exists($svc.protected_services)) ? {
+                            "key": $svc_key,
+                            "svc": $svc
+                          }
+                        )
+                      }),
+                      function($entry){ $type($entry) = "object" }
+                    );
+                  $each($k8s, function($k, $k_key){
+                    (
+                      $nets := $distinct((($k.network_connection) or []) ~> $append($k.management_networks));
+                      $matches := $filter($pam_services, function($entry){
+                        $k_key in $entry.svc.protected_services
+                      });
+                      ($count($matches)=0) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_pam.missing." & $k_key,
+                        "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_pam.missing." & $k_key,
+                        "title": "K8s '" & $k.title & "' не защищён PAM",
+                        "correction": "ID: " & $k_key & ". " & ("Добавьте кластер в protected_services PAM-системы"),
+                        "description": "Кластер отсутствует в PAM сервисах"
+                      } : (
+                        $issues := $map($matches, function($entry){
+                          (
+                            $svc := $entry.svc;
+                            $svc_key := $entry.key;
+                            ($exists($nets) and $exists($svc.network_connection)) ? (
+                              $common := $filter($nets, function($n){ $n in $svc.network_connection });
+                              ($count($common)=0) ? {
+                                "uid": "seaf.validation.ta.p3.k8s_pam.reach." & $k_key & "." & $svc_key,
+                                "deviation_id": $code & ":" & "seaf.validation.ta.p3.k8s_pam.reach." & $k_key & "." & $svc_key,
+                                "title": "K8s '" & $k.title & "' и PAM '" & $svc.title & "' не делят сети",
+                                "correction": "ID: " & $k_key & ". " & ("Согласуйте network_connection"),
+                                "description": "PAM: " & $svc_key
+                              } : []
+                            ) : []
+                          )
+                        });
+                        $filter($issues, function($issue){ $type($issue) = "object" })
+                      )
+                    )
+                  }) ~> $reduce(function($curr, $acc){
+                    (
+                      $seq :=
+                        ($type($curr) = "array") ? $curr :
+                        ($type($curr) = "object") ? [$curr] :
+                        [];
+                      $seq ~> $reduce(function($value, $inner){
+                        $inner ~> $append($value)
+                      }, $acc)
+                    )
+                  }, [])
+                )
+              ])
+            )
+            : []
+        )

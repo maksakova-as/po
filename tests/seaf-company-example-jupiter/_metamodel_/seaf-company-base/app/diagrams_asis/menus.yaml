@@ -1,0 +1,21 @@
+entities:
+  seaf.company.app.diagrams.asis:
+    menu: >
+      (
+      $entity_id := "seaf.company.app.diagrams.asis";
+      $domain_id := "seaf.company.app";
+      $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+      $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+      $menu := [];
+      /* фомрируем индивидуальный п.меню для каждого экземпляра */
+      $m := [(
+          $each($.$lookup($entity_id), function ($val, $key) {(
+              {
+                "link": "/entities/" & $entity_id & "/view?id=" & $key,      
+                "location": $seaf_fn_generate_menu_item($val.menu_location, $root_menu),
+                "order": $root_menu_order + $val.menu_order
+              }
+          )});
+      )];
+      $menu := $append($menu, $m);
+      )

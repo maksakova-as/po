@@ -1,0 +1,31 @@
+datasets:
+  seaf.company.ds.ta.kbs_options.networks:
+    description: "Опции для выбора сетей в таблице редактирования КБ"
+    origin:
+      networks: seaf.company.ds.ta.networks
+    source: >
+      (
+        $nets := $exists(networks) ? networks : {};
+        $map($keys($nets), function($net_id){(
+          $net := $lookup($nets, $net_id);
+          {
+            "value": $net_id,
+            "text": $net.title ? $net.title : $net_id
+          }
+        )})
+      )
+  seaf.company.ds.ta.kbs_options.services:
+    description: "Опции для выбора защищаемых сервисов в таблице редактирования КБ"
+    origin:
+      services: seaf.company.ds.ta.all_objects
+    source: >
+      (
+        $services := $exists(services) ? services : {};
+        $map($keys($services), function($srv_id){(
+          $srv := $lookup($services, $srv_id);
+          {
+            "value": $srv_id,
+            "text": $srv.title ? $srv.title : $srv_id
+          }
+        )})
+      )

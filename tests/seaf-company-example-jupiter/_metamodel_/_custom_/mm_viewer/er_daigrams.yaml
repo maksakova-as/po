@@ -1,0 +1,85 @@
+seaf.toolkit.mm_viewer.erds:
+  erd_seaf_ba:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/(*) ER SEAF (Бизнес Арх.)
+    order: 92200
+    show_subentities: true
+    entities:
+      - "seaf.company.ba.**"
+    entity_patterns_formats:
+      - pattern: "seaf.company.ba.**" # бизнес-архитектура
+        object_format: "#header:FFFF88"
+        link_format: "#line:CCCC00;line.bold"
+
+  erd_seaf_da:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/(*) ER SEAF (Арх. Данных)
+    order: 92300
+    show_subentities: true
+    entities:
+      - "seaf.company.da.**"
+    entity_patterns_formats:
+      - pattern: "seaf.company.da.**" # домен архитектура данных
+        object_format: "#header:FFD040"
+        link_format: "#line:CCA633"
+
+  erd_seaf_ai:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/(*) ER SEAF (Арх. ИИ)
+    order: 92400
+#    show_subentities: true
+    entities:
+      - "seaf.company.ai.**"
+    entity_patterns_formats:
+      - pattern: "seaf.company.ai.**" # домен ИИ-архитектура
+        object_format: "#header:FF66FF"
+        link_format: "#line:FF66FF"
+
+  erd_seaf_app:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/(*) ER SEAF (Прикладная Арх.)
+    order: 92500
+    show_subentities: true
+    entities:
+      - "seaf.company.app.**"
+      - "seaf.company.cybersec.**"
+      - "seaf.company.systems"
+      - "seaf.company.sys_components"
+      - "seaf.company.services"
+      - "seaf.company.functions"
+    entity_patterns_formats:
+      - pattern: "seaf.company.app.**" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.functions" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.cybersec.**" # КБ архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.sys_components" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.systems" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.services" # прикладная-архитектура
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+  erd_seaf_ta:
+    title: ER-диаграмма SEAF
+    location: SEAF/Инструменты/MM Viewer/(*) ER SEAF (Техн. Архитектура)
+    order: 92600
+    show_subentities: false
+    entities:
+      - "seaf.company.ta.**"
+    entity_patterns_formats:
+      - pattern: "seaf.company.ta.**" # ТА
+        object_format: "#header:99FF99"
+        link_format: "#line:60FF60;line.bold"

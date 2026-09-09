@@ -1,0 +1,749 @@
+entities:
+  seaf.company.ta.components.servers:
+    presentations:
+      list:
+        title: Серверы
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: type
+            text: Тип
+          - value: fqdn
+            text: FQDN
+          - value: vendor
+            text: Производитель
+          - value: location
+            text: Локации
+            link: location_link
+          - value: networks
+            text: Сети
+            link: network_link
+          - value: virtualization
+            text: Кластер виртуализации
+            link: virtualization_link
+          - value: id
+            text: ID
+        origin:
+          servers: seaf.company.ds.ta.servers
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          virtualization: seaf.company.ds.ta.cluster_virtualizations
+          networks: seaf.company.ds.ta.networks
+        source: >
+          (
+            $servers := servers;
+            $dcs := dcs;
+            $offices := offices;
+            $virtualization := virtualization;
+            $networks := networks;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $servers.*@$server.(
+              $location_objects := $exists($server.location)
+                ? $server.location[].($resolve_location($))
+                : [];
+              $network_objects := $exists($server.subnets)
+                ? $server.subnets[].($lookup($networks, $))
+                : [];
+              $virt := $exists($server.virtualization)
+                ? $lookup($virtualization, $server.virtualization)
+                : {};
+              {
+                "id": $server.__id__,
+                "link": "/entities/" & $server.__entity_id__ & "/card?id=" & $server.__id__,
+                "title": $server.title,
+                "type": $server.type,
+                "fqdn": $server.fqdn,
+                "vendor": $server.vendor,
+                "location": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null,
+                "networks": $network_objects.title ~> $join(", "),
+                "network_link": $exists($network_objects[0])
+                  ? "/entities/" & $network_objects[0].__entity_id__ & "/card?id=" & $network_objects[0].__id__
+                  : null,
+                "virtualization": $virt.title,
+                "virtualization_link": $exists($virt)
+                  ? "/entities/" & $virt.__entity_id__ & "/card?id=" & $virt.__id__
+                  : null
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка сервера
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Характеристики
+            presentation: server_card_details
+            align: "v"
+            order: 10
+          tech_services:
+            title: Технические сервисы
+            presentation: server_tech_services
+            align: "v"
+            order: 15
+          location_topology:
+            title: Схема размещения
+            presentation: server_location_topology
+            align: "v"
+            order: 20
+          network_topology:
+            title: Схема сетевых подключений
+            presentation: server_network_topology
+            align: "v"
+            order: 25
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+          configs: seaf.ds.configs
+        source: >
+          (
+            $configs := configs;
+            $cfg_root := $exists($configs."seaf.configs") ? $configs."seaf.configs" : $configs;
+            $ta_cfg := $lookup($cfg_root, "seaf.company.ta");
+            $active_profile := $exists($ta_cfg.data_sources.profile) ? $ta_cfg.data_sources.profile : null;
+            $obj := $lookup(objects, $params.id);
+            $widgets := $active_profile = "seaf2_only"
+              ? $self.widgets.$sift(function($v, $k){ $k != "kadzo_systems" })
+              : $self.widgets;
+            $presentation := $merge([$self, { "widgets": $widgets }]);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($presentation, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      # Backward-compatible alias. Some legacy links may still point to /presentations/main.
+      main:
+        title: Карточка сервера
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Характеристики
+            presentation: server_card_details
+            align: "v"
+            order: 10
+          tech_services:
+            title: Технические сервисы
+            presentation: server_tech_services
+            align: "v"
+            order: 15
+          location_topology:
+            title: Схема размещения
+            presentation: server_location_topology
+            align: "v"
+            order: 20
+          network_topology:
+            title: Схема сетевых подключений
+            presentation: server_network_topology
+            align: "v"
+            order: 25
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+          configs: seaf.ds.configs
+        source: >
+          (
+            $configs := configs;
+            $cfg_root := $exists($configs."seaf.configs") ? $configs."seaf.configs" : $configs;
+            $ta_cfg := $lookup($cfg_root, "seaf.company.ta");
+            $active_profile := $exists($ta_cfg.data_sources.profile) ? $ta_cfg.data_sources.profile : null;
+            $obj := $lookup(objects, $params.id);
+            $widgets := $active_profile = "seaf2_only"
+              ? $self.widgets.$sift(function($v, $k){ $k != "kadzo_systems" })
+              : $self.widgets;
+            $presentation := $merge([$self, { "widgets": $widgets }]);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($presentation, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )
+
+      server_tech_services:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: type_label
+            text: Тип сервиса
+          - value: description
+            text: Описание
+        origin:
+          servers: seaf.company.ds.ta.servers
+          compute_services: seaf.company.ds.ta.compute_services
+          k8s: seaf.company.ds.ta.k8s
+          backup: seaf.company.ds.ta.backup
+          monitoring: seaf.company.ds.ta.monitoring
+          kb: seaf.company.ds.ta.kb
+          virtualizations: seaf.company.ds.ta.cluster_virtualizations
+          data_lake: seaf.ds.data_lake
+        source: >
+          (
+            $server := $lookup(servers, $params.id);
+            $to_list := function($v){ $type($v) = "array" ? $v : ($exists($v) ? [$v] : []) };
+            $compute_services := compute_services;
+            $k8s := k8s;
+            $monitoring := monitoring;
+            $backup := backup;
+            $kb := kb;
+            $virtualizations := virtualizations;
+            $kadzo_tech_services := $lookup(data_lake, "kadzo.v2023.tech_services");
+            $resolve_tech_service := function($id){
+              $lookup($compute_services, $id) ? $lookup($compute_services, $id) :
+                ($lookup($k8s, $id) ? $lookup($k8s, $id) :
+                  ($lookup($monitoring, $id) ? $lookup($monitoring, $id) :
+                    ($lookup($backup, $id) ? $lookup($backup, $id) :
+                      ($lookup($kb, $id) ? $lookup($kb, $id) : $lookup($virtualizations, $id))
+                    )
+                  )
+                )
+            };
+            /* Dataset kadzo.v2023.tech_services returns {"kadzo.v2023.tech_services": {...}} */
+            $kadzo_map := $exists($kadzo_tech_services."kadzo.v2023.tech_services")
+              ? $kadzo_tech_services."kadzo.v2023.tech_services"
+              : $kadzo_tech_services;
+            
+            $type_labels := {
+              "seaf.company.ta.services.cluster_virtualizations": "Кластер виртуализации",
+              "seaf.company.ta.services.compute_services": "Вычислительный сервис",
+              "seaf.company.ta.services.k8s": "Кластер Kubernetes",
+              "seaf.company.ta.services.backups": "Резервное копирование",
+              "seaf.company.ta.services.monitorings": "Мониторинг",
+              "seaf.company.ta.services.kbs": "Сервис кибербезопасности",
+              "kadzo.monitoring": "Мониторинг (КА ДЗО)",
+              "kadzo.backup": "Резервное копирование (КА ДЗО)",
+              "kadzo.cluster": "Кластер (КА ДЗО)",
+              "kadzo.compute": "Вычислительный сервис (КА ДЗО)"
+            };
+
+            $resolve_label := function($eid) {
+              $lookup($type_labels, $eid) ? $lookup($type_labels, $eid) : $eid
+            };
+
+            $svc_list := $to_list($server.is_part_of);
+
+            $rows := $svc_list.($svc_id := $; (
+              $obj := $resolve_tech_service($svc_id);
+              $obj ? {
+                "title": $obj.title,
+                "link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $svc_id,
+                "type_label": $resolve_label($obj.__entity_id__),
+                "description": $obj.description
+              } : (
+                $is_kadzo := $contains($svc_id, "kadzo.");
+                $is_kadzo ? (
+                  $raw_id := $replace($svc_id, /^kadzo\.(monitoring|backup|cluster|compute)\./, "");
+                  $k_obj := $lookup($kadzo_map, $raw_id);
+                  $k_obj ? {
+                    "title": $k_obj.title,
+                    "link": "/entities/kadzo.v2023.tech_services/card?id=" & $raw_id,
+                    "type_label": $resolve_label($substringBefore($svc_id, "." & $raw_id)),
+                    "description": $k_obj.description
+                  } : null
+                ) : null
+              )
+            ))[$exists(title)];
+            
+            $rows
+          )
+
+      server_card_details:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+            link: link
+        origin:
+          servers: seaf.company.ds.ta.servers
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          virtualization: seaf.company.ds.ta.cluster_virtualizations
+          compute_services: seaf.company.ds.ta.compute_services
+          k8s: seaf.company.ds.ta.k8s
+          monitoring: seaf.company.ds.ta.monitoring
+          backup: seaf.company.ds.ta.backup
+          kb: seaf.company.ds.ta.kb
+          networks: seaf.company.ds.ta.networks
+        source: >
+          (
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $virtualization := virtualization;
+            $compute_services := compute_services;
+            $k8s := k8s;
+            $monitoring := monitoring;
+            $backup := backup;
+            $kb := kb;
+            $server := $lookup(servers, $params.id);
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $resolve_compute := function($id){ $lookup($compute_services, $id) };
+            $resolve_tech_service := function($id){
+              $lookup($compute_services, $id) ? $lookup($compute_services, $id) :
+                ($lookup($k8s, $id) ? $lookup($k8s, $id) :
+                  ($lookup($monitoring, $id) ? $lookup($monitoring, $id) :
+                    ($lookup($backup, $id) ? $lookup($backup, $id) :
+                      ($lookup($kb, $id) ? $lookup($kb, $id) : $lookup($virtualization, $id))
+                    )
+                  )
+                )
+            };
+            $rows := [
+              {"field": "ID", "value": $server.__id__},
+              {"field": "Название", "value": $server.title},
+              {"field": "Тип", "value": $server.type},
+              {"field": "FQDN", "value": $server.fqdn},
+              {"field": "Вендор", "value": $server.vendor},
+              {"field": "Модель", "value": $server.model},
+              {"field": "OS", "value": $server.os.type},
+              {"field": "OS битность", "value": $server.os.bit},
+              {"field": "CPU (ядра)", "value": $server.cpu.cores},
+              {"field": "CPU (МГц)", "value": $server.cpu.frequency},
+              {"field": "RAM, ГБ", "value": $server.ram},
+              {"field": "NIC qty", "value": $server.nic_qty},
+              {"field": "Внешний ID", "value": $server.external_id}
+            ];
+            $disk_rows := $exists($server.disks)
+              ? $server.disks[].{
+                  "field": "Диск",
+                  "value": $.name & ": " & $.size & " ГБ (" & $.type & ")"
+                }
+              : [];
+            $location_rows := $exists($server.location)
+              ? $server.location[].(
+                  $loc := $resolve_location($);
+                  {
+                    "field": "Локация",
+                    "value": $loc.title,
+                    "link": $exists($loc) ? "/entities/" & $loc.__entity_id__ & "/card?id=" & $loc.__id__ : null
+                  }
+                )
+              : [];
+            $tech_service_rows := $exists($server.is_part_of)
+              ? $server.is_part_of[].(
+                  $svc := $resolve_tech_service($);
+                  $exists($svc.__id__)
+                    ? {
+                        "field": "Технический сервис",
+                        "value": $svc.title,
+                        "link": "/entities/" & $svc.__entity_id__ & "/card?id=" & $svc.__id__
+                      }
+                    : null
+                )[$exists(value)]
+              : [];
+            $virt := $exists($server.virtualization) ? $lookup($virtualization, $server.virtualization) : {};
+            $virt_row := $exists($virt)
+              ? [{
+                  "field": "Кластер виртуализации",
+                  "value": $virt.title,
+                  "link": "/entities/" & $virt.__entity_id__ & "/card?id=" & $virt.__id__
+                }]
+              : [];
+            $network_rows := $exists($server.subnets)
+              ? $server.subnets[].(
+                  $net := $lookup($networks, $);
+                  {
+                    "field": "Сеть",
+                    "value": $net.title,
+                    "link": $exists($net) ? "/entities/" & $net.__entity_id__ & "/card?id=" & $net.__id__ : null
+                  }
+                )
+              : [];
+            $exists($server)
+              ? $rows
+                ~> $append($disk_rows)
+                ~> $append($location_rows)
+                ~> $append($virt_row)
+                ~> $append($tech_service_rows)
+                ~> $append($network_rows)
+              : []
+          )
+
+      server_location_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: ../widgets/templates/server_location.puml
+        origin:
+          servers: seaf.company.ds.ta.servers
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+          azs: seaf.company.ds.ta.dc_azs
+          regions: seaf.company.ds.ta.dc_regions
+        source: >
+          (
+            $is_present := function($val){ $val != null and $val != "" };
+            $dcs := dcs;
+            $offices := offices;
+            $server := $lookup(servers, $params.id);
+            $has_server := $exists($server.__id__);
+            $location_id := $has_server and $exists($server.location[0]) ? $server.location[0] : null;
+            $server_az := $has_server and $exists($server.availabilityzone[0]) ? $server.availabilityzone[0] : null;
+            $dc := $is_present($location_id) ? $lookup(dcs, $location_id) : {};
+            $office := $is_present($location_id) ? $lookup(offices, $location_id) : {};
+            $dc_az_from_location := $exists($dc.availabilityzone[0])
+              ? $dc.availabilityzone[0]
+              : (
+                  $exists($office.availabilityzone[0])
+                    ? $office.availabilityzone[0]
+                    : null
+                );
+            $az_id := $is_present($dc_az_from_location)
+              ? $dc_az_from_location
+              : (
+                  $is_present($server_az)
+                    ? $server_az
+                    : null
+                );
+            $az := $is_present($az_id) ? $lookup(azs, $az_id) : {};
+            $region_id := $is_present($office.region)
+              ? $office.region
+              : (
+                  $is_present($dc.region)
+                    ? $dc.region
+                    : (
+                        $is_present($az.region)
+                          ? $az.region
+                          : null
+                      )
+                );
+            $region := $is_present($region_id) ? $lookup(regions, $region_id) : {};
+            $has_region := $exists($region.title);
+            $has_az := $exists($az.title);
+            $has_dc := $exists($dc.title);
+            $has_office := $exists($office.title);
+            $no_az := $has_az = false;
+            $no_dc := $has_dc = false;
+            $no_office := $has_office = false;
+            $has_context := $has_region or $has_az or $has_dc or $has_office;
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              (
+                $has_region
+                  ? "node \"Регион: " &
+                    "[[/entities/" & $region.__entity_id__ & "/card?id=" & $region.__id__ & " " & $region.title & "]]\" as region_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_az
+                  ? "node \"Зона доступности: " &
+                    "[[/entities/" & $az.__entity_id__ & "/card?id=" & $az.__id__ & " " & $az.title & "]]\" as az_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_dc
+                  ? "node \"ЦОД: " &
+                    "[[/entities/" & $dc.__entity_id__ & "/card?id=" & $dc.__id__ & " " & $dc.title & "]]\" as dc_node #bbdefb\n"
+                  : ""
+              ) &
+              (
+                $has_office
+                  ? "node \"Локация: " &
+                    "[[/entities/" & $office.__entity_id__ & "/card?id=" & $office.__id__ & " " & $office.title & "]]\" as office_node #bbdefb\n"
+                  : ""
+              ) &
+              "rectangle \"Сервер: " & $server.title & "\" as srv #d1c4e9\n";
+            $diagram_core := (
+              (
+                $has_region and $has_az
+                  ? "region_node --> az_node\n"
+                  : ""
+              ) &
+              (
+                $has_region and $no_az and $has_dc
+                  ? "region_node --> dc_node\n"
+                  : ""
+              ) &
+              (
+                $has_region and $no_az and $no_dc and $has_office
+                  ? "region_node --> office_node\n"
+                  : ""
+              ) &
+              (
+                $has_az and $has_dc
+                  ? "az_node --> dc_node\n"
+                  : ""
+              ) &
+              (
+                $has_az and $no_dc and $has_office
+                  ? "az_node --> office_node\n"
+                  : ""
+              ) &
+              (
+                $has_dc
+                  ? "dc_node --> srv\n"
+                  : ""
+              ) &
+              (
+                $no_dc and $has_office
+                  ? "office_node --> srv\n"
+                  : ""
+              ) &
+              (
+                $no_dc and $no_office and $has_az
+                  ? "az_node --> srv\n"
+                  : ""
+              ) &
+              (
+                $no_dc and $no_office and $no_az and $has_region
+                  ? "region_node --> srv\n"
+                  : ""
+              ) &
+              ""
+            );
+            $diagram :=
+              $has_server and $has_context
+                ? ($base & $diagram_core & "@enduml")
+                : (
+                    "@startuml\n" &
+                    (
+                      $has_server
+                        ? "note \"Нет данных о расположении\" as no_location\n"
+                        : "note \"Сервер не найден\" as no_server\n"
+                    ) &
+                    "@enduml"
+                  );
+            {
+              "diagram": $diagram
+            }
+          )
+
+      server_network_topology:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: plantuml
+        template: ../widgets/templates/server_location.puml
+        origin:
+          servers: seaf.company.ds.ta.servers
+          networks: seaf.company.ds.ta.networks
+          segments: seaf.company.ds.ta.network_segments
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $is_present := function($val){ $val != null and $val != "" };
+            $sanitize := function($val){ $replace(($is_present($val) ? $val : "n_a"), /[^A-Za-z0-9_]/, "_") };
+            $networks := networks;
+            $segments := segments;
+            $dcs := dcs;
+            $offices := offices;
+            $server := $lookup(servers, $params.id);
+            $has_server := $exists($server.__id__);
+            $network_ids := $exists($server.subnets) ? $server.subnets : [];
+            $network_ids := $distinct($network_ids);
+            $resolved := $network_ids[].(
+              $net := $lookup($networks, $);
+              $exists($net.__id__)
+                ? (
+                    $segment_id := $exists($net.segment[0]) ? $net.segment[0] : null;
+                    $segment := $is_present($segment_id) ? $lookup($segments, $segment_id) : {};
+                    $dc_id := $exists($net.location[0])
+                      ? $net.location[0]
+                      : (
+                          $is_present($segment.location)
+                            ? $segment.location
+                            : null
+                        );
+                    $dc_obj := $is_present($dc_id)
+                      ? (
+                          $lookup($dcs, $dc_id)
+                            ? $lookup($dcs, $dc_id)
+                            : $lookup($offices, $dc_id)
+                        )
+                      : {};
+                    {
+                      "network": $net,
+                      "segment": $segment,
+                      "dc": $dc_obj,
+                      "net_node": "net_" & $sanitize($net.__id__),
+                      "segment_node": $exists($segment.__id__)
+                        ? "seg_" & $sanitize($segment.__id__)
+                        : null,
+                      "dc_node": $exists($dc_obj.__id__)
+                        ? "loc_" & $sanitize($dc_obj.__id__)
+                        : null
+                    }
+                  )
+                : null
+            )[$exists(network.__id__)];
+            $has_networks := $exists($resolved[0].network.__id__);
+            $base := "@startuml\n" &
+              "skinparam backgroundColor #ffffff\n" &
+              "skinparam defaultTextAlignment center\n" &
+              "skinparam shadowing false\n" &
+              "skinparam rectangle {\n" &
+              "  BackgroundColor #f2f4f7\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam node {\n" &
+              "  BackgroundColor #fdfdfd\n" &
+              "  BorderColor #4d6bf0\n" &
+              "  FontColor #111318\n" &
+              "}\n" &
+              "skinparam arrowColor #4d6bf0\n" &
+              "skinparam arrowFontColor #111318\n" &
+              "skinparam note {\n" &
+              "  BackgroundColor #fff8e1\n" &
+              "  BorderColor #f0a500\n" &
+              "  FontColor #382100\n" &
+              "}\n" &
+              "rectangle \"Сервер: " & $server.title & "\" as srv #d1c4e9\n";
+            $network_nodes := $resolved.(
+              "node \"Сеть: [[/entities/" & $.network.__entity_id__ & "/card?id=" & $.network.__id__ & " " & $.network.title & "]]" &
+              ($is_present($.network.ipnetwork) ? "\\n" & $.network.ipnetwork : "") &
+              "\" as " & $.net_node & " #c8e6c9\n"
+            ) ~> $distinct();
+            $segment_nodes := $resolved[$exists(segment_node)].(
+              "node \"Сегмент: [[/entities/" & $.segment.__entity_id__ & "/card?id=" & $.segment.__id__ & " " & $.segment.title & "]]\" as " & $.segment_node & " #ffecb3\n"
+            ) ~> $distinct();
+            $dc_nodes := $resolved[$exists(dc_node)].(
+              $label := $.dc.__entity_id__ = "seaf.company.ta.services.dc_offices" ? "Локация" : "ЦОД";
+              "node \"" & $label & ": [[/entities/" & $.dc.__entity_id__ & "/card?id=" & $.dc.__id__ & " " & $.dc.title & "]]\" as " & $.dc_node & " #bbdefb\n"
+            ) ~> $distinct();
+            $server_edges := $resolved.(
+              "srv --> " & $.net_node & "\n"
+            ) ~> $distinct();
+            $net_segment_edges := $resolved[$exists(segment_node)].(
+              $.net_node & " --> " & $.segment_node & "\n"
+            ) ~> $distinct();
+            $segment_dc_edges := $resolved[$exists(segment_node) and $exists(dc_node)].(
+              $.segment_node & " --> " & $.dc_node & "\n"
+            ) ~> $distinct();
+            $net_dc_edges := $resolved[$exists(dc_node) and ($segment_node = null)].(
+              $.net_node & " --> " & $.dc_node & "\n"
+            ) ~> $distinct();
+            $diagram_core :=
+              ($network_nodes ~> $join("")) &
+              ($segment_nodes ~> $join("")) &
+              ($dc_nodes ~> $join("")) &
+              ($server_edges ~> $join("")) &
+              ($net_segment_edges ~> $join("")) &
+              ($segment_dc_edges ~> $join("")) &
+              ($net_dc_edges ~> $join(""));
+            $diagram :=
+              $has_server and $has_networks
+                ? ($base & $diagram_core & "@enduml")
+                : (
+                    "@startuml\n" &
+                    (
+                      $has_server
+                        ? "note \"Нет данных о сетевых подключениях\" as no_network\n"
+                        : "note \"Сервер не найден\" as no_server\n"
+                    ) &
+                    "@enduml"
+                  );
+            {
+              "diagram": $diagram
+            }
+          )

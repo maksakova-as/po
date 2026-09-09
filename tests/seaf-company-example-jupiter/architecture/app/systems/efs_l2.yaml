@@ -1,0 +1,66 @@
+seaf.company.sys_components:
+  jupiter.sys_component.efs_bal:
+    title: Балансировщик L7 для АС ЕФС
+    realizes_system: jupiter.app_system.efs
+    type: Балансировщик
+    lifecycle_stage: Промышленная эксплуатация
+    description: Балансирование входящего трафика
+    scalability: Горизонтальная
+    stakeholders:
+      - name: Семенов Иван
+        role: Лидер сопровождения
+
+  jupiter.sys_component.efs_webapp:
+    title: ЕФС web приложение пользователя
+    description: Фронтальное приложение в браузере пользователя
+    realizes_system: jupiter.app_system.efs
+    type: Фронт (web-приложение)
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - name: Иванов Семен
+        role: Лидер разработки
+
+  jupiter.sys_component.efs_rm:
+    title: ЕФС Микросервис рабочее место сотрудника
+    description: Функционал рабочего места сотрудника компании
+    realizes_system: jupiter.app_system.efs
+    type: Серверное приложение
+    lifecycle_stage: Промышленная эксплуатация
+    scalability: Вертикальная и горизонтальная
+    stakeholders:
+      - name: Семенов Иван
+        role: Лидер разработки
+
+  jupiter.sys_component.efs_news:
+    title: ЕФС Микросервис Новости
+    realizes_system: jupiter.app_system.efs_news_editor
+    type: Серверное приложение
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - name: Семенов Иван
+        role: Лидер разработки
+    scalability: Горизонтальная
+
+  jupiter.sys_component.efs_db:
+    title: ЕФС база данных
+    realizes_system: jupiter.app_system.efs
+    type: База данных
+    lifecycle_stage: Промышленная эксплуатация
+    stakeholders:
+      - name: Петров Иван
+        department: Управление сопровождения ИТ
+        role: Лидер сопровождения
+    scalability: Вертикальная
+    uses_technologies:
+      - technology: jupiter.software.dbms_pangolin_standard
+
+
+
+
+
+
+
+
+
+
+

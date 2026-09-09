@@ -1,0 +1,64 @@
+entities:
+  seaf.company.cybersec.systems:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          categories:
+            title: Отнесена к категориям
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: categories
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 330
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      categories:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: obj_id
+            text: Идентификатор
+            link: path_to_object
+          - value: obj_title
+            text: Название
+            link: path_to_object
+
+        origin:
+          objects: seaf.company.ds.cybersec.systems
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.categories;
+          $exists($data2present) and  $data2present != null
+          ? $map($data2present, function($val, $i) {(
+              $t := $seaf_fn_get_object_info($val, $all_objects);
+              {
+                "number": $i+1,
+                "obj_id": $t.__id__,
+                "obj_title": $t.title,
+                "path_to_object": $t.link_to_card
+              }
+            )})[];
+          )

@@ -1,0 +1,111 @@
+entities:
+  seaf.company.ta.docs.schema_r41_menu:
+    menu: >
+      (
+        $configs := $."seaf.configs";
+        $ta_config := (
+          $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $cfg1 := $configs."seaf.company.ta";
+          $cfg2 := $configs.seaf.company.ta;
+          $cfg3 := $cfg_root."seaf.company.ta";
+          $cfg4 := $cfg_root.seaf.company.ta;
+          $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+        );
+        $profiles := $ta_config.data_sources.profiles ? $ta_config.data_sources.profiles : {};
+        $active_profile := $ta_config.data_sources.profile ? $ta_config.data_sources.profile : null;
+        $profile_cfg := (
+          $active_profile != null and $exists($lookup($profiles, $active_profile))
+            ? $lookup($profiles, $active_profile)
+            : {}
+        );
+        $enabled := $profile_cfg.enabled
+          ? $profile_cfg.enabled
+          : ($ta_config.data_sources.enabled ? $ta_config.data_sources.enabled : []);
+        $doc_exists := $exists($lookup($."docs", "seaf.ta.docs.schema_r41"));
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        ("seaf2" in $enabled) and $doc_exists
+          ? [
+              {
+                "link": "/docs/seaf.ta.docs.schema_r41",
+                "location": $seaf_fn_generate_menu_item("Схема Р41", $root_menu),
+                "order": $root_menu_order + 9990
+              }
+            ]
+          : []
+      )
+
+  seaf.company.ta.docs.schema_r41_seaf1_menu:
+    menu: >
+      (
+        $configs := $."seaf.configs";
+        $ta_config := (
+          $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $cfg1 := $configs."seaf.company.ta";
+          $cfg2 := $configs.seaf.company.ta;
+          $cfg3 := $cfg_root."seaf.company.ta";
+          $cfg4 := $cfg_root.seaf.company.ta;
+          $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+        );
+        $profiles := $ta_config.data_sources.profiles ? $ta_config.data_sources.profiles : {};
+        $active_profile := $ta_config.data_sources.profile ? $ta_config.data_sources.profile : null;
+        $profile_cfg := (
+          $active_profile != null and $exists($lookup($profiles, $active_profile))
+            ? $lookup($profiles, $active_profile)
+            : {}
+        );
+        $enabled := $profile_cfg.enabled
+          ? $profile_cfg.enabled
+          : ($ta_config.data_sources.enabled ? $ta_config.data_sources.enabled : []);
+        $doc_exists := $exists($lookup($."docs", "seaf.ta.docs.schema_r41_seaf1"));
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        ("seaf1" in $enabled) and $doc_exists
+          ? [
+              {
+                "link": "/docs/seaf.ta.docs.schema_r41_seaf1",
+                "location": $seaf_fn_generate_menu_item("Схема Р41 SEAF1", $root_menu),
+                "order": $root_menu_order + 10000
+              }
+            ]
+          : []
+      )
+
+  seaf.company.ta.docs.schema_r41_reverse_menu:
+    menu: >
+      (
+        $configs := $."seaf.configs";
+        $ta_config := (
+          $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $cfg1 := $configs."seaf.company.ta";
+          $cfg2 := $configs.seaf.company.ta;
+          $cfg3 := $cfg_root."seaf.company.ta";
+          $cfg4 := $cfg_root.seaf.company.ta;
+          $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+        );
+        $profiles := $ta_config.data_sources.profiles ? $ta_config.data_sources.profiles : {};
+        $active_profile := $ta_config.data_sources.profile ? $ta_config.data_sources.profile : null;
+        $profile_cfg := (
+          $active_profile != null and $exists($lookup($profiles, $active_profile))
+            ? $lookup($profiles, $active_profile)
+            : {}
+        );
+        $enabled := $profile_cfg.enabled
+          ? $profile_cfg.enabled
+          : ($ta_config.data_sources.enabled ? $ta_config.data_sources.enabled : []);
+        $doc_exists := $exists($lookup($."docs", "seaf.ta.docs.schema_r41_reverse"));
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        ("reverse" in $enabled) and $doc_exists
+          ? [
+              {
+                "link": "/docs/seaf.ta.docs.schema_r41_reverse",
+                "location": $seaf_fn_generate_menu_item("Схема Р41 Реверс", $root_menu),
+                "order": $root_menu_order + 10010
+              }
+            ]
+          : []
+      )

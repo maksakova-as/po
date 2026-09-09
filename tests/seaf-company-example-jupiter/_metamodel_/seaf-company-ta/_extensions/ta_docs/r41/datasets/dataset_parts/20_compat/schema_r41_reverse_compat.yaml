@@ -1,0 +1,158 @@
+# Назначение: Источник R41 из reverse с нормализацией в формат, ожидаемый seaf2drawio.
+# Используется: docs, internal_docs.
+datasets:
+  seaf.company.ds.ta.schema_r41_reverse_compat:
+    description: >
+      Источник данных для R41 Reverse с нормализацией структуры в формат, ожидаемый плагином seaf2drawio.
+    origin:
+      reverse_src: seaf.company.ds.ta.schema_r41_reverse
+    source: >
+      (
+        $src := reverse_src ? reverse_src : {};
+        $as_object := function($value){
+          $type($value) = "object" ? $value : {}
+        };
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : (($exists($value) and $value != null) ? [$value] : [])
+        };
+        $sanitize_nulls := function($value){
+          $value = null
+            ? ""
+            : (
+                $type($value) = "object"
+                  ? $merge(
+                      $value.$spread().(
+                        $k := $keys()[0];
+                        { ($k): $sanitize_nulls($.*[0]) }
+                      )
+                    )
+                  : (
+                      $type($value) = "array"
+                        ? $map($value, function($item){ $sanitize_nulls($item) })
+                        : $value
+                    )
+              )
+        };
+        $normalize_collection := function($collection){
+          (
+            $col := $as_object($collection);
+            $merge(
+              $col.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                {
+                  ($id): (
+                    $type($obj) = "object"
+                      ? $merge([
+                          $obj,
+                          {
+                            "isp": $to_array($obj.isp),
+                            "network_links": $to_array($obj.network_links),
+                            "network_connection": $to_array($obj.network_connection)
+                          }
+                        ])
+                      : {}
+                  )
+                }
+              )
+            )
+          )
+        };
+        $required := [
+          "seaf.ta.services.dc_region",
+          "seaf.ta.services.dc_az",
+          "seaf.ta.services.dc",
+          "seaf.ta.services.office",
+          "seaf.ta.services.network_segment",
+          "seaf.ta.services.network",
+          "seaf.ta.services.network_links",
+          "seaf.ta.services.logical_link",
+          "seaf.ta.services.kb",
+          "seaf.ta.components.hw_storage",
+          "seaf.ta.components.server",
+          "seaf.ta.components.user_device",
+          "seaf.ta.components.network",
+          "seaf.ta.services.cluster_virtualization",
+          "seaf.ta.services.compute_service",
+          "seaf.ta.services.storage",
+          "seaf.ta.services.backup",
+          "seaf.ta.services.monitoring",
+          "seaf.ta.services.k8s",
+          "seaf.ta.services.software"
+        ];
+        $result := $merge(
+          $required@$key.{
+            ($key): ($exists($lookup($src, $key)) ? $normalize_collection($lookup($src, $key)) : {})
+          }
+        );
+        $network_ids := $keys($lookup($result, "seaf.ta.services.network"));
+        $link_ids := $keys($lookup($result, "seaf.ta.services.network_links"));
+        $segment_ids := $keys($lookup($result, "seaf.ta.services.network_segment"));
+        $sanitize_components := function($collection){
+          (
+            $col := $as_object($collection);
+            $merge(
+              $col.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                {
+                  ($id): (
+                    $type($obj) = "object"
+                      ? $merge([
+                          $obj,
+                          {
+                            "isp": $filter($to_array($obj.isp), function($v){ $v in $link_ids }),
+                            "network_links": $filter($to_array($obj.network_links), function($v){ $v in $link_ids }),
+                            "network_connection": $filter($to_array($obj.network_connection), function($v){ $v in $network_ids }),
+                            "segment": $filter($to_array($obj.segment), function($v){ $v in $segment_ids })
+                          }
+                        ])
+                      : {}
+                  )
+                }
+              )
+            )
+          )
+        };
+        $result := $merge([
+          $result,
+          {
+            "seaf.ta.components.network": $sanitize_components($lookup($result, "seaf.ta.components.network")),
+            "seaf.ta.components.server": $sanitize_components($lookup($result, "seaf.ta.components.server")),
+            "seaf.ta.components.hw_storage": $sanitize_components($lookup($result, "seaf.ta.components.hw_storage")),
+            "seaf.ta.components.user_device": $sanitize_components($lookup($result, "seaf.ta.components.user_device"))
+          }
+        ]);
+        $result := $sanitize_nulls($result);
+        $singular_to_plural_map := {
+          "seaf.ta.services.dc_region": "seaf.company.ta.services.dc_regions",
+          "seaf.ta.services.dc_az": "seaf.company.ta.services.dc_azs",
+          "seaf.ta.services.dc": "seaf.company.ta.services.dcs",
+          "seaf.ta.services.office": "seaf.company.ta.services.dc_offices",
+          "seaf.ta.services.network_segment": "seaf.company.ta.services.network_segments",
+          "seaf.ta.services.network": "seaf.company.ta.services.networks",
+          "seaf.ta.services.network_links": "seaf.company.ta.services.network_links",
+          "seaf.ta.services.logical_link": "seaf.company.ta.services.logical_links",
+          "seaf.ta.services.kb": "seaf.company.ta.services.kbs",
+          "seaf.ta.components.hw_storage": "seaf.company.ta.components.hw_storages",
+          "seaf.ta.components.server": "seaf.company.ta.components.servers",
+          "seaf.ta.components.user_device": "seaf.company.ta.components.user_devices",
+          "seaf.ta.components.network": "seaf.company.ta.components.networks",
+          "seaf.ta.services.cluster_virtualization": "seaf.company.ta.services.cluster_virtualizations",
+          "seaf.ta.services.compute_service": "seaf.company.ta.services.compute_services",
+          "seaf.ta.services.storage": "seaf.company.ta.services.storages",
+          "seaf.ta.services.backup": "seaf.company.ta.services.backups",
+          "seaf.ta.services.monitoring": "seaf.company.ta.services.monitorings",
+          "seaf.ta.services.k8s": "seaf.company.ta.services.k8s",
+          "seaf.ta.services.software": "seaf.company.ta.services.softwares"
+        };
+        $aliases := $merge(
+          $keys($singular_to_plural_map)@$singular.(
+            $plural := $lookup($singular_to_plural_map, $singular);
+            { ($plural): ($exists($lookup($result, $singular)) ? $normalize_collection($lookup($result, $singular)) : {}) }
+          )
+        );
+        $merge([$result, $aliases])
+      )

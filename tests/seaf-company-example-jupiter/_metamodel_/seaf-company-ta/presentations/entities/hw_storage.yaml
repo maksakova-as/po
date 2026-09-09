@@ -1,0 +1,98 @@
+entities:
+  seaf.company.ta.components.hw_storages:
+    presentations:
+      list:
+        title: Аппаратные СХД
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: vendor
+            text: Производитель
+          - value: volume
+            text: Объём, ТБ
+          - value: disk_type
+            text: Тип дисков
+          - value: protocols
+            text: Протоколы
+          - value: locations
+            text: Локации
+            link: location_link
+          - value: id
+            text: ID
+        origin:
+          hw: seaf.company.ds.ta.hw_storages
+          dcs: seaf.company.ds.ta.dcs
+          offices: seaf.company.ds.ta.dc_offices
+        source: >
+          (
+            $hw := hw;
+            $dcs := dcs;
+            $offices := offices;
+            $resolve_location := function($id){
+              $lookup($dcs, $id) ? $lookup($dcs, $id) : $lookup($offices, $id)
+            };
+            $hw.*@$item.(
+              $location_objects := $exists($item.location)
+                ? $item.location[].($resolve_location($))
+                : [];
+              {
+                "id": $item.__id__,
+                "link": "/entities/" & $item.__entity_id__ & "/card?id=" & $item.__id__,
+                "title": $item.title,
+                "vendor": $item.vendor,
+                "volume": $item.volume,
+                "disk_type": $item.disk_type,
+                "protocols": $item.protocols,
+                "locations": $location_objects.title ~> $join(", "),
+                "location_link": $exists($location_objects[0])
+                  ? "/entities/" & $location_objects[0].__entity_id__ & "/card?id=" & $location_objects[0].__id__
+                  : null
+              }
+            )[];
+          )
+
+      card:
+        title: Карточка аппаратной СХД
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

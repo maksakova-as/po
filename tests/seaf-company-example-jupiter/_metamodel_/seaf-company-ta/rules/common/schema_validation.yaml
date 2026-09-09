@@ -1,0 +1,118 @@
+# Валидирует все сущности озера данных по их JSON Schema из метамодели.
+rules:
+  validators:
+    seaf.validation.ta.common.schema_validation:
+      uid: SEAF-TA-COMMON-SCHEMA-VALIDATION
+      title: Проверка данных по JSON Schema сущностей
+      description: |
+        Валидирует все сущности озера данных по их JSON Schema из метамодели.
+      correction: |
+        Исправьте данные в соответствии с описанием схемы сущности.
+      source: >
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.common.schema_validation";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              $fn_flatten := function($v) {(
+                $type($v) = "array"
+                  ? $reduce($v, function($acc, $item){$append($acc, $item)}, [])
+                  : $v
+              )};
+
+              $meta := $exists($.entities) ? $.entities
+                : ($exists($.metamodel.entities) ? $.metamodel.entities
+                  : ($exists($.metamodel) ? $.metamodel : {}));
+              /* Исключаем реверс-сущности из-за проблем со строгим режимом валидатора */
+              $entity_ids := $filter($keys($meta), function($k){ 
+                $exists($lookup($meta, $k).schema) and $not($contains($k, ".reverse."))
+              });
+              $global_defs := $."$defs";
+              $base_defs := $lookup($meta, "seaf.company.ta.services.entity").schema."$defs";
+              $seaf1_base_defs := $lookup($meta, "seaf.ta.services.entity").schema."$defs";
+              $seaf1_base_fallback := {
+                "seaf.ta.services.base.entity": {
+                  "type": "object",
+                  "properties": {
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "external_id": { "type": "string" }
+                  }
+                }
+              };
+              $common_defs := $lookup($meta, "seaf.def.attributes").schema."$defs";
+              $data_type_defs := $lookup($meta, "seaf.def.data_types").schema."$defs";
+              $company_defs := $merge([
+                $lookup($meta, "seaf.company.def.systems").schema."$defs"
+                  ? $lookup($meta, "seaf.company.def.systems").schema."$defs" : {},
+                $lookup($meta, "seaf.company.def.ai").schema."$defs"
+                  ? $lookup($meta, "seaf.company.def.ai").schema."$defs" : {}
+              ]);
+              $app_defs_raw := $lookup($meta, "seaf.company.app.systems").schema;
+              $app_defs := $exists($app_defs_raw) ? $app_defs_raw."$defs" : {};
+              $cybersec_defs_raw := $lookup($meta, "seaf.company.cybersec.systems").schema;
+              $cybersec_defs := $exists($cybersec_defs_raw) ? $cybersec_defs_raw."$defs" : {};
+              
+              $mk_rels := function($schema, $defs) {(
+                $refs := $distinct($match($string($schema) & $string($defs), /#\/\$rels\/[A-Za-z0-9\._-]+/).match);
+                $merge($refs.(
+                  $p := $substringAfter($, "#/$rels/");
+                  { $p: { "type": "string" } }
+                ))
+              )};
+              $errors := $entity_ids.(
+                $entity_id := $;
+                $meta_entity := $lookup($meta, $entity_id);
+                $schema := $meta_entity.schema;
+                $objects := $lookup($$, $entity_id);
+                $exists($schema) and $exists($objects) and $type($objects) = "object"
+                  ? (
+                      $entity_defs := $schema."$defs";
+                      $defs := $merge([
+                        $global_defs ? $global_defs : {},
+                        $base_defs ? $base_defs : {},
+                        $seaf1_base_defs ? $seaf1_base_defs : $seaf1_base_fallback,
+                        $common_defs ? $common_defs : {},
+                        $data_type_defs ? $data_type_defs : {},
+                        $company_defs ? $company_defs : {},
+                        $app_defs ? $app_defs : {},
+                        $cybersec_defs ? $cybersec_defs : {},
+                        $entity_defs ? $entity_defs : {}
+                      ]);
+                      $rels := $mk_rels($schema, $defs);
+                      $wrapper_schema := {
+                        "type": "object",
+                        "properties": {
+                          $entity_id: $schema
+                        },
+                        "additionalProperties": true,
+                        "$defs": $defs ? $defs : {},
+                        "$rels": $rels ? $rels : {}
+                      };
+                      $type($validate_json_schema_v1) = "function" 
+                        ? $validate_json_schema_v1($wrapper_schema, { $entity_id: $objects })
+                        : []
+                    )
+                  : []
+              ) ~> $fn_flatten;
+              $errors := $merge($errors.{$.uid: $});
+              $errors := $type($errors) = "object" ? $errors.* : $errors;
+
+              $errors
+            )
+            : []
+        )

@@ -1,0 +1,57 @@
+entities:
+  seaf.company.da.aggregats:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        # Добавляем собственный виджет
+        widgets:
+          tree:
+            title: Дерево объектов
+            # Расположение вверху
+            align: ">"
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: tree
+            # Порядок расположения
+            order: 0
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      tree:
+        type: plantuml
+        template: ../../../_shared/templates/tree.puml
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+          objects_links: seaf.ds.objects_links
+        source: >
+          (
+          $id := $params.id;
+          $objects := objects;
+          $objects_links := objects_links;
+          
+          $tree := $seaf_fn_generate_relative_object_tree($id, $objects, $objects_links, "is_part_of");
+          /* Дополняем записи данными для wbs диаграммы */
+          $tree := $map($tree, function($val){(
+              $merge([$val, 
+                  { 
+                      "style": ($val.object_id=$id ? "[#FFBBCC]" : ""),
+                      "stars": [1..$val.level].$append(["*"], $a)~>$join()
+                  }
+              ]);
+          )});
+          /* отдаем коллекцию на отрисовку */
+          {
+              "objects": $tree
+          }
+          )

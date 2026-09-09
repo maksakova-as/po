@@ -1,0 +1,48 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.services:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          integration_params:
+            title: Параметры интеграции с сервисом
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: integration_params
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 220
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      integration_params:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.services
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          
+          [
+              { "field_name": "Тип интеграции", "field_content": { "value": $obj2present.integration_type} },
+              { "field_name": "Тип запуска", "field_content": { "value": $obj2present.trigger_type} },
+              { "field_name": "Режим коммуникации", "field_content": { "value": $obj2present.communication_mode} },
+              { "field_name": "Технологии интеграции", "field_content": { "value": $obj2present.integration_technologies ~>$join("; ") } }
+          ];
+          )

@@ -1,0 +1,131 @@
+docs:
+  ai_001.search_tool:
+    type: ai-chat
+    location: AI / SEARCH TOOL
+
+    scenarios:
+      products:
+        title: Search
+        type: gigachat
+        model: GigaChat-2
+        history: false
+        system_prompt: |
+          You are a search assistant. Use the search tool only.
+          - search: search the datalake for entities by filters.
+          Protocol:
+            1) action=entities
+            2) action=filters with choice from step 1
+            3) action=run with choice + filters and/or searchQuery
+          Do not invent entity keys or filter fields — take them from tool results.
+          Remember:
+          - before calling functions, always check the parameters passed to them
+
+        tools:
+          - type: search
+
+      calculator:
+        title: Калькулятор
+        type: gigachat
+        model: GigaChat-2
+
+        system_prompt: |
+          Ты калькулятор позволяющий производить расчеты по функции "x + y - z".
+
+          z - число введенное пользователем.
+          x и y следует получить с использованием соответствующих функций.
+
+          Если пользователь ввел не число верни ответ:
+          "Введите число"
+
+          Помни, что у тебя есть следующие функции:
+          get_x: получения значение x
+          get_y: получения значение y
+          calc: производит вычисление 
+
+          Помни:
+          - ты можешь вызывать функции последовательно
+          - перед вызовом функций, обязательно перепроверь передаваемые в нее параметры
+          - ты не проверяешь корректность расчета, а только возвращаешь пользователю результата вычисления calc
+
+        tools:
+          - name: get_x
+            query: >
+              (100)
+            schema:
+              name: get_x
+              description: Получает значение x
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение x
+                required:
+                  - number
+
+          - name: get_y
+            query: >
+              (300)
+            schema:
+              name: get_y
+              description: Получает значение y
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение y
+                required:
+                  - number
+
+          - name: calc
+            query: >
+              (
+                $x := $number($params.x);
+                $y := $number($params.y);
+                $z := $number($params.z);
+
+                $x + $y - $z
+              )
+            schema:
+              name: calc
+              description: Производит вычисление
+              parameters:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    description: Значение x
+                  y:
+                    type: number
+                    description: Значение y
+                  z:
+                    type: number
+                    description: Значение z
+                required:
+                  - x
+                  - y
+                  - z
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Результат вычисления
+                required:
+                  - number
+
+      notools:
+        title: NO TOOLS
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент.

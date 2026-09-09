@@ -1,0 +1,82 @@
+entities:
+  kadzo.v2023.endpoints:
+    title: Точка взаимодействия
+    description: Дополнительные характеристики интеграций, агрегированные в понятие - точки взаимодействия
+    schema:
+      type: object
+      $defs:
+        kadzo.v2023.endpoints.tech:
+          title: Технологические атрибуты точки взаимодействия
+          type: object
+          properties:
+            technology:
+              title: Технология интеграции
+              type: string
+              enum:
+                - API
+                - Очереди
+                - Файлы
+                - Базы данных
+                - Почта
+                - Ручное
+                - RPA
+            technical-use:
+              title: Механизм использования
+              type: string
+              enum:
+                - Pull
+                - Push
+            protected:
+              title: Средства защиты точки взаимодействия
+              type: array
+              items:
+                type: string
+          required:
+            - technical-use
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          $ref: "#/$defs/kadzo.v2023.endpoints.tech"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            uri:
+              title: URI endpoint
+              type: string
+            gates:
+              type: array
+              title: АС / тех сервисы, обеспечивающие транспорт точки взаимодействия
+              items:
+                oneOf:
+                  - $ref: "#/$rels/kadzo.v2023.systems.systems"
+                  - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services"
+            owners:
+              title: АС, обеспечивающие функционирование точки взаимодействия
+              type: array
+              minItems: 1
+              items:
+                $ref: "#/$rels/kadzo.v2023.systems.systems"
+            status:
+              title: Статус
+              enum:
+                - Планируется
+                - Разрабатывается
+                - Модифицируется
+                - Используется
+                - Выводится из эксплуатации / Удаляется
+                - В архиве / Удалено
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - uri
+            - status
+            - technology
+    objects:
+      endpoint:
+        route: "/"
+        title: Точка взаимодействия

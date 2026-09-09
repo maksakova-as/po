@@ -1,0 +1,69 @@
+entities:
+  seaf.company.services:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          supporting_services:
+            title: Сервисы, обеспечивающие работу данного сервиса
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: supporting_services
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 430
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      supporting_services:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: service_id
+            text: Идентификатор
+            link: service_link
+          - value: service_title
+            text: Название
+            link: service_link
+          - value: type
+            text:  Тип
+          - value: description
+            text:  Описание
+
+        origin:
+          objects: seaf.company.ds.services
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $lookup($objects, $id);
+          
+          $map($obj2present.supporting_services, function($val, $i) {(
+              $srv := $lookup($objects, $val.service);
+              {
+                  "number": $i+1,
+                  "service_id": $srv.__id__,
+                  "service_title": $srv.title,
+                  "service_link": $srv.__link_to_card__,
+                  "type": $val.type,
+                  "description": $val.description
+              }
+          )})[];
+          )

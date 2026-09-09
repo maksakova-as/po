@@ -1,0 +1,11 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - header.yaml
+  - summary.yaml
+  - comments.yaml
+  - metrics.yaml
+  - services.yaml
+  - products.yaml
+  - channels.yaml
+  - tree.yaml

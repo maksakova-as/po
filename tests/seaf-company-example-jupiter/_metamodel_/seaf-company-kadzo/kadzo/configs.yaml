@@ -1,0 +1,31 @@
+# Дополняем схему сущности
+entities:
+  seaf.configs:
+    schema:
+      patternProperties:
+
+        "^(seaf->kadzo)$":
+          title: Настройки модуля конвертации SEAF->КАДЗО
+          description: |
+            В данной секции задаются параметры, используемые в алгоритмах конвертации данных из формата SEAF в формат КАДЗО
+          type: object
+          additionalProperties: false
+
+          properties:
+            groups:
+              title: Группы КАДЗО
+              description: |
+                Параметры конвертации сущности "Группы"
+              type: object
+              additionalProperties: false
+
+              properties:
+                root_category:
+                  title: ID корневой категории
+                  description: >
+                    Задайте идентификатор корневой категории "Группы систем". Все дерево дочерних категорий
+                    (исключая корневую) будет сконвертировано в справочник "Группы" КАДЗО
+                  $ref: "#/$rels/seaf.company.categories.category"
+
+
+

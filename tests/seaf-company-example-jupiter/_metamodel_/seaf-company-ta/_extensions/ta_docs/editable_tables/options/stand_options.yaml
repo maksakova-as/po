@@ -1,0 +1,16 @@
+datasets:
+  seaf.company.ds.ta.stand_options:
+    description: Список стендов для редактируемых таблиц
+    origin:
+      stands: seaf.company.ds.ta.stands
+    source: >
+      (
+        $stands := $exists(stands) ? stands : {};
+        $map($keys($stands), function($stand_id){(
+          $stand := $lookup($stands, $stand_id);
+          {
+            "value": $stand_id,
+            "text": $stand.title ? $stand.title : $stand_id
+          }
+        )})
+      )

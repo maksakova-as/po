@@ -1,0 +1,110 @@
+datasets:
+  seaf.company.ds.app.diagrams.asis.systems_arr:
+    description: |
+      Датасет формирует массив систем для отображения на диаграммамах прикладной архитектуры
+
+    origin:
+      systems: seaf.company.ds.systems
+      all_objects: seaf.ds.objects
+      categories: seaf.company.ds.categories
+
+    source: >
+      (
+      $systems := systems;
+      $all_objects := all_objects;
+      $categories := categories;
+      
+      /* Основной алгоритм*/
+      $result := (
+          $each($systems, function ($val, $key) {(
+              /* готовим данные */
+              $functions := (
+                  $rf := $val.realizes_functions;
+                  $exists($rf) and $rf != null
+                  ? $map($rf, function($fval, $i) {(
+                      $f := $exists($fval."function") ? $seaf_fn_get_object_info($fval."function", $all_objects);
+                      {
+                        "number": $i+1,
+                        "title": $f.title,
+                        "target_status": $fval.target_status,
+                        "lifecycle_stage": $exists($fval.lifecycle_stage) ? $fval.lifecycle_stage : $val.lifecycle_stage
+                      }
+                  )})[];
+              );
+              $categories_arr := (
+                  $ct := $val.categories;
+                  $exists($ct) and $ct != null
+                  ? $map($ct, function($ctval, $i) {(
+                      $co := $categories.$lookup($ctval);
+                      {
+                        "category": $co.__id__,
+                        "title": $co.title,
+                        "root_category": $co.root_category
+                      }
+                  )})[];
+              );
+              /* формируем запись*/
+              {
+                "__id__": $key,
+                "__link_to_card__": $val.__link_to_card__,
+                "title": $val.title,
+                "class": $val.class,
+                "location": $val.location,
+                "lifecycle_stage": $val.lifecycle_stage,
+                "criticality_level": $val.criticality_level,
+                "functions": $functions,
+                "categories": $categories_arr
+              }
+          )});
+      );
+      $result
+      )
+      
+
+  seaf.company.ds.app.diagrams.asis.integrations_arr:
+    description: |
+      Датасет формирует массив интеграций для отображения на диаграммамах прикладной архитектуры
+
+    origin:
+      integrations: seaf.company.ds.systems.integrations
+      all_objects: seaf.ds.objects
+
+    source: >
+      (
+      $integrations := integrations;
+      $all_objects := all_objects;
+      
+      $result := (
+          $map($integrations.*, function ($val, $i) {(
+              /* готовим данные */
+              $supporting_services := [(
+                  $ss := $val.supporting_services;
+                  $exists($ss) and $ss != null
+                  ? $map($ss, function($ssval, $i) {(
+                      $srv := $lookup($all_objects, $ssval.service);
+                      {
+                          "number": $i+1,
+                          "service_id": $srv.__id__,
+                          "service_title": $srv.title,
+                          "service_link": $srv.__link_to_card__,
+                          "type": $val.type
+                      }
+                  )})[];
+              )];
+              /* формируем запись*/
+              {
+                "__id__": $val.__id__,
+                "__link_to_card__": $val.__link_to_card__,
+                "title": $val.title,
+                "lifecycle_stage": $val.lifecycle_stage,
+                "system1": $val.system1,
+                "system2": $val.system2,
+                "service": $val.service,
+                "direction": "--#",
+                "code": "И." & ($i+1),
+                "supporting_services": $supporting_services
+              }
+          )});
+      );
+      $result
+      )

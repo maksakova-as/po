@@ -1,0 +1,65 @@
+entities:
+  seaf.company.ba.processes:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          uses_data:
+            title: Использует данные
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: uses_data
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 30
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      uses_data:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: linked_id
+            text: Идентификатор
+            link: path_to_object
+          - value: linked_title
+            text: Название
+            link: path_to_object
+          - value: usage_mode
+            text: Режим использования
+
+        origin:
+          objects: seaf.company.ds.ba.processes
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $lookup(objects, $params.id);
+          $map($obj2present.uses_data, function ($val, $i) {(
+              $bt := $seaf_fn_get_object_info($val.business_term, $all_objects);
+              {
+                  "number": $i+1,
+                  "linked_id": $val.business_term,
+                  "linked_title": $bt.title,
+                  "path_to_object": $bt.link_to_card,
+                  "usage_mode": $val.usage_mode
+              }
+          )})[];
+          )

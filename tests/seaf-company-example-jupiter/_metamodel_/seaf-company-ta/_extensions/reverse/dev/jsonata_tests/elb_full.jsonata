@@ -1,0 +1,81 @@
+(
+  $normalize := function($text){
+    (
+      $str := $type($text) = "string" ? $lowercase($text) : "";
+      $clean := $replace($str, "[^a-z0-9]+", ".");
+      $replace($clean, "^(\\.)|(\\.)$", "")
+    )
+  };
+  $subnet_ref := function($subnet_id){
+    (
+      $norm := $normalize($subnet_id);
+      $norm != "" ? "reverse.network." & $norm : null
+    )
+  };
+  $dc_ref := function($dc){
+    (
+      $norm := $normalize($dc);
+      $norm != "" ? "reverse.dc." & $norm : null
+    )
+  };
+  $dc_az_ref := function($az){
+    (
+      $val := $type($az) = "string" ? $trim($az) : "";
+      $val != "" ? "reverse.dc_az." & $val : null
+    )
+  };
+  $elbs := $."seaf.ta.reverse.cloud_ru.advanced.elbs".$spread().{
+    "key": $keys()[0],
+    "value": $.*[0]
+  };
+  $elbs.(
+    $record := value;
+    $source_key := key;
+    $raw_id := $lookup($record, "id");
+    $id_part := $raw_id != null and $raw_id != "" ? $raw_id : $source_key;
+    $component_id := "reverse.comp.elb." & $normalize($id_part);
+    $tenant := $lookup($record, "tenant");
+    $dc := $lookup($record, "DC");
+    $dc_value := $dc_ref($dc);
+    $subnet_connection := $subnet_ref($lookup($record, "subnet_id"));
+    $listener_names := $exists($lookup($record, "listeners")) ? $lookup($record, "listeners").name : [];
+    $pool_names := $exists($lookup($record, "pools")) ? $lookup($record, "pools").name : [];
+    $az_candidates := [
+      $lookup($record, "availability_zone"),
+      $lookup($record, "az")
+    ];
+    $az_refs := $az_candidates.(
+      $dc_az_ref($)
+    )[$ != null] ~> $distinct;
+    $description_parts := [
+      $lookup($record, "description"),
+      $lookup($record, "address") != null and $lookup($record, "address") != "" ? "Internal IP: " & $lookup($record, "address") : "",
+      $lookup($record, "operating_status") != null and $lookup($record, "operating_status") != "" ? "Operating Status: " & $lookup($record, "operating_status") : "",
+      $lookup($record, "provisioning_status") != null and $lookup($record, "provisioning_status") != "" ? "Provisioning Status: " & $lookup($record, "provisioning_status") : "",
+      $count($listener_names) > 0 ? "Listeners: " & $join($listener_names, ", ") : "",
+      $count($pool_names) > 0 ? "Pools: " & $join($pool_names, ", ") : "",
+      $lookup($record, "tenant") != null and $lookup($record, "tenant") != "" ? "Tenant: " & $lookup($record, "tenant") : "",
+      $dc_value != null ? "DC: " & $dc_value : ($dc != null and $dc != "" ? "DC: " & $dc : "")
+    ][ $ != "" ];
+    $description := $description_parts != [] ? $join($description_parts, "\n") : "";
+    {
+      ($component_id): {
+        "__id__": $component_id,
+        "__entity_id__": "seaf.company.ta.services.compute_services",
+        "__entity_title__": "Compute Service (reverse import)",
+        "__company_id__": $tenant,
+        "title": $lookup($record, "name"),
+        "description": $description,
+        "external_id": $lookup($record, "id"),
+        "service_type": "Cloud Load Balancer",
+        "availabilityzone": $az_refs,
+        "network_connection": $subnet_connection != null ? [$subnet_connection] : [],
+        "location": $dc_value != null ? [$dc_value] : [],
+        "address": $lookup($record, "address"),
+        "source_key": $source_key,
+        "resource_id": $lookup($record, "id"),
+        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.elbs"
+      }
+    }
+  )[] ~> $merge()
+)

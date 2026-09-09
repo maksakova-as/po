@@ -1,0 +1,18 @@
+docs:
+  obj_stat:
+    title: Статистика по объектам
+    location: /SEAF/Инструменты/MM Viewer/Статистика по объектам
+    order: 94000
+    type: markdown
+    template: templates/obj_stat.md
+
+    origin:
+      stat: seaf.toolkit.ds.objects_count
+    source: >
+      (                    
+      $stat := stat;
+      /*  Формируем объект для визуализации */
+      {
+          "stat": $stat
+      }
+      )

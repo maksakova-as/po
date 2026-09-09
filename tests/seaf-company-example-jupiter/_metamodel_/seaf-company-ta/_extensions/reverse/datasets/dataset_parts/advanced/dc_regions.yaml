@@ -1,0 +1,40 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.dc_regions` (dc regions) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.dc_regions:
+    description: |
+      Collects unique availability zones from the reverse servers list, converts them into region identifiers (e.g. `ru-moscow-1a` -> `ru-moscow-1`) and exposes them as `seaf.company.ta.services.dc_regions`.
+    source: |
+      (
+        $region_from_az := function($az){
+          (
+            $str := $type($az) = "string" ? $trim($az) : "";
+            $len := $length($str);
+            $len <= 0
+              ? ""
+              : (
+                  $last := $substring($str, $len-1, 1);
+                  $match($last, /[A-Za-z]/) ? $substring($str, 0, $len-1) : $str
+                )
+          )
+        };
+        $servers := $eval(datasets."seaf.ta.reverse.servers_list".source);
+        $regions := $distinct($servers.az.($region_from_az($))[$ != ""]);
+        $regions.(
+          $key := "reverse.dc_region." & $;
+          {
+            ($key): {
+              "__id__": $key,
+              "__entity_id__": "seaf.company.ta.services.dc_regions",
+              "__entity_title__": "DC Region (reverse import)",
+              "title": $,
+              "external_id": $,
+              "__link_to_card__": "/entities/seaf.company.ta.services.dc_regions/card?id=" & $,
+              "link": "/entities/seaf.company.ta.services.dc_regions/card?id=" & $,
+              "source_key": $,
+              "reverse_source": "seaf.ta.reverse.servers_list"
+            }
+          }
+        )[] ~> $merge()
+      )
+

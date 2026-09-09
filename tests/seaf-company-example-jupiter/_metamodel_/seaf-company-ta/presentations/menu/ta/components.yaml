@@ -1,0 +1,147 @@
+entities:
+  seaf.company.ta.components.hw_storages:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.hw_storages";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Аппаратные СХД", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.hw_storage");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 300
+            }
+        ]
+      )
+
+  seaf.company.ta.components.servers:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.servers";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Серверы", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.server");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 310
+            }
+        ]
+      )
+
+  seaf.company.ta.components.k8s_namespaces:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.k8s_namespaces";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Kubernetes/Namespaces", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.k8s_namespace");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 320
+            }
+        ]
+      )
+
+  seaf.company.ta.components.k8s_hpa:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.k8s_hpa";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Kubernetes/HPA", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.k8s_hpa");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 330
+            }
+        ]
+      )
+
+  seaf.company.ta.components.k8s_nodes:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.k8s_nodes";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Kubernetes/Ноды", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.k8s_node");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 335
+            }
+        ]
+      )
+
+  seaf.company.ta.components.networks:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.networks";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Сетевые устройства", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.network");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 340
+            }
+        ]
+      )
+
+  seaf.company.ta.components.user_devices:
+    menu: >
+      (
+        $entity_id := "seaf.company.ta.components.user_devices";
+        $domain_id := "seaf.company.ta";
+        $root_menu := $seaf_fn_get_root_menu($."seaf.configs", $domain_id);
+        $root_menu_order := $seaf_fn_get_root_menu_order($."seaf.configs", $domain_id);
+        $menu := $seaf_fn_generate_menu_item("Компоненты/Пользовательские устройства", $root_menu);
+        [
+          (
+            $legacy := $lookup($, "seaf.ta.components.user_device");
+            $exists($lookup($, $entity_id)) or ($exists($legacy) and $count($keys($legacy)) > 0)
+          )
+          ? {
+              "link": "/entities/" & $entity_id & "/list",
+              "location": $menu,
+              "order": $root_menu_order + 350
+            }
+        ]
+      )

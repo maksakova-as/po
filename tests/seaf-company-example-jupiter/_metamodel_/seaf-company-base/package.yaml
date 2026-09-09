@@ -1,0 +1,26 @@
+# Метаданные пакета
+$package:
+  seaf-company-base: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF company base
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: |
+      Базовый пакет для описания архитектуры компании. 
+      Покрывает домены архитектуры: CHANGE, БА, ПА, КБ
+    # Версия
+    version: 1.2.0
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+      seaf-common: ">=1.5.0"
+
+imports:
+  - ref/_root.yaml
+  - _shared/_root.yaml
+  - ba/_root.yaml
+  - app/_root.yaml
+  - cybersec/_root.yaml
+  - change/_root.yaml
+  - da/_root.yaml # Дополнения визуализации для модуля seaf-company-da

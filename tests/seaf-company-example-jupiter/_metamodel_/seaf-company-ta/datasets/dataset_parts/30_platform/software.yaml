@@ -1,0 +1,71 @@
+# Назначение: Единый реестр ПО, связанного с техническими сервисами и компонентами.
+# Используется: widgets, ta, internal_docs, presentations, auto_tests, docs.
+datasets:
+  seaf.company.ds.ta.software:
+    description: |
+      Коллекция программного обеспечения
+    origin:
+      objects: seaf.ds.objects_by_entities
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $sources_priority := cfg.priority;
+
+        $seaf2_data := objects."seaf.company.ta.services.softwares";
+
+        $seaf1_data := "seaf1" in $sources_enabled
+          ? (
+              $seaf1_raw := data_lake."seaf.ta.services.software";
+              $seaf1_raw ? $seaf1_raw.$spread().(
+                $id := $keys()[0];
+                $obj := $.*[0];
+                $new_id := "seaf1." & $id;
+                {
+                  $new_id: {
+                    "__id__": $new_id,
+                    "__entity_id__": "seaf.company.ta.services.softwares",
+                    "__link_to_card__": "/entities/seaf.company.ta.services.softwares/card?id=" & $new_id,
+                    "title": $obj.title,
+                    "description": $obj.description,
+                    "vendor": $obj.vendor,
+                    "type": $obj.type,
+                    "support": $obj.support,
+                    "expiration": $obj.expiration,
+                    "lic_qty": $obj.lic_qty,
+                    "legacy_id": $id,
+                    "source": "seaf1"
+                  }
+                }
+              ) ~> $merge()
+            )
+          : {};
+
+        $kadzo_data := "kadzo" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $kadzo_ctx := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              $eval($datasets."kadzo.ds.ta.softwares".source, $kadzo_ctx)
+            )
+          : {};
+
+        $merge_list := $sources_priority.(
+          $src := $;
+          $src = "seaf2" and "seaf2" in $sources_enabled ? $seaf2_data : (
+            $src = "seaf1" and "seaf1" in $sources_enabled ? $seaf1_data : (
+              $src = "kadzo" and "kadzo" in $sources_enabled ? $kadzo_data : (
+                $src = "reverse" and "reverse" in $sources_enabled ? {} : {}
+              )
+            )
+          )
+        );
+
+        $merge($merge_list)
+      )

@@ -1,0 +1,15 @@
+# Назначение: Реестр Kubernetes HPA объектов.
+# Используется: internal_docs, auto_tests, app, presentations, ta, rules.
+datasets:
+  seaf.company.ds.ta.k8s_hpas:
+    description: |
+      ??????? HPA
+    origin:
+      objects: seaf.ds.objects_by_entities
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        $seaf2_data := objects."seaf.company.ta.components.k8s_hpa";
+        "seaf2" in $sources_enabled ? ($exists($seaf2_data) ? $seaf2_data : {}) : {}
+      )

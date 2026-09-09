@@ -1,0 +1,58 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vmware.network_segments` (network segments) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vmware.network_segments:
+    description: |
+      Creates default network segments per VMware reverse DC for LAN networks.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $segment_names := [
+          "VMWARE-LAN",
+          "VMWARE-MGMT"
+        ];
+        $vdcs := data_lake."seaf.ta.reverse.vmwareonprem.vdcs";
+        $seaf1_dcs := data_lake."seaf.ta.services.dc";
+        $dc_ids := $vdcs ? $distinct($vdcs.*.dc) : [];
+        $dc_items := $dc_ids.{
+          "id": $,
+          "dc": $lookup($seaf1_dcs, $)
+        };
+        $dc_items.(
+          $dc_id := id;
+          $dc := dc;
+          $title := $lookup($dc, "title");
+          $dc_code := $normalize($dc_id);
+          $dc_ref := $dc_code != "" ? "seaf1." & $dc_code : null;
+          $segment_names.(
+            $segment := $;
+            $seg_id := "reverse.segment.vmware." & $dc_code & "." & $segment;
+            {
+              ($seg_id): {
+                "__id__": $seg_id,
+                "__entity_id__": "seaf.company.ta.services.network_segments",
+                "__entity_title__": "Network Segment (vmware reverse import)",
+                "__link_to_card__": "/entities/seaf.company.ta.services.network_segments/card?id=" & $seg_id,
+                "title": $segment & (
+                  $title != null and $title != "" ? " (" & $title & ")" : ""
+                ),
+                "location": $dc_ref != null ? [$dc_ref] : [],
+                "zone": $segment,
+                "sber": {
+                  "location": $dc_ref,
+                  "zone": $segment
+                },
+                "type": "Default",
+                "source_key": $dc_code & ":" & $segment,
+                "reverse_source": "seaf.ta.services.dc",
+                "is_reverse": true
+              }
+            }
+          )
+        )[] ~> $merge()
+      )
+

@@ -1,0 +1,45 @@
+entities:
+  kadzo.v2023.products:
+    title: Продукты
+    description: Товары, услуги или сервисы ДЗО, созданные или адаптированные для использования внешними или внутренними клиентами Компании
+    schema:
+      $defs:
+        kadzo.v2023.products.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Создается
+                - Используется
+                - Выводится
+                - В архиве
+          required:
+            - status
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.products.livestage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - description
+    objects:
+      products:
+        route: "/"
+        title: Продукт-услуга
+        symbol: "prd"

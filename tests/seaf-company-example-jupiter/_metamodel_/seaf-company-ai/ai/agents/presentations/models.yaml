@@ -1,0 +1,66 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          models:
+            title: Модели, используемые агентом
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: models
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 405
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      models:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: model
+            text: Модель
+            link: model_link
+          - value: description
+            text: Описание
+          - value: realized_in_title
+            text: Реализуется в
+            link: realized_in_link
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+
+        origin:
+          models_by_agents: seaf.company.ds.ai.models.by_agents
+        source: >
+          (
+          $models_by_agents := models_by_agents;
+          $id := $params.id;
+          $data2present := $models_by_agents.$lookup($id);
+          $map($data2present, function($val, $i) {(
+                {
+                  "number": $i+1,
+                  "model": $val.model,
+                  "model_link": $val.model_link,
+                  "description": $val.description,
+                  "lifecycle_stage": $val.lifecycle_stage,
+                  "realized_in_title": $val.realized_in_title,
+                  "realized_in_link": $val.realized_in_link
+                }
+          )})[]
+          )

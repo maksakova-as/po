@@ -1,0 +1,98 @@
+functions:
+  seaf_fn_generate_relative_object_tree:
+    title: Генерация относительного дерева объектов
+    description: |
+      Функция строит массив объектов, для отрисовки дерева.
+      Для дерева используется задаваемый атрибут - ссылка на родительский объект 
+      (например стандартрная связь по атрибуту is_part_of).
+      При этом строится не полное дерево объектов, а относительное - относительно заданного объекта. 
+      В дерево попадают только объекты, которые являются прямыми родителями и прямыми потомками заданного объекта.
+    params:
+      - alias: main_object_id
+        type: string
+        title: Идентификатор объекта, для которого строится дерево
+      - alias: objects
+        type: object
+        title: Коллекция объектов
+      - alias: objects_links
+        type: object
+        title: Коллекция связей объектов
+      - alias: link_attribute
+        type: string
+        title: Имя атрибута, по которому строится дерево
+      - alias: root_presentation
+        type: string
+        title: Имя презентации для корня дерева. Если не задано, то используется стандартное имя list
+        default: list
+
+    result:
+      type: array
+    code: >
+      (
+      $main_object_id := main_object_id;
+      $objects := objects;
+      $objects_links := objects_links;
+      $link_attribute := link_attribute;
+      $root_presentation := $exists(root_presentation) and root_presentation != "" and root_presentation != null ? root_presentation : "list";
+      /* Получаем массив родителей */
+      $get_parents := function($id) {(
+          $exists($objects.$lookup($id))
+          ? (
+              $link2parent := $objects_links.$lookup($id)[link_dir="direct" and link_attr=$link_attribute];
+              $exists($link2parent) ? $append($get_parents($link2parent.linked_id), [$id]) : [$id]
+          )
+      )};
+      /* Получаем массив детей */
+      $get_children := function($id, $level) {(
+          $exists($objects.$lookup($id))
+          ? (
+              $link2children := $objects_links.$lookup($id)[link_dir="reverse" and link_attr=$link_attribute]^(linked_id);
+              $exists($link2children) 
+              ? (
+                  $ch_arr := $map($link2children, function($l2c){(
+                      $get_children($l2c.linked_id, $level+1);
+                  )});
+                  /* превращаем массив массивов в плоский массив */
+                  $ch_arr := $ch_arr@$i.$append($a, $i);
+                  $append([{ "object_id": $id, "level": $level }], $ch_arr);
+              ) 
+              : [{ "object_id": $id, "level": $level }]
+          )
+      )};
+      
+      /* инициализируем дерево */
+      $main_object := $objects.$lookup($main_object_id);
+      $tree := [{
+              "object_id": $main_object.__entity_id__,
+              "object_title": $main_object.__entity_title__,
+              "object_link": "/entities/" & $main_object.__entity_id__ & "/" & $root_presentation,
+              "level": 1
+          }];
+      /* дополняем дерево родителями */
+      $tree := $append( $tree, $map($get_parents($main_object_id), function($val, $i){(
+          $obj := $objects.$lookup($val);
+          $level := $i+2;
+          {
+              "object_id": $obj.__id__,
+              "object_title": $obj.title,
+              "object_link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__,
+              "level": $level
+          }
+      )}));
+      /* дополняем дерево детьми */
+      $main_level := $tree[object_id=$main_object_id].level;
+      $tree := $append( $tree, $map($get_children($main_object_id, $main_level), function($val){(
+          $val.object_id != $main_object_id /* игнорим главный объект */
+          ? (
+              $obj := $objects.$lookup($val.object_id);
+              {
+                  "object_id": $obj.__id__,
+                  "object_title": $obj.title,
+                  "object_link": "/entities/" & $obj.__entity_id__ & "/card?id=" & $obj.__id__,
+                  "level": $val.level
+              }
+          )
+      )}));
+      $tree
+      )
+      

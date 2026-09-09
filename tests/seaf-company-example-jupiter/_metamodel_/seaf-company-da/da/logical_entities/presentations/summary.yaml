@@ -1,0 +1,57 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.da.logical_entities:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          summary:
+            title: Сводка
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: summary
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 10
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      summary:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.da.logical_entities
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $objects := objects;
+          $all_objects := all_objects;
+          $obj2present := $lookup($objects, $params.id);
+          [
+              { "field_name": "Идентификатор объекта", "field_content": { "value": $obj2present.__id__} },
+              { "field_name": "Идентификатор объекта во внешней системе", "field_content": { "value": $obj2present.external_id } },
+              { "field_name": "Идентификатор сущности", "field_content": { "value": $obj2present.__entity_id__ } },
+              { "field_name": "Название", "field_content": { "value":$obj2present.title } },
+              { "field_name": "Описание", "field_content": { "value": $obj2present.description } },
+              { "field_name": "Категория", "field_content": { "value": $obj2present.category ~> $join(", ") } },
+              { "field_name": "Наличие перс. данных", "field_content": { "value": $obj2present.pdn_flag ? "ДА" : "НЕТ"} },
+              { "field_name": "Наличие крит. данных", "field_content": { "value": $obj2present.cde_flag ? "ДА" : "НЕТ"} },
+              { "field_name": "Этап ЖЦ объекта", "field_content": { "value": $obj2present.lifecycle_stage } },
+              { "field_name": "Агрегат", "field_content": ( $o := $seaf_fn_get_object_info($obj2present.aggregat, $all_objects); {"value": $o.title, "link": $o.link_to_card } )},
+              { "field_name": "Мастер-система", "field_content": ( $o := $seaf_fn_get_object_info($obj2present.master_system, $all_objects); {"value": $o.title, "link": $o.link_to_card } )}
+          ];
+          )

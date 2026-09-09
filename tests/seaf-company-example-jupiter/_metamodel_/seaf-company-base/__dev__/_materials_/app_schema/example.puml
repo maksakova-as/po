@@ -1,0 +1,1100 @@
+'!pragma ratio 0.3
+!pragma horizontalLineBetweenDifferentPackageAllowed
+!if (true == true)
+!pragma layout elk
+!endif
+'Общее позиционирование
+
+allowmixing
+
+skinparam {
+
+    titleFontSize 40
+
+	'maxMessageSize 200
+
+	'hide stereotype
+
+	tabSize 5
+
+	defaultfontname Arial
+
+	linetype ortho
+
+	'linetype polyline
+
+	nodesep 20
+
+	ranksep 20
+
+	shadowing true
+	stereotypefontsize 8
+
+	'padding 10
+
+    hyperlinkColor black
+
+    hyperlinkUnderline false
+
+}
+
+top to bottom direction
+'left to right direction
+
+hide circle
+
+hide empty members
+
+'Стили регионов
+
+skinparam rectangle {
+
+	borderthickness 2
+	fontstyle bold
+
+	attributefontsize 11
+
+	'sameClassWidth true
+
+	'padding 200
+
+	'ranksep 10
+	'bordercolor transparent
+	backgroundcolor #f0f0f0
+
+	bordercolor<<External-сеть>> transparent
+
+	backgroundcolor<<External-сеть>> #ddd5e4
+
+	bordercolor<<Internal-сеть>> transparent
+	backgroundcolor<<Internal-сеть>> #c5d7ef
+	borderstyle<<Группа систем>> dashed
+
+	bordercolor<< ДБ/ДЗО >> transparent
+
+	backgroundcolor<< ДБ/ДЗО >> #f0f0f0
+
+	bordercolor<<Каналы>> transparent
+
+	backgroundcolor<<Каналы>> #84b5f5
+
+	bordercolor<<Банк>> transparent
+
+	backgroundcolor<<Банк>> #e9f6dc
+
+	bordercolor<<ОЭ>> transparent
+
+	backgroundcolor<<ОЭ>> #a1f1dc
+
+	bordercolor<<Cloud>> transparent
+
+	backgroundcolor<<Cloud>> #a1f1dc
+
+	backgroundcolor<<Платформа>> #ffcc66
+
+}
+
+<style>
+    classDiagram {
+        maximumWidth 150
+        minimumWidth 100
+        roundCorner 10
+
+        class {
+            backgroundcolor #fcfcee
+            linethickness 1
+            linecolor #4e4948
+
+            'stereotypefontsize 9
+
+            header {
+                fontstyle bold
+                fontsize 11
+            }
+
+            .Внешняя {
+                linecolor gray
+                header {
+                    backgroundcolor lightblue/%lighten("#lightblue", 40)
+                }
+            }
+
+            .Нецелевая {
+                linecolor gray
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600-%lighten("#006600", 40)
+                }
+            }
+
+            .Нецелевая модифицируется {
+                linecolor red
+                'fontcolor white
+                'stereotypefontcolor darkgray
+                header {
+                    'fontcolor white
+                    backgroundcolor #006600/%lighten("#006600", 40)
+                }
+            }
+
+            .Целевая требуется выбор {
+                linecolor red
+                header {
+                    backgroundcolor orange/%lighten("#orange", 40)
+                }
+            }
+
+            .Целевая разработка {
+                linecolor red
+                header {
+                    backgroundcolor ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена {
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая частично внедрена модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #ffff8a/%lighten("#ffff8a", 40)
+                }
+            }
+
+            .Целевая внедрена полностью {
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Целевая внедрена полностью модифицируется {
+                linecolor red
+                header {
+                    backgroundcolor #92d050/%lighten("#92d050", 40)
+                }
+            }
+
+            .Технический сервис {
+                header {
+                    backgroundcolor de924b/%lighten("de924b", 40)
+                }
+            }
+        }
+
+        node {
+            fontstyle bold
+            fontsize 14
+            linestyle 8
+            linethickness 2
+            backgroundcolor #GreenYellow/LightGoldenRodYellow
+            'backgroundcolor #84b5f5
+        }
+
+        frame {
+            fontstyle bold
+            fontsize 11
+            linestyle 8
+            linethickness 2
+
+            'backgroundColor #ffcc66
+        }
+
+        file {
+            backgroundcolor transparent
+            'borderColor transparent
+            linethickness 2
+            textcolor white
+            fontcolor transparent
+            fontsize 0
+        }
+
+        component {
+            .Person {
+                backgroundcolor transparent
+                lineColor transparent
+                linethickness 1
+                fontsize 14
+                fontstyle Bold
+            }
+        }
+    }
+</style>
+
+'hide stereotype
+hide <<>> stereotype
+hide <<Person>> stereotype
+'hide <<Технический сервис>> stereotype
+'hide <<Нецелевая>> stereotype
+
+set namespaceSeparator none
+title Архитектурная схема to-be
+
+@startuml
+
+    component jupiter.client.young_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Молодые люди..
+    ]
+    component jupiter.client.mature_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Зрелые люди..
+    ]
+    component jupiter.client.elderly_person <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Пожилые люди..
+    ]
+    component jupiter.client.employee <<Person>> [
+        ..<size:42><&person,color=Blue></size>..
+        ..Сотрудники..
+    ]
+
+!if (1)
+node "Каналы взаимодействия с клиентом" as channels_boundary{
+!endif
+        rectangle "➕    Вебсайт компании" as jupiter.channel.website
+        rectangle "Цифровой канал клиентов" as jupiter.channel.digital4clients
+        rectangle "Магазин компании" as jupiter.channel.shopping_centre
+        rectangle "Офис компании" as jupiter.channel.company_office
+!if (1)
+}
+!endif
+
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+
+        class "АС ECM Новости" as jupiter.app_system.ecm_news
+                {
+                    {field} <color:black><size:8><U+25E6> Ведение новостей</size></color>
+                    {field} <color:black><size:8><U+25E6> Публикация новостей</size></color>
+                    {field} <color:red><size:8><U+25E6> ➕    Доставка</size></color>
+                }
+
+
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Внешние партнеры" as jupiter.sys_group.external_partners.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Внешние партнеры" as jupiter.sys_group.external_partners.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Внешние партнеры" as jupiter.sys_group.external_partners.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Внешние партнеры" as jupiter.sys_group.external_partners {
+    !endif
+
+
+        !if (0)
+            frame "Внешняя АС ИИ Агенты создания новостей" as jupiter.app_system.news_summary.frame {
+            class "Внешняя АС ИИ Агенты создания новостей" as jupiter.app_system.news_summary << Внешняя >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.news_summary]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> ИИ-агент Сводка новостей</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы Внешняя АС ИИ Агенты создания новостей" as jupiter.app_system.news_summary.sub {
+            }
+            }
+        !else
+        class "Внешняя АС ИИ Агенты создания новостей" as jupiter.app_system.news_summary << Внешняя >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.news_summary]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> ИИ-агент Сводка новостей</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.external_partners
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (0)
+            frame "АС MES Одежда" as jupiter.app_system.mes_clothing.frame {
+            class "АС MES Одежда" as jupiter.app_system.mes_clothing << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.mes_clothing]]
+            !if (1)
+                {
+                    {field} <color:red><size:8><U+25E6> Управление производством одежды</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС MES Одежда" as jupiter.app_system.mes_clothing.sub {
+            }
+            }
+        !else
+        class "АС MES Одежда" as jupiter.app_system.mes_clothing << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.mes_clothing]]
+            !if (1)
+                {
+                    {field} <color:red><size:8><U+25E6> Управление производством одежды</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud {
+    !endif
+
+
+        !if (0)
+            frame "АС 1С ERP" as jupiter.app_system.1c_erp.frame {
+            class "АС 1С ERP" as jupiter.app_system.1c_erp << Нецелевая >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.1c_erp]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС 1С ERP" as jupiter.app_system.1c_erp.sub {
+            }
+            }
+        !else
+        class "АС 1С ERP" as jupiter.app_system.1c_erp << Нецелевая >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.1c_erp]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_sbercloud
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud {
+    !endif
+
+
+        !if (0)
+            frame "МП Любимый клиент" as jupiter.app_system.mp_favorite_client.frame {
+            class "МП Любимый клиент" as jupiter.app_system.mp_favorite_client << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.mp_favorite_client]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Мобильный ЛК</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы МП Любимый клиент" as jupiter.app_system.mp_favorite_client.sub {
+            }
+            }
+        !else
+        class "МП Любимый клиент" as jupiter.app_system.mp_favorite_client << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.mp_favorite_client]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Мобильный ЛК</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_sbercloud
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud {
+    !endif
+
+
+        !if (0)
+            frame "АС Веб-сайт" as jupiter.app_system.website.frame {
+            class "АС Веб-сайт" as jupiter.app_system.website << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.website]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС Веб-сайт" as jupiter.app_system.website.sub {
+            }
+            }
+        !else
+        class "АС Веб-сайт" as jupiter.app_system.website << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.website]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_sbercloud
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "SberCloud" as jupiter.sys_group.internal_sbercloud {
+    !endif
+
+
+        !if (1)
+            frame "АС TMS" as jupiter.app_system.tms.frame {
+            class "АС TMS" as jupiter.app_system.tms << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.tms]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС TMS" as jupiter.app_system.tms.sub {
+                class "ФП Логистика" as jupiter.app_system.tms_logistics << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.tms_logistics]]
+                !if (1)
+                    {
+                        {field} <color:red><size:8><U+25E6> ➕    Доставка</size></color>
+                        {field} <color:black><size:8><U+25E6> Доставка для ФЛ</size></color>
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+                class "ФП Маршртуты" as jupiter.app_system.tms_routes << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.tms_routes]]
+                !if (0)
+                    {
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+            }
+            }
+        !else
+        class "АС TMS" as jupiter.app_system.tms << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.tms]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_sbercloud
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (1)
+            frame "АС Единый Фронт Сотрудника" as jupiter.app_system.efs.frame {
+            class "АС Единый Фронт Сотрудника" as jupiter.app_system.efs << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.efs]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС Единый Фронт Сотрудника" as jupiter.app_system.efs.sub {
+                class "ФП Технолог производства" as jupiter.app_system.efs_prod_expert << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.efs_prod_expert]]
+                !if (1)
+                    {
+                        {field} <color:red><size:8><U+25E6> Кабинет технолога производства</size></color>
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+                class "ФП Редактор новостей" as jupiter.app_system.efs_news_editor << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.efs_news_editor]]
+                !if (1)
+                    {
+                        {field} <color:black><size:8><U+25E6> Кабинет редактора новостей</size></color>
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+            }
+            }
+        !else
+        class "АС Единый Фронт Сотрудника" as jupiter.app_system.efs << Целевая частично внедрена >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.efs]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (1)
+            frame "➕     АС ИИ Хаб Юпитер" as jupiter.app_system.aihub.frame {
+            class "➕     АС ИИ Хаб Юпитер" as jupiter.app_system.aihub << Целевая разработка >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.aihub]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы ➕     АС ИИ Хаб Юпитер" as jupiter.app_system.aihub.sub {
+                class "➕     ФП Модель DeepSeek" as jupiter.app_system.aihub_model_ds1 << Целевая разработка >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.aihub_model_ds1]]
+                !if (0)
+                    {
+                    }
+                !else
+                    {
+                        {field}<size:8></size>
+                    }
+                !endif
+            }
+            }
+        !else
+        class "➕     АС ИИ Хаб Юпитер" as jupiter.app_system.aihub << Целевая разработка >> [[/entities/kadzo.v2023.systems/card?id=jupiter.app_system.aihub]]
+            !if (0)
+                {
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (0)
+            frame "АС КСШ" as jupiter.tech_system.esb.frame {
+            class "АС КСШ" as jupiter.tech_system.esb << Нецелевая >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.esb]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Транспорт сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС КСШ" as jupiter.tech_system.esb.sub {
+            }
+            }
+        !else
+        class "АС КСШ" as jupiter.tech_system.esb << Нецелевая >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.esb]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Транспорт сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (0)
+            frame "АС Kafka" as jupiter.tech_system.kafka.frame {
+            class "АС Kafka" as jupiter.tech_system.kafka << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.kafka]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Транспорт сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС Kafka" as jupiter.tech_system.kafka.sub {
+            }
+            }
+        !else
+        class "АС Kafka" as jupiter.tech_system.kafka << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.kafka]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Транспорт сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+    !if (false == true)
+    !if (0)
+        file "Cистемы Сбербанка" as sber_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.sber_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.sber_area {
+    !else
+    !if (0)
+        file "Внешние системы" as external_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.external_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.external_area {
+    !else
+        file "Прикладные системы" as systems_area{
+
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal.systems_area {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc.systems_area {
+    !endif
+    !endif
+    !else
+            rectangle "Периметр компании ООО Юпитер" as jupiter.sys_group.internal {
+            rectangle "ЦОД компании" as jupiter.sys_group.internal_dc {
+    !endif
+
+
+        !if (0)
+            frame "АС ШПУ Ворона" as jupiter.tech_system.vorona.frame {
+            class "АС ШПУ Ворона" as jupiter.tech_system.vorona << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.vorona]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Шлюз сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+
+            frame "Подсистемы АС ШПУ Ворона" as jupiter.tech_system.vorona.sub {
+            }
+            }
+        !else
+        class "АС ШПУ Ворона" as jupiter.tech_system.vorona << Целевая внедрена полностью >> [[/entities/kadzo.v2023.systems/card?id=jupiter.tech_system.vorona]]
+            !if (1)
+                {
+                    {field} <color:black><size:8><U+25E6> Шлюз сообщений</size></color>
+                }
+            !else
+                {
+                    {field}<size:8></size>
+                }
+            !endif
+        !endif
+
+    }
+    }
+    !if (false == true)
+    }
+    !else
+        !if (1)
+                channels_boundary -[hidden]down- jupiter.sys_group.internal
+                channels_boundary -[hidden]down- jupiter.sys_group.internal_dc
+        !endif
+    !endif
+
+!if (false == true)
+    !if (1)
+        channels_boundary -[hidden]down- systems_area
+        !if (0)
+            channels_boundary -[hidden]down- external_area
+        !endif
+        !if (0)
+        channels_boundary -[hidden]down- sber_area
+        !endif
+    !endif
+
+    !if (0)
+    sber_area -[hidden]down- systems_area
+    !endif
+
+    !if (0)
+    systems_area -[hidden]down- external_area
+    !endif
+!endif
+
+
+    "jupiter.app_system.news_summary" -down-> "jupiter.app_system.ecm_news" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.ecm_news__news_summary__i001 П.1]]
+    "jupiter.tech_system.esb" -down-> "jupiter.app_system.1c_erp" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.esb" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.app_system.tms_logistics" -down-> "jupiter.tech_system.vorona" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__tms_logistics__i01 <U+271A> П.2]]
+    "jupiter.cs_system.esign" -down-> "jupiter.app_system.1c_erp" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.1c_erp__esign__i02 П.3]]
+    "jupiter.tech_system.kafka" -down-> "jupiter.app_system.mp_favorite_client" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.kafka" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.app_system.ecm_news" -down-> "jupiter.tech_system.vorona" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.mp_favorite_client__ecm_news__i_01 П.4]]
+    "jupiter.tech_system.esb" -down-> "jupiter.app_system.efs_prod_expert" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_prod_expert__mes_clothing__i234 П.5]]
+    "jupiter.app_system.mes_clothing" -down-> "jupiter.tech_system.esb" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_prod_expert__mes_clothing__i234 П.5]]
+    "jupiter.tech_system.kafka" -down-> "jupiter.app_system.efs_news_editor" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.tech_system.vorona" -down-> "jupiter.tech_system.kafka" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.app_system.ecm_news" -down-> "jupiter.tech_system.vorona" #red;text:red : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__ecm_news__i023 П.6]]
+    "jupiter.app_system.news_summary" -down-> "jupiter.app_system.efs_news_editor" #black;text:black : [[/entities/kadzo.v2023.integrations/card?id=jupiter.integration.efs_news_editor__news_summary__i024 П.7]]
+
+    "jupiter.channel.website" -[dotted]down- "jupiter.app_system.website"
+    "jupiter.channel.digital4clients" -[dotted]down- "jupiter.app_system.mp_favorite_client"
+    "jupiter.channel.shopping_centre" -[dotted]down- "jupiter.app_system.efs"
+    "jupiter.channel.company_office" -[dotted]down- "jupiter.app_system.efs"
+
+    "jupiter.client.young_person" -[dotted]down- "jupiter.channel.website"
+    "jupiter.client.mature_person" -[dotted]down- "jupiter.channel.website"
+    "jupiter.client.young_person" -[dotted]down- "jupiter.channel.digital4clients"
+    "jupiter.client.mature_person" -[dotted]down- "jupiter.channel.digital4clients"
+    "jupiter.client.mature_person" -[dotted]down- "jupiter.channel.shopping_centre"
+    "jupiter.client.elderly_person" -[dotted]down- "jupiter.channel.shopping_centre"
+    "jupiter.client.young_person" -[dotted]down- "jupiter.channel.company_office"
+    "jupiter.client.employee" -[dotted]down- "jupiter.channel.company_office"
+
+@enduml

@@ -1,0 +1,95 @@
+seaf.toolkit.mm_viewer.obj_diagrams:
+
+  od_custom_model:
+    title: Карта объектов SEAF (кастомная)
+    location: SEAF/Инструменты/MM Viewer/(*) Карта объектов SEAF
+    order: 93200
+    grouping: true
+    entity_patterns:
+      - "seaf.**"
+
+    entity_patterns_formats:
+      - pattern: "seaf.company.ba.**" # бизнес-архитектура
+        group: БИЗНЕС-АРХИТЕКТУРА
+        object_format: "#header:FFFF88"
+        link_format: "#line:CCCC00;line.bold"
+
+      - pattern: "seaf.company.app.**" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.cybersec.**" # КБ-архитектура
+        group: АРХИТЕКТУРА КИБЕРБЕЗОПАСНОСТИ
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.systems" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.sys_components" # прикладная-архитектура
+        group: ПРИКЛАДНАЯ АРХИТЕКТУРА
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.services" # прикладная-архитектура
+        group: СЕРВИСЫ СИСТЕМ
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.functions" # прикладная-архитектура
+        group: ФУНКЦИОНАЛЬНОСТЬ СИСТЕМ
+        object_format: "#header:CCE5FF"
+        link_format: "#line:9CCDFF;line.bold"
+
+      - pattern: "seaf.company.ta.**" # техническая(инфра)-архитектура
+        group: ТА (ИНФРАСТРУКТУРА)
+        object_format: "#header:99FF99"
+        link_format: "#line:60FF60;line.bold"
+
+      - pattern: "seaf.company.change.**"
+        group: CHANGE
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.artefacts"
+        group: CHANGE
+        object_format: "#header:FFE0E0"
+        link_format: "#line:FF9999"
+
+      - pattern: "seaf.company.da.**" # домен архитектура данных
+        group: АРХИТЕКТУРА ДАННЫХ
+        object_format: "#header:FFD040"
+        link_format: "#line:CCA633"
+
+      - pattern: "seaf.company.ai.**" # домен архитектура ИИ
+        group: ИИ-АРХИТЕКТУРА
+        object_format: "#header:FF66FF"
+        link_format: "#line:FF66FF"
+
+#      - pattern: "seaf.ta.services.**" # техническая(инфра)-архитектура из seaf v1
+#        group: СЕРВИСЫ ТА (SEAF1)
+#        object_format: "#header:7ACC7A"
+#        link_format: "#line:7ACC7A;line.bold"
+#
+#      - pattern: "seaf.ta.components.**" # техническая(инфра)-архитектура из seaf v1
+#        group: ТА (ИНФРАСТРУКТУРА) (SEAF1)
+#        object_format: "#header:528A52"
+#        link_format: "#line:528A52;line.bold"
+
+
+  od_custom_model_da_objects:
+    title: Карта объектов SEAF - АД (кастомная)
+    location: SEAF/Инструменты/MM Viewer/(*) Карта объектов Арх.Данных
+    order: 93300
+    grouping: true
+    entity_patterns:
+      - "seaf.company.da.**"
+
+    entity_patterns_formats:
+      - pattern: "seaf.company.da.**" # домен архитектура данных
+        group: АРХИТЕКТУРА ДАННЫХ
+        object_format: "#header:FFD040"
+        link_format: "#line:CCA633"

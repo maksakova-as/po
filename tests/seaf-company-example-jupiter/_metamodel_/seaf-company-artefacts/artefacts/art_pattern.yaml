@@ -1,0 +1,28 @@
+entities:
+  seaf.company.artefacts:
+    schema:
+      # Архитектурный паттерн
+      patternProperties:
+        "^([a-zA-Z0-9_-]+\\.)+(pattern)(\\.[a-zA-Z0-9_-]+)+$":
+          title: "PATTERN"  # это название используется как имя подсущности в ER диаграмме
+          description: >
+            Документация по архитектурному шаблону (паттерну)
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.company.def.artefact_basic_attributes"
+            - $ref: "#/$defs/seaf.company.def.artefact_stakeholders"
+
+          properties:
+            type:
+              title: Тип
+              enum:
+                - Архитектурный паттерн
+                - Референсная архитектура
+              default: Архитектурный паттерн
+
+          required:
+            - type

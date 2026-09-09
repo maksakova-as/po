@@ -1,0 +1,11 @@
+imports:
+  - news.yaml
+  - production.yaml
+  - erp.yaml
+  - web_mobile.yaml
+  - tms.yaml
+  - efs.yaml
+  - aihub.yaml
+  - monitoring.yaml
+  - news_l2.yaml
+  - efs_l2.yaml

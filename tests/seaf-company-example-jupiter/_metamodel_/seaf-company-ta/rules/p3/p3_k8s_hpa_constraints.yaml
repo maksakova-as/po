@@ -1,0 +1,64 @@
+rules:
+  validators:
+    seaf.validation.ta.p3.k8s_hpa_constraints:
+      uid: SEAF-TA-P3-K8S-HPA-CONS
+      title: "[TACSA_4-P3-33-04 (частично)] Проверка ограничений HPA (min/max)"
+      description: |
+        Проверяет, что для каждого `seaf.company.ta.components.k8s_hpa` заданы min/max (min>0, max>=min).
+        Целостность ссылок (target_ref, cluster_ref) покрывается отдельными валидаторами, здесь — численные пределы.
+        Требование (частично): TACSA_4-P3-33-04 — Горизонтальное автоскалирование приложения; проверяем корректные пороги HPA.
+        
+        Требование (цитата):
+        Необходимо обеспечить резервное копирование конфигурации платформы контейнерной оркестрации.
+      correction: |
+        Задайте `min` и `max` у HPA, обеспечив min > 0 и max >= min.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.p3.k8s_hpa_constraints";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.k8s_hpas";
+                  $hpas := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $each($hpas, function($h, $h_key){
+                    (
+                      $min := $exists($h.min_replicas) ? $h.min_replicas : $h.min;
+                      $max := $exists($h.max_replicas) ? $h.max_replicas : $h.max;
+                      ($not($exists($min)) or $min < 2) ? {
+                        "uid": "seaf.validation.ta.p3.k8s_hpa_constraints.min." & $h_key,
+                        "deviation_id": "TACSA_4-P3-32-04:" & "seaf.validation.ta.p3.k8s_hpa_constraints.min." & $h_key,
+                        "title": "HPA '" & $h.title & "' min_replicas < 2",
+                        "correction": "ID: " & $h_key & ". " & ("Установите min_replicas >= 2"),
+                        "description": "Текущее значение: " & $string($min) & ". Требование: не менее 2 экземпляров."
+                      } : (
+                        ($not($exists($max)) or $max <= $min) ? {
+                          "uid": "seaf.validation.ta.p3.k8s_hpa_constraints.max." & $h_key,
+                          "deviation_id": "TACSA_4-P3-32-04:" & "seaf.validation.ta.p3.k8s_hpa_constraints.max." & $h_key,
+                          "title": "HPA '" & $h.title & "' некорректный max_replicas",
+                          "correction": "ID: " & $h_key & ". " & ("Установите max_replicas > min_replicas"),
+                          "description": "max_replicas (" & $string($max) & ") должно быть больше min_replicas (" & $string($min) & ")"
+                        } : ()
+                      )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

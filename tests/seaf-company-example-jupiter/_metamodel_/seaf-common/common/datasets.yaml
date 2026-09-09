@@ -1,0 +1,199 @@
+datasets:
+  seaf.ds.data_lake:
+    title: Озеро данных
+    description: |
+      Коллекция всех объектов, загруженных в озеро всеми возможными способами
+      (и через обычный импорт и через datasets с типом manifest)
+      Для того чтобы данные из датасета типа manifest попали в глобальное озеро данных (этот датасет), 
+      необходимо для датасета seaf.ds.data_lake прописать origin, в котором указать датасет типа manifest.
+    origin:
+      normal_data_lake: ($)
+    source: >
+      (
+      $mergedeep([$.*]);
+      )
+
+  seaf.ds.entities:
+    title: Сущности
+    description: |
+      Коллекция всех объектных сущностей, с которыми работают модули метамодели SEAF.
+      Под объектной сущностью понимаются такие, по которым создаются архитектурные объекты (есть секция objects и schema в описании сущности)
+      Каждый модуль метамодели должен сам определить какие объектные сущности нужны для его нормальной работы и объявить имена
+      (ключи) этих сущностей в массивах seaf_entities и non_seaf_entities в секции origin для данного датасета.
+    origin:
+      data_lake: ($) # Не используем здесь seaf.ds.data_lake, чтобы исключить циклические зависимости датасетов для некоторых конфигураций, где сущности подгружаются напрямую в $, а объекты подгружаются через mainfest-датасеты
+      seaf_entities: ["seaf.configs"]
+      non_seaf_entities: []
+      # TODO Описать в документации, что дополнять массив сущностей нужно расширениях - просто дополнив массив необходимыми значениями
+    source: >
+      (
+      $data_lake := data_lake;
+      $entities_to_include := $append(seaf_entities, non_seaf_entities) ~> $sort() ~> $distinct();
+      $data_lake.entities ~> $sift(function($v, $k){ $exists($v.objects) and $exists($v.schema) and $k in $entities_to_include });
+      )
+
+#  seaf.ds.jsonschema_errors:
+#    description: |
+#      Ошибки валидации данных архитектуры на соответствие действующей метамодели (jsonschema)
+#    source: >
+#      (
+#      $schema := $manifestschema();
+#      $validator := $jsonschema($schema);
+#      $validator($);
+#      )
+  seaf.ds.configs:
+    title: DS конфигурации
+    description: |
+      Коллекция конфигурационных параметров
+    origin: seaf.ds.data_lake
+    source: >
+      (
+      $."seaf.configs"
+      )
+
+  seaf.ds.objects:
+    title: Объекты
+    description: |
+      Коллекция всех объектов модели, заведенных в рамках метамодели.
+      Поиск объекта через функцию lookup, например: $.$lookup("имя_объекта")
+    origin:
+      data_lake: seaf.ds.data_lake
+      configs: seaf.ds.configs
+      entities: seaf.ds.entities
+    source: >
+      (
+      /* Получаем список объектных сущностей метамодели */
+      $data_lake := data_lake;
+      $configs := configs;
+      $entities := entities;
+      $elist := $keys($entities);
+      /* строим массив объектов (экземпляров сущностей) */
+      $arr_objects:= $map($elist, function($eid){(
+          $objects := $lookup($data_lake, $eid);
+          $exists($objects) and $objects != null ? $each($objects, function($val, $key){(
+              $id_split := $seaf_fn_split_object_key($key, $configs);
+              $merge( [
+                    {   "__id__": $key,
+                        "__entity_id__": $eid,
+                        "__entity_title__": $lookup($entities, $eid).title,
+                        "__company_id__": $id_split.company_id,
+                        "__object_type__": $id_split.object_type,
+                        "__object_id__": $id_split.object_id,
+                        "__link_to_card__": "/entities/" & $eid & "/card?id=" & $key
+                    },
+                    $val 
+                      ])
+          )})
+      )})[];     
+      /* превращаем массив массивов в плоский массив */
+      $arr_objects := $arr_objects@$i.$append($a, $i);
+      /* строим индексированную коллекцию сущностей */
+      $arr_objects.{__id__: $}~>$merge()
+      )
+
+  seaf.ds.objects_by_entities:
+    title: DS объекты в разрезе сущностей
+    description: |
+      Коллекция всех объектов модели в разрезе сущностей.
+      Поиск объекта через функцию lookup, например: $.$lookup("имя_объекта")
+    origin: seaf.ds.objects
+    source: >
+      (
+      $.*{ __entity_id__: ${__id__: $} }
+      )
+
+  seaf.ds.objects_links:
+    title: DS связи объектов
+    description: |
+      Коллекция всех связей всех объектов модели в разрезе объектов.
+      Каждый модуль метамодели должен сам определить какие атрибуты в его сущностях содержат ссылки на объекты и перечислить
+      имена этих атрибутов в массиве attr2check
+    origin:
+      objects: seaf.ds.objects
+      # TODO Описать в документации, что дополнять массив атрибутов можно и в расширениях - просто дополнив массив необходимыми значениями
+      attr2check: [] # в каждом модуле задаем массив имен атрибутов, в которых может встречаться ссылка на объект
+#        - "app_components"
+
+    source: >
+      (
+      $attr2check := attr2check ~> $sort() ~> $distinct();
+      /* функция сканирует объект и выявляет все атрибуты-связи */
+      $get_links := function($obj, $parent_key) {(
+          $type($obj) = "object" 
+          ? ( /* на вход пришел json-объект - сканируем его */
+              $each($obj, function($val, $key){(
+                  $full_key := $parent_key = "" ? $key : $parent_key & "." & $key;
+                  $get_links($val, $full_key)@$i.$append($a, $i)~>$distinct() /* собираем линки и избавляемся от вложенности массива */
+              )})
+          ):(
+              $type($obj) = "array" 
+              ? ( /* на вход пришел json-массив - сканируем его*/
+                  $map($obj, function($val, $i) {(
+                      $array_key := $parent_key;
+                      $get_links($val, $array_key)@$i.$append($a, $i)~>$distinct(); /* собираем линки и избавляемся от вложенности массива */
+                  )})
+              ):( /* на вход пришел json-примитив */
+                  $attr_key := $split($parent_key, ".")[-1];
+                  $exists($obj) and $not($obj = null) and ($attr_key in $attr2check) /* обрабатываем только атрибуты из списка */
+                  ? ( /* проверяем - не ссылка ли это на объект */
+                      $linked_obj := $lookup($objects, $obj);
+                      $exists($linked_obj) 
+                      ? (/* есть связанный объект */
+                          {
+                              "linked_id": $linked_obj.__id__,
+                              "linked_title": $linked_obj.title,
+                              "linked_entity_id": $linked_obj.__entity_id__,
+                              "linked_entity_title": $linked_obj.__entity_title__,
+                              "linked_object_link_to_card": $linked_obj.__link_to_card__,
+                              "link_attr": $parent_key,
+                              "link_dir": "direct"
+                          }
+                      )
+                  )
+              )
+          )
+      )};
+      
+      $objects := objects;
+      /* строим массив прямых связей объектов */
+      $arr_direct_links := $each($objects, function ($val, $key) {(
+            $links := $get_links($val, "");
+            /* превращаем массив массивов в плоский массив */
+            $links := $links@$i.$append($a, $i)~>$distinct();
+            $map($links, function($lval){(
+                  $lval != {} and $val != [] and $val != "" and $val != null
+                  ? $merge([
+                  { 
+                      "__id__" : $key,
+                      "title": $val.title,
+                      "__entity_id__": $val.__entity_id__,
+                      "__entity_title__": $val.__entity_title__,
+                      "__link_to_card__": $val.__link_to_card__
+                  },
+                  $lval
+                  ])
+            )});
+      )});
+      
+      /* превращаем массив массивов в плоский массив */
+      $arr_direct_links := $arr_direct_links@$i.$append($a, $i);
+      
+      /* строим массив обратных связей объектов */
+      $arr_reverse_links := $arr_direct_links@$dval.{
+          "__id__" : $dval.linked_id,
+          "title": $dval.linked_title,
+          "__entity_id__": $dval.linked_entity_id,
+          "__entity_title__": $dval.linked_entity_title,
+          "__link_to_card__": $dval.linked_object_link_to_card,
+          "linked_id": $dval.__id__,
+          "linked_title": $dval.title,
+          "linked_entity_id": $dval.__entity_id__,
+          "linked_entity_title": $dval.__entity_title__,
+          "linked_object_link_to_card": $dval.__link_to_card__,
+          "link_attr": $dval.link_attr,
+          "link_dir": "reverse"
+      };
+      $result_arr := $append($arr_direct_links, $arr_reverse_links)^(__id__);
+      /* агрегируем в коллекцию по __id__ */
+      $result_arr{__id__: [$]};
+      )

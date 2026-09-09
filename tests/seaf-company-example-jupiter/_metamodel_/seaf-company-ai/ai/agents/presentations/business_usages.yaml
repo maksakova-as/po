@@ -1,0 +1,71 @@
+entities:
+  seaf.company.ai.agents:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          business_usages:
+            title: Использование агента в бизнесе
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: business_usages
+            # Расположение
+            align: "v"
+            # Порядок расположения
+            order: 400
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      business_usages:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: business_object_id
+            text: ID бизнес-объекта
+            link: business_object_link
+          - value: business_object_title
+            text: Название
+            link: business_object_link
+          - value: business_object_type
+            text: Тип
+          - value: description
+            text: Описание
+
+        origin:
+          objects: seaf.company.ds.ai.agents
+          all_objects: seaf.ds.objects
+        source: >
+          (
+          $objects := objects;
+          $all_objects := all_objects;
+          $id := $params.id;
+          $obj2present := $objects.$lookup($id);
+          $data2present := $obj2present.business_usages;
+          $data2present = "Не используется"
+          ? { "business_object_title": "Не используется" }
+          : $map($data2present, function($val, $i) {(
+              $bo := $exists($val.business_object) ? $seaf_fn_get_object_info($val.business_object, $all_objects);
+              {
+                "number": $i+1,
+                "business_object_id": $bo.__id__,
+                "business_object_title": $bo.title,
+                "business_object_link": $bo.link_to_card,
+                "business_object_type": $bo.__entity_title__,
+                "description": $val.description
+              }
+            )})[];
+          )

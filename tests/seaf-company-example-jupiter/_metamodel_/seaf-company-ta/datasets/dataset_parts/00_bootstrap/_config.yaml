@@ -1,0 +1,45 @@
+# Назначение: Единая конфигурация TA-датасетов: включение источников, режимы merge и флаги визуализаций.
+# Используется: internal_docs.
+datasets:
+  seaf.company.ds.ta._config:
+    description: |
+      Shared TA dataset configuration (enabled sources and priority).
+    origin:
+      data_lake: ($)
+    source: >
+      (
+        $configs := data_lake."seaf.configs";
+        $cfg_root := $exists($configs."seaf.configs") ? $configs."seaf.configs" : $configs;
+        $cfg1 := $configs."seaf.company.ta";
+        $cfg2 := $configs.seaf.company.ta;
+        $cfg3 := $cfg_root."seaf.company.ta";
+        $cfg4 := $cfg_root.seaf.company.ta;
+        $cfg5 := $cfg_root.company.seaf.company.ta;
+        $ta_config := $exists($cfg1)
+          ? $cfg1
+          : (
+              $exists($cfg2)
+                ? $cfg2
+                : (
+                    $exists($cfg3)
+                      ? $cfg3
+                      : (
+                          $exists($cfg4)
+                            ? $cfg4
+                            : ($exists($cfg5) ? $cfg5 : null)
+                        )
+                  )
+            );
+        $profiles := $ta_config.data_sources.profiles ? $ta_config.data_sources.profiles : {};
+        $active_profile := $ta_config.data_sources.profile ? $ta_config.data_sources.profile : null;
+        $profile_cfg := (
+          $active_profile != null and $exists($lookup($profiles, $active_profile))
+            ? $lookup($profiles, $active_profile)
+            : {}
+        );
+        {
+          "enabled": $profile_cfg.enabled ? $profile_cfg.enabled : ($ta_config.data_sources.enabled ? $ta_config.data_sources.enabled : ["seaf2", "seaf1", "kadzo", "reverse"]),
+          "priority": $profile_cfg.priority ? $profile_cfg.priority : ($ta_config.data_sources.priority ? $ta_config.data_sources.priority : ["seaf2", "seaf1", "kadzo", "reverse"]),
+          "active_profile": $active_profile
+        }
+      )

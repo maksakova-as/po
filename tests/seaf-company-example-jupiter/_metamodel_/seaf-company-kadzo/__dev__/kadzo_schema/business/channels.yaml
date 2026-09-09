@@ -1,0 +1,88 @@
+entities:
+  kadzo.v2023.channels:
+    title: Каналы предоставления продуктов Компании
+    description: Цифровое (web, app) физическое (офис, торговый зал) или смешанное (phygital) пространство Компании, в котором Клиент (внешний и/или внутренний) знакомится, приобретает и пользуется продуктами Компании
+    schema:
+      $defs:
+        kadzo.v2023.channels.livestage:
+          title: Жизненный цикл
+          type: object
+          properties:
+            status:
+              title: Статус
+              enum:
+                - Создается
+                - Используется
+                - Выводится
+                - В архиве
+          required:
+            - status
+        kadzo.v2023.channels.ownership:
+          title: Модель владения
+          type: object
+          properties:
+            location:
+              title: Размещение/владение
+              enum:
+                - Внешний
+                - Внутренний
+          required:
+            - location
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          allOf:
+            - $ref: "#/$defs/kadzo.v2023.channels.ownership"
+            - $ref: "#/$defs/kadzo.v2023.channels.livestage"
+          properties:
+            title:
+              title: Наименование
+              type: string
+            description:
+              title: Описание
+              type: string
+            type:
+              title: Тип канала
+              enum:
+                - Цифровой
+                - Физический
+                - Phygital
+            products:
+              title: Продукты, поставляемые в канале
+              type: array
+              minItems: 1
+              items:
+                $ref: "#/$rels/kadzo.v2023.products.products"
+            clients:
+              title: Клиенты, обслуживаемые в канале
+              type: array
+              minItems: 1
+              items:
+                $ref: "#/$rels/kadzo.v2023.clients.clients"
+            systems:
+              title: АС, обеспечивающие функционирование канала
+              type: array
+              minItems: 1
+              items:
+                $ref: "#/$rels/kadzo.v2023.systems.systems"
+            security:
+              title: Способы защиты канала
+              type: string
+            comments:
+              title: Комментарии, риски, проблемы
+              type: array
+              items:
+                type: string
+          required:
+            - title
+            - description
+            - type
+            - products
+            - clients
+            - systems
+    objects:
+      channels:
+        route: "/"
+        title: Каналы
+        symbol: "ch"

@@ -1,0 +1,316 @@
+docs:
+  seaf.company.ta.docs.kbs.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Кибербезопасность/Изменение кибербезопасности
+    description: Редактирование Кибербезопасности из architecture/ta/kb.yaml
+    page_size: 15
+    filtration: true
+    selection: false
+
+    origin:
+      kbs: seaf.company.ds.ta.kb
+      networks: seaf.company.ds.ta.networks
+      services: seaf.company.ds.ta.all_objects
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: tag
+        text: Тег
+        width: 120px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: technology
+        text: Технология
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: software_name
+        text: ПО
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: status
+        text: Статус
+        width: 120px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: network_connection
+        text: Сети
+        width: 280px
+        type: multiple-select
+        options: >
+          (
+            $nets := $exists(networks) ? networks : {};
+            $map($keys($nets), function($net_id){(
+              $net := $lookup($nets, $net_id);
+              {
+                "value": $net_id,
+                "text": $net.title ? $net.title : $net_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+      - value: protected_services
+        text: Защищённые сервисы
+        width: 320px
+        type: multiple-select
+        options:
+          option_id: protected_services
+          options: >
+            (
+              $services := $exists(services) ? services : {};
+              $map($keys($services), function($srv_id){(
+                $srv := $lookup($services, $srv_id);
+                {
+                  "value": $srv_id,
+                  "text": $srv.title ? $srv.title : $srv_id
+                }
+              )})
+            )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/kb.yaml
+
+    source: >
+      (
+        $entries := $exists(kbs) ? kbs : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($entries), function($id){(
+          $entry := $lookup($entries, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $entry.title,
+              "description": $entry.description,
+              "tag": $entry.tag,
+              "technology": $entry.technology,
+              "software_name": $entry.software_name,
+              "status": $entry.status,
+              "network_connection": $to_array($entry.network_connection),
+              "protected_services": $to_array($entry.protected_services)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_data := $lookup(file, "seaf.company.ta.services.kbs");
+        $existing := $exists($file_data) ? $file_data : {};
+        
+        $to_array := function($value){
+            $type($value) = "array"
+                ? $value
+                : ($exists($value) ? [$value] : [])
+        };
+
+        $updates := $map($keys($table), function($id){
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "tag": $row.tag,
+              "technology": $row.technology,
+              "software_name": $row.software_name,
+              "status": $row.status,
+              "network_connection": $to_array($row.network_connection),
+              "protected_services": $to_array($row.protected_services)
+            }
+          }
+        }) ~> $merge();
+        
+        {
+          "seaf.company.ta.services.kbs": $merge([$existing, $updates])
+        }
+      )
+
+  seaf.company.ta.docs.logical_links.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Логические связи/Изменение логических связей
+    description: Редактирование логических связей из architecture/ta/logical_link.yaml
+    page_size: 10
+    filtration: true
+    selection: false
+
+    origin:
+      links: seaf.company.ds.ta.logical_links
+      objects: seaf.company.ds.ta.all_objects
+      networks: seaf.company.ds.ta.networks
+      stands: seaf.company.ds.ta.stands
+      stand_options: seaf.company.ds.ta.stand_options
+
+    headers:
+      - value: id
+        text: ID
+        width: 260px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+      - value: description
+        text: Описание
+        width: 300px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+      - value: direction
+        text: Направление
+        width: 140px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+      - value: source
+        text: Источник
+        width: 220px
+        type: select
+        options: >
+          (
+            $objs := $exists(objects) ? objects : {};
+            $map($keys($objs), function($obj_id){(
+              $obj := $lookup($objs, $obj_id);
+              {
+                "value": $obj_id,
+                "text": $obj.title ? $obj.title : $obj_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+      - value: target
+        text: Приёмники
+        width: 320px
+        type: multiple-select
+        options: >
+          (
+            $objs := $exists(objects) ? objects : {};
+            $map($keys($objs), function($obj_id){(
+              $obj := $lookup($objs, $obj_id);
+              {
+                "value": $obj_id,
+                "text": $obj.title ? $obj.title : $obj_id
+              }
+            )})
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+      - value: stand
+        text: Стенды
+        width: 200px
+        type: multiple-select
+        options: >
+          (
+            $opts := $exists(stand_options) ? stand_options : [];
+            $type($opts) = "array" ? $opts : ($exists($opts) ? [$opts] : [])
+          )
+        editable: true
+        save:
+          path: ../../../../architecture/ta/logical_link.yaml
+
+    source: >
+      (
+        $links := $exists(links) ? links : {};
+        $to_array := function($value){
+          $type($value) = "array"
+            ? $value
+            : ($exists($value) ? [$value] : [])
+        };
+        $rows := $map($keys($links), function($id){(
+          $link := $lookup($links, $id);
+          {
+            $id: {
+              "id": $id,
+              "title": $link.title,
+              "description": $link.description,
+              "direction": $link.direction,
+              "source": $link.source,
+              "target": $to_array($link.target),
+              "stand": $to_array($link.stand)
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $type($rows) = 'object' ? $rows : {}
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $file_data := $lookup(file, "seaf.company.ta.services.logical_links");
+        $existing := $exists($file_data) ? $file_data : {};
+        
+        $to_array := function($value){
+            $type($value) = "array"
+                ? $value
+                : ($exists($value) ? [$value] : [])
+        };
+
+        $updates := $map($keys($table), function($id){
+          $row := $lookup($table, $id);
+          {
+            $id: {
+              "title": $row.title,
+              "description": $row.description,
+              "direction": $row.direction,
+              "source": $row.source,
+              "target": $to_array($row.target),
+              "stand": $to_array($row.stand)
+            }
+          }
+        }) ~> $merge();
+        
+        {
+          "seaf.company.ta.services.logical_links": $merge([$existing, $updates])
+        }
+      )

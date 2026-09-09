@@ -1,0 +1,54 @@
+# Сводка по архитектурному аспекту
+entities:
+  seaf.company.cybersec.systems:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          tech_params:
+            title: Технические параметры функционирования
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: tech_params
+            # Расположение
+            align: "<"
+            # Порядок расположения
+            order: 210
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      tech_params:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: markdown
+        template: ../../../_shared/templates/summary.md
+
+        origin:
+          objects: seaf.company.ds.cybersec.systems
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          
+          [
+              { "field_name": "Масштабируемость", "field_content": { "value": $obj2present.scalability } }
+              { "field_name": "Средства мониторинга", "field_content": { "value": $join($obj2present.monitoring, ",") } },
+              { "field_name": "Обеспечивается отказоустойчивость", "field_content": { "value": $obj2present.high_availability.type } },
+              { "field_name": "Тип резервирования \nв пределах одной зоны доступности", "field_content": { "value": $obj2present.high_availability.capacity_reservation_type } },
+              { "field_name": "Полнота резервирования \nв пределах одной зоны доступности", "field_content": { "value": $obj2present.high_availability.capacity_management } },
+              { "field_name": "Обеспечивается катастрофоустойчивость", "field_content": { "value": $obj2present.disaster_recovery.type } },
+              { "field_name": "Тип резервирования \nв резервных зонах доступности", "field_content": { "value": $obj2present.disaster_recovery.capacity_reservation_type } },
+              { "field_name": "Полнота резервирования \nв резервных зонах доступности", "field_content": { "value": $obj2present.disaster_recovery.capacity_management } },
+              { "field_name": "Резервное копирование \n(место хранение бекапа)", "field_content": { "value": $obj2present.backup.placement } },
+              { "field_name": "Резервное копирование дубликата \n(место хранения дубликата резервной копии)", "field_content": { "value": $obj2present.backup.backup_placement } }
+          ];
+          )

@@ -1,0 +1,111 @@
+docs:
+  editable_table.s3.table:
+    location: TABLE / S3 / Table
+    origin:
+      headers: >
+        ($.docs."editable_table.s3.table"."headers")
+      # Может быть использовано любое JSONata выражение для получения данных из архитектурного озера
+      body: >
+        ($."editable_table.s3.table.data")
+
+    type: editable-table
+    # type - Тип документа
+    page_size: 5
+    # page_size - Количество строк на странице
+    # Дефолтное значение: 20
+    # Допустимые значения: положительные целые числа
+    selection: true
+    # selection - Отображение чекбоксов для выбора строк
+    # Дефолтное значение:  false
+    # Допустимые значения: false / true
+    filtration: true
+    # filtration - Флаг позволяющий глобально отключить отображение фильтров в каждой колонке
+    # Дефолтное значение: true
+    # Допустимые значения: true / false
+    direction: ltr
+    # direction - Направление таблицы
+    # Дефолтное значение:  ltr
+    # Допустимые значения: ltr (left to right) / ttb (top to bottom)
+    excel_export: false
+    # excel_export - Флаг позволяющий отключить выгрузку таблицы в excel
+    # Дефолтное значение:  true
+    # Допустимые значения: true / false
+    excel_export_filter: false
+    # excel_export_filter - Флаг позволяющий применить используемые фильтры и сортировку при выгрузке excel
+    # Дефолтное значение:  false
+    # Допустимые значения: true / false
+    new_row_allowed: true
+    # new_row_allowed - Флаг позволяющий отключить создание новой строки
+    # Дефолтное значение:  true
+    # Допустимые значения: true / false
+    row_remove_allowed: true
+    # row_remove_allowed - Флаг позволяющий отключить удаление строк
+    # Важно: требует установки значения `selection: true`
+    # Дефолтное значение:  true
+    # Допустимые значения: true / false
+    show_data_error: false
+    # show_data_error - Флаг позволяющий отобразить таблицу содержащую ошибки в данных (body)
+    # Дефолтное значение:  false
+    # Допустимые значения: true / false
+    update_index_file: null
+    # update_index_file - Позволяет обновить индексные файлы при сохранении.
+    # При отсуствии значения - индексные файлы не обновляются.
+    # В качестве значения "update_index_file" необходимо указать наименование индексного файла, например - "root.yaml".
+    # Не затрагивает уже подключенные файлы.
+    new_row: >
+      (
+          $rows := $keys(table);
+          $new_row_count := $count($rows) + 1;
+          $new_row_id := "row_" & $new_row_count;
+          $new_row_id
+      )
+
+    format: >
+      (
+         {"editable_table.s3.table.data": table}
+      )
+
+    yaml:
+      # yaml - позволяет настроить форматирование yaml при сохранении
+      null_replace_string: null
+      # null_replace_string - позволяет заменить пустые значения при сохранении
+      # Дефолтное значение: "" (пустая строка)
+
+    headers:
+      # headers - Массив заголовков
+      # Обязательное
+      - value: text
+        type: text
+        editable: true
+        save:
+          path: data.yaml
+
+      - value: fn
+        type: fn
+        fn: >
+          ($string(row.upload))
+
+      - value: upload
+        type: upload
+        editable: true
+        save:
+          path: data.yaml
+
+      - value: upload_disabled
+        type: upload
+        editable: false
+        save:
+          path: data.yaml
+
+    source: >
+      (
+        $mock := {
+            "width": "250px"
+        };
+      
+        $headers := $map(headers, function($h){(
+            $merge([$h, $mock]);
+        )});
+      
+        { "body": body, "headers": $headers }
+      )

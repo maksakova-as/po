@@ -1,0 +1,110 @@
+entities:
+  seaf.company.ta.services.environments:
+    presentations:
+      list:
+        title: Окружения
+        type: table
+        headers:
+          - value: title
+            text: Название
+            link: link
+          - value: description
+            text: Описание
+          - value: id
+            text: ID
+        origin: seaf.company.ds.ta.environments
+        source: >
+          (
+            $.*@$env.{
+              "id": $env.__id__,
+              "link": "/entities/" & $env.__entity_id__ & "/card?id=" & $env.__id__,
+              "title": $env.title,
+              "description": $env.description
+            }[];
+          )
+
+      card:
+        title: Карточка окружения
+        widgets:
+          header:
+            align: "^"
+            presentation: header
+            order: 0
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+          details:
+            title: Атрибуты
+            presentation: environment_details
+            align: "v"
+            order: 10
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            $obj := $lookup(objects, $params.id);
+            $exists($obj.__id__)
+              ? $seaf_fn_combine_widgets($self, $obj.__entity_id__, $obj.__id__)
+              : { "type": "rows", "items": [] };
+          )
+
+      environment_details:
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+          required:
+            - id
+        type: table
+        headers:
+          - value: field
+            text: Атрибут
+          - value: value
+            text: Значение
+        origin: seaf.company.ds.ta.environments
+        source: >
+          (
+            $env := $lookup($, $params.id);
+            $exists($env)
+            ? [
+                {"field": "ID", "value": $env.__id__},
+                {"field": "Название", "value": $env.title},
+                {"field": "Описание", "value": $env.description},
+                {"field": "Внешний ID", "value": $env.external_id}
+              ]
+            : []
+          )
+
+      header:
+        type: markdown
+        template: ../../../seaf-company-base/_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.company.ds.ta.all_objects
+        source: >
+          (
+            /*  ищем объект для презентации */
+            $obj2present := $lookup(objects, $params.id);
+            {
+              "entity": $obj2present.__entity_title__,
+              "title": $obj2present.title
+            }
+          )

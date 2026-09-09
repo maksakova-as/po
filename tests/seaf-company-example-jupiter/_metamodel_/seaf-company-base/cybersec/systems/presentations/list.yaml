@@ -1,0 +1,46 @@
+entities:
+  seaf.company.cybersec.systems:
+
+    presentations:
+      list:
+        title: Список
+        type: table
+
+        headers:
+          - value: id
+            text: Идентификатор
+            link: link
+          - value: title
+            text: Название
+            align: left
+            link: link
+          - value: class
+            text: Класс
+            align: left
+#          - value: criticality_level
+#            text: Критичность
+#            align: left
+          - value: description
+            text: Описание
+            align: left
+          - value: location
+            text: Размещение
+            align: left
+          - value: lifecycle_stage
+            text: Этап ЖЦ
+            align: left
+
+        origin: seaf.company.ds.cybersec.systems
+        source: >
+          (
+          $.*@$val.{
+              "id": $val.__id__,
+              "link": "/entities/" & $val.__entity_id__ & "/card?id=" & $val.__id__,
+              "title": $val.title,
+              "class": $val.class,
+          /*    "criticality_level": $val.criticality_level,*/
+              "location": $val.location,
+              "lifecycle_stage": $val.lifecycle_stage,
+              "description": $val.description
+          }[];
+          )

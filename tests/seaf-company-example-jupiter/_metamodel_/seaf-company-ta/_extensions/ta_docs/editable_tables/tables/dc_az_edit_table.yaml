@@ -1,0 +1,95 @@
+docs:
+  seaf.company.ta.docs.dc_azs.edit:
+    type: editable-table
+    location: /Техническая архитектура/Сервисы/Локации/Зоны доступности/Изменение зон
+    description: Редактирование зон доступности из architecture/ta/dc_az.yaml
+    page_size: 12
+    filtration: true
+    selection: false
+    excel_export: true
+
+    origin:
+      dc_azs: seaf.company.ds.ta.dc_azs
+
+    headers:
+      - value: id
+        text: ID
+        width: 220px
+        filterable: false
+        sortable: false
+
+      - value: title
+        text: Название
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_az.yaml
+
+      - value: description
+        text: Описание
+        width: 280px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_az.yaml
+
+      - value: region
+        text: Регион
+        width: 230px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_az.yaml
+
+      - value: vendor
+        text: Вендор
+        width: 220px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_az.yaml
+
+      - value: external_id
+        text: Внешний ID
+        width: 180px
+        editable: true
+        save:
+          path: ../../../../architecture/ta/dc_az.yaml
+
+    source: >
+      (
+        $azs := $exists(dc_azs) ? dc_azs : {};
+        $rows := $map($keys($azs), function($az_id){(
+          $az := $lookup($azs, $az_id);
+          {
+            $az_id: {
+              "id": $az_id,
+              "title": $az.title,
+              "description": $az.description,
+              "region": $az.region,
+              "vendor": $az.vendor,
+              "external_id": $az.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "body": $rows
+        }
+      )
+
+    format: >
+      (
+        $table := $exists(table) ? table : {};
+        $rows := $map($keys($table), function($az_id){(
+          $row := $lookup($table, $az_id);
+          {
+            $az_id: {
+              "title": $row.title,
+              "description": $row.description,
+              "region": $row.region,
+              "vendor": $row.vendor,
+              "external_id": $row.external_id
+            }
+          }
+        )}) ~> $merge();
+        {
+          "seaf.company.ta.services.dc_azs": $rows
+        }
+      )

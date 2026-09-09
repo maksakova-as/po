@@ -1,0 +1,619 @@
+{
+  "systems": [
+    {
+      "id": "jupiter.app_system.ecm_news",
+      "title": "АС ECM Новости",
+      "notation": "Нецелевая",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Ведение новостей",
+          "color": "black"
+        },
+        {
+          "title": "Публикация новостей",
+          "color": "black"
+        },
+        {
+          "title": "➕    Доставка",
+          "color": "red"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.news_summary",
+      "title": "Внешняя АС ИИ Агенты создания новостей",
+      "notation": "Внешняя",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "ИИ-агент Сводка новостей",
+          "color": "black"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.external_partners",
+          "title": "Внешние партнеры"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.mes_clothing",
+      "title": "АС MES Одежда",
+      "notation": "Целевая частично внедрена",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Управление производством одежды",
+          "color": "red"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.1c_erp",
+      "title": "АС 1С ERP",
+      "notation": "Нецелевая",
+      "has_functions": 0,
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_sbercloud",
+          "title": "SberCloud"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.mp_favorite_client",
+      "title": "МП Любимый клиент",
+      "notation": "Целевая внедрена полностью",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Мобильный ЛК",
+          "color": "black"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_sbercloud",
+          "title": "SberCloud"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.website",
+      "title": "АС Веб-сайт",
+      "notation": "Целевая внедрена полностью",
+      "has_functions": 0,
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_sbercloud",
+          "title": "SberCloud"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.app_system.tms",
+      "title": "АС TMS",
+      "notation": "Целевая внедрена полностью",
+      "has_functions": 0,
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_sbercloud",
+          "title": "SberCloud"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 1,
+      "subsystems": [
+        {
+          "id": "jupiter.app_system.tms_logistics",
+          "title": "ФП Логистика",
+          "notation": "Целевая внедрена полностью",
+          "has_functions": 1,
+          "functions": [
+            {
+              "title": "➕    Доставка",
+              "color": "red"
+            },
+            {
+              "title": "Доставка для ФЛ",
+              "color": "black"
+            }
+          ]
+        },
+        {
+          "id": "jupiter.app_system.tms_routes",
+          "title": "ФП Маршртуты",
+          "notation": "Целевая внедрена полностью",
+          "has_functions": 0
+        }
+      ]
+    },
+    {
+      "id": "jupiter.app_system.efs",
+      "title": "АС Единый Фронт Сотрудника",
+      "notation": "Целевая частично внедрена",
+      "has_functions": 0,
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 1,
+      "subsystems": [
+        {
+          "id": "jupiter.app_system.efs_prod_expert",
+          "title": "ФП Технолог производства",
+          "notation": "Целевая частично внедрена",
+          "has_functions": 1,
+          "functions": [
+            {
+              "title": "Кабинет технолога производства",
+              "color": "red"
+            }
+          ]
+        },
+        {
+          "id": "jupiter.app_system.efs_news_editor",
+          "title": "ФП Редактор новостей",
+          "notation": "Целевая частично внедрена",
+          "has_functions": 1,
+          "functions": [
+            {
+              "title": "Кабинет редактора новостей",
+              "color": "black"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jupiter.app_system.aihub",
+      "title": "➕     АС ИИ Хаб Юпитер",
+      "notation": "Целевая разработка",
+      "has_functions": 0,
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 1,
+      "subsystems": [
+        {
+          "id": "jupiter.app_system.aihub_model_ds1",
+          "title": "➕     ФП Модель DeepSeek",
+          "notation": "Целевая разработка",
+          "has_functions": 0
+        }
+      ]
+    },
+    {
+      "id": "jupiter.tech_system.esb",
+      "title": "АС КСШ",
+      "notation": "Нецелевая",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Транспорт сообщений",
+          "color": "black"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.tech_system.kafka",
+      "title": "АС Kafka",
+      "notation": "Целевая внедрена полностью",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Транспорт сообщений",
+          "color": "black"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    },
+    {
+      "id": "jupiter.tech_system.vorona",
+      "title": "АС ШПУ Ворона",
+      "notation": "Целевая внедрена полностью",
+      "has_functions": 1,
+      "functions": [
+        {
+          "title": "Шлюз сообщений",
+          "color": "black"
+        }
+      ],
+      "groups": [
+        {
+          "id": "jupiter.sys_group.internal",
+          "title": "Периметр компании ООО Юпитер"
+        },
+        {
+          "id": "jupiter.sys_group.internal_dc",
+          "title": "ЦОД компании"
+        }
+      ],
+      "is_sber": 0,
+      "is_external": 0,
+      "has_subsystems": 0,
+      "subsystems": []
+    }
+  ],
+  "has_external": 0,
+  "has_sber": 0,
+  "integrations": [
+    {
+      "id": "jupiter.integration.ecm_news__news_summary__i00100",
+      "link_id": "jupiter.integration.ecm_news__news_summary__i001",
+      "direction": "-down->",
+      "from": "jupiter.app_system.news_summary",
+      "to": "jupiter.app_system.ecm_news",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.1",
+      "title": "П.1",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.1c_erp__tms_logistics__i0110",
+      "link_id": "jupiter.integration.1c_erp__tms_logistics__i01",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.esb",
+      "to": "jupiter.app_system.1c_erp",
+      "is_new": 1,
+      "is_deleted": 0,
+      "code": "<U+271A> П.2",
+      "title": "П.2",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.1c_erp__tms_logistics__i0111",
+      "link_id": "jupiter.integration.1c_erp__tms_logistics__i01",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.vorona",
+      "to": "jupiter.tech_system.esb",
+      "is_new": 1,
+      "is_deleted": 0,
+      "code": "<U+271A> П.2",
+      "title": "П.2",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.1c_erp__tms_logistics__i01120",
+      "link_id": "jupiter.integration.1c_erp__tms_logistics__i01",
+      "direction": "-down->",
+      "from": "jupiter.app_system.tms_logistics",
+      "to": "jupiter.tech_system.vorona",
+      "is_new": 1,
+      "is_deleted": 0,
+      "code": "<U+271A> П.2",
+      "title": "П.2",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.1c_erp__esign__i0220",
+      "link_id": "jupiter.integration.1c_erp__esign__i02",
+      "direction": "-down->",
+      "from": "jupiter.cs_system.esign",
+      "to": "jupiter.app_system.1c_erp",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.3",
+      "title": "П.3",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.mp_favorite_client__ecm_news__i_0130",
+      "link_id": "jupiter.integration.mp_favorite_client__ecm_news__i_01",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.kafka",
+      "to": "jupiter.app_system.mp_favorite_client",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.4",
+      "title": "П.4",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.mp_favorite_client__ecm_news__i_0131",
+      "link_id": "jupiter.integration.mp_favorite_client__ecm_news__i_01",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.vorona",
+      "to": "jupiter.tech_system.kafka",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.4",
+      "title": "П.4",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.mp_favorite_client__ecm_news__i_01320",
+      "link_id": "jupiter.integration.mp_favorite_client__ecm_news__i_01",
+      "direction": "-down->",
+      "from": "jupiter.app_system.ecm_news",
+      "to": "jupiter.tech_system.vorona",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.4",
+      "title": "П.4",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.efs_prod_expert__mes_clothing__i23440",
+      "link_id": "jupiter.integration.efs_prod_expert__mes_clothing__i234",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.esb",
+      "to": "jupiter.app_system.efs_prod_expert",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.5",
+      "title": "П.5",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.efs_prod_expert__mes_clothing__i234410",
+      "link_id": "jupiter.integration.efs_prod_expert__mes_clothing__i234",
+      "direction": "-down->",
+      "from": "jupiter.app_system.mes_clothing",
+      "to": "jupiter.tech_system.esb",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.5",
+      "title": "П.5",
+      "color": "black"
+    },
+    {
+      "id": "jupiter.integration.efs_news_editor__ecm_news__i02350",
+      "link_id": "jupiter.integration.efs_news_editor__ecm_news__i023",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.kafka",
+      "to": "jupiter.app_system.efs_news_editor",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.6",
+      "title": "П.6",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.efs_news_editor__ecm_news__i02351",
+      "link_id": "jupiter.integration.efs_news_editor__ecm_news__i023",
+      "direction": "-down->",
+      "from": "jupiter.tech_system.vorona",
+      "to": "jupiter.tech_system.kafka",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.6",
+      "title": "П.6",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.efs_news_editor__ecm_news__i023520",
+      "link_id": "jupiter.integration.efs_news_editor__ecm_news__i023",
+      "direction": "-down->",
+      "from": "jupiter.app_system.ecm_news",
+      "to": "jupiter.tech_system.vorona",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.6",
+      "title": "П.6",
+      "color": "red"
+    },
+    {
+      "id": "jupiter.integration.efs_news_editor__news_summary__i02460",
+      "link_id": "jupiter.integration.efs_news_editor__news_summary__i024",
+      "direction": "-down->",
+      "from": "jupiter.app_system.news_summary",
+      "to": "jupiter.app_system.efs_news_editor",
+      "is_new": 0,
+      "is_deleted": 0,
+      "code": "П.7",
+      "title": "П.7",
+      "color": "black"
+    }
+  ],
+  "channels": [
+    {
+      "id": "jupiter.channel.website",
+      "title": "➕    Вебсайт компании",
+      "type": "Внутренний",
+      "description": "Основной цифровой канал компании\n"
+    },
+    {
+      "id": "jupiter.channel.digital4clients",
+      "title": "Цифровой канал клиентов",
+      "type": "Внутренний",
+      "description": "Основной цифровой канал для клиентов компании\n"
+    },
+    {
+      "id": "jupiter.channel.shopping_centre",
+      "title": "Магазин компании",
+      "type": "Внутренний",
+      "description": "Физическая площадка по торговле товарами и живому взаимодействию с клиентами"
+    },
+    {
+      "id": "jupiter.channel.company_office",
+      "title": "Офис компании",
+      "type": "Внутренний",
+      "description": "Площадка работы и общения сотрудников"
+    }
+  ],
+  "channels_links": [
+    {
+      "channel": "jupiter.channel.website",
+      "system": "jupiter.app_system.website"
+    },
+    {
+      "channel": "jupiter.channel.digital4clients",
+      "system": "jupiter.app_system.mp_favorite_client"
+    },
+    {
+      "channel": "jupiter.channel.shopping_centre",
+      "system": "jupiter.app_system.efs"
+    },
+    {
+      "channel": "jupiter.channel.company_office",
+      "system": "jupiter.app_system.efs"
+    }
+  ],
+  "has_channels": 1,
+  "clients": [
+    {
+      "id": "jupiter.client.young_person",
+      "title": "Молодые люди"
+    },
+    {
+      "id": "jupiter.client.mature_person",
+      "title": "Зрелые люди"
+    },
+    {
+      "id": "jupiter.client.elderly_person",
+      "title": "Пожилые люди"
+    },
+    {
+      "id": "jupiter.client.employee",
+      "title": "Сотрудники"
+    }
+  ],
+  "clients_links": [
+    {
+      "client": "jupiter.client.young_person",
+      "channel": "jupiter.channel.website"
+    },
+    {
+      "client": "jupiter.client.mature_person",
+      "channel": "jupiter.channel.website"
+    },
+    {
+      "client": "jupiter.client.young_person",
+      "channel": "jupiter.channel.digital4clients"
+    },
+    {
+      "client": "jupiter.client.mature_person",
+      "channel": "jupiter.channel.digital4clients"
+    },
+    {
+      "client": "jupiter.client.mature_person",
+      "channel": "jupiter.channel.shopping_centre"
+    },
+    {
+      "client": "jupiter.client.elderly_person",
+      "channel": "jupiter.channel.shopping_centre"
+    },
+    {
+      "client": "jupiter.client.young_person",
+      "channel": "jupiter.channel.company_office"
+    },
+    {
+      "client": "jupiter.client.employee",
+      "channel": "jupiter.channel.company_office"
+    }
+  ],
+  "title": "Архитектурная схема to-be",
+  "config": {
+    "sber_frame": false,
+    "elk": true
+  }
+}

@@ -1,0 +1,11 @@
+docs:
+  dochub.welcome:
+    title: SEAF company example (Jupiter)
+    type: markdown
+#    location: README
+    source: README.md
+
+imports:
+  - _metamodel_/packages.yaml
+  - repo.yaml
+  - tests/root.yaml

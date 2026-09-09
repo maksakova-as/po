@@ -1,0 +1,54 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.vpn_gateways` (vpn gateways) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.vpn_gateways:
+    description: Converts Cloud.ru VPN Gateways into network components.
+    origin:
+      data_lake: ($)
+    source: |
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $az_ref := function($text){
+          (
+            $norm := $normalize($text);
+            $norm != "" ? "reverse.dc_az." & $norm : null
+          )
+        };
+        $vpns := data_lake."seaf.ta.reverse.cloud_ru.advanced.vpn_gateways".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vpns.(
+          $record := value;
+          $raw_id := $record.id ? $record.id : key;
+          $comp_id := "reverse.netcomp.vpn." & $normalize($raw_id);
+          $vpc_ref := $record.vpc_id ? ["reverse.netcomp.vpc." & $normalize($record.vpc_id)] : [];
+          $az_refs := $record.availability_zones ? $record.availability_zones.($az_ref($)) : [];
+          $card := "/entities/seaf.company.ta.components.networks/card?id=" & $comp_id;
+          {
+            ($comp_id): {
+              "__id__": $comp_id,
+              "__entity_id__": "seaf.company.ta.components.networks",
+              "__entity_title__": "VPN Gateway (reverse import)",
+              "__company_id__": $record.tenant,
+              "__link_to_card__": $card,
+              "link": $card,
+              "title": $record.name ? $record.name : ("VPN " & $raw_id),
+              "description": $join([
+                $record.status ? "Status: " & $record.status : "",
+                $record.bandwidth ? "Bandwidth: " & $record.bandwidth : "",
+                $record.local_subnets ? "Local Subnets: " & $join($record.local_subnets, ", ") : ""
+              ][ $ != "" ], "\n"),
+              "type": "VPN Gateway",
+              "availabilityzone": $az_refs,
+              "network_connection": $vpc_ref,
+              "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vpn_gateways",
+              "resource_id": $record.id,
+              "source_key": key,
+              "is_reverse": true
+            }
+          }
+        )[] ~> $merge()
+      )

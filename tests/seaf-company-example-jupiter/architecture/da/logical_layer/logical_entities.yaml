@@ -1,0 +1,152 @@
+seaf.company.da.logical_entities:
+
+  jupiter.le.model:
+    title: Модель изделия
+    description: уникальное кодовое название модели одежды
+    category:
+      - Прочее
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.model
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_1
+    pdn_flag: false
+    cde_flag: true
+    attributes:
+      article:
+        title: Артикул
+        description: код артикула одежды
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: true
+      material:
+        title: Материал
+        description: уникальное кодовое название материала для изготовления одежды
+        lifecycle_stage: Используется
+        business_term: jupiter.bt.material
+        pdn_flag: true
+        cde_flag: false
+  jupiter.le.color:
+    title: Основной цвет
+    description: основной цвет изделия
+    category:
+      - Прочее
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.color
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_1
+    pdn_flag: false
+    cde_flag: false
+    attributes:
+      name:
+        title: Название цвета
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: false
+      valueR:
+        title: Значение R
+        description: красный
+        pdn_flag: false
+        cde_flag: false
+      valueG:
+        title: Значение G
+        description: зелёный
+        pdn_flag: false
+        cde_flag: false
+      valueB:
+        title: Значение B
+        description: синий
+        pdn_flag: false
+        cde_flag: false
+  jupiter.le.size:
+    title: Размер
+    description: размер одежды
+    category:
+      - Прочее
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.size
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_1
+    pdn_flag: false
+    cde_flag: false
+    attributes:
+      name_rus:
+        title: Наименование Российское
+        description: 32-56
+        lifecycle_stage: Используется
+        pdn_flag: false
+        cde_flag: false
+      name_int:
+        title: Наименование Буквенное
+        description: S-XL
+        lifecycle_stage: Используется
+        business_term: jupiter.bt.material
+        pdn_flag: false
+        cde_flag: false
+
+  jupiter.le.employee:
+    title: Сотрудник
+    description: сотрудник компании, в любой должности
+    category:
+      - Перс данные
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.employee
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_2
+    pdn_flag: true
+    cde_flag: true
+    attributes:
+      surname:
+        title: Фамилия
+        business_term: jupiter.bt.full_name
+        pdn_flag: true
+        cde_flag: true
+      name:
+        title: Имя
+        business_term: jupiter.bt.full_name
+        pdn_flag: true
+        cde_flag: true
+      second_name:
+        title: Отчество
+        business_term: jupiter.bt.full_name
+        pdn_flag: true
+        cde_flag: true
+  jupiter.le.designer:
+    title: Дизайнер
+    description: сотрудник компании, исполняющий обязанности дизайнера
+    category:
+      - Прочее
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.designer
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_2
+    pdn_flag: false
+    cde_flag: true
+    attributes:
+      specialty:
+        title: Специализация
+        business_term: jupiter.bt.full_name
+        pdn_flag: false
+        cde_flag: false
+  jupiter.le.technician:
+    title: Технолог
+    description: сотрудник компании, работающий на должности технолога
+    category:
+      - Прочее
+    lifecycle_stage: Используется
+    business_terms:
+      - jupiter.bt.lead_technician
+      - jupiter.bt.senior_technician
+    master_system: jupiter.app_system.mes_clothing
+    aggregat: jupiter.aggr.domain1_2
+    pdn_flag: false
+    cde_flag: false
+    attributes:
+      category:
+        title: Разряд
+        pdn_flag: false
+        cde_flag: false

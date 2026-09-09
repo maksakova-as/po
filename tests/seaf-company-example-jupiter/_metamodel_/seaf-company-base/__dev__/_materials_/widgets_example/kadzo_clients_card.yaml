@@ -1,0 +1,40 @@
+entities:
+  kadzo.v2023.clients:
+    presentations:
+      card:
+        title: Карточка клиента
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+        type: mkr-grid
+        widgets:
+          summary:
+            title: Сводка по клиенту
+            entity: kadzo.v2023.clients
+            presentation: summary
+            order: 10
+            align: "<"
+            style:
+              margin: 4px
+              border: true
+          client_channels:
+            title: Каналы обслуживания клиентов
+            entity: kadzo.v2023.channels
+            presentation: channels_by_client
+            order: 20
+            style:
+              margin: 4px
+              border: true
+        header:
+          entity: kadzo.v2023.clients
+          presentation: header
+        origin: kadzo.v2023.__presentations__.widgets
+        source: >
+          (
+                $lookup( $lookup($, "__widgets__.kadzo.v2023.clients.card"), $params.id);
+          )

@@ -1,0 +1,19 @@
+# Метаданные пакета
+$package:
+  seaf-company-ai: # Идентификатор пакета
+    # Краткое название пакета
+    name: SEAF company AI
+    # Поставщик
+    vendor: Sber
+    # Описание
+    description: Модуль описания ИИ ландшафта компании
+    # Версия
+    version: 1.6.0
+    # Зависимости от других пакетов
+    dependencies:
+      dochub: ">=4.1.0"
+      seaf-common: ">=1.5.0"
+
+imports:
+  - _shared/_root.yaml
+  - ai/_root.yaml

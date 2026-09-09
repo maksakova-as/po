@@ -1,0 +1,16 @@
+seaf.company.ta.services.kbs:
+  blah.blah:
+    title: Blah!!!
+    description: Blah
+    technology: Безопасность конфигураций
+    segment: flix.network_segment.dc.ntwrk.03
+    network_connection:
+      - jupiter.network.lan.dc01.int.prod
+    OID: blah.blah
+  "":
+    title: ""
+    description: ""
+    technology: Контентная фильтрация и разграничение доступа в Интернет
+    segment: flix.network_segment.dc.ntwrk.03
+    network_connection: "[]"
+    OID: ""

@@ -1,0 +1,50 @@
+entities:
+  seaf.company.services:
+
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        widgets:
+          specs:
+            title: Спецификации сервиса
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: specs
+            # Расположение
+            align: ">"
+            # Порядок расположения
+            order: 330
+            # Определяем стиль виджета
+            style:
+              margin: 4px
+              padding: 0px
+              border: true
+
+      # Презентация для виджета
+      specs:
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор объекта
+              type: string
+          required:
+            - id
+
+        type: table
+        headers:
+          - value: number
+            text: №
+          - value: spec
+            text: Спецификация
+
+        origin:
+          objects: seaf.company.ds.services
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+          $obj2present.specs#$i.{
+                                  "number": $i+1,
+                                  "spec": $
+                                   }[];
+          )

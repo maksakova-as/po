@@ -1,0 +1,140 @@
+entities:
+  seaf.company.app.diagrams.asis:
+    title: &entity_title Диаграммы прикладной архитектуры
+    description: &entity_description |
+      Диаграммы (схемы) графического представления прикладной архитектуры.
+      \n Используйте ключ (идентификатор) объекта вида: 
+      \n - <компания>.app_diagram.<id_объекта>
+      \n где: 
+      \n - <компания> - идентификатор компании
+      \n - токен в середине = тип объекта. Рекомендуется указывать для удобства использования архитектурных данных
+      \n - <id_объекта> - идентификатор диаграммы
+
+    schema:
+      type: object
+      patternProperties:
+        "^[a-zA-Z][a-zA-Z0-9_-]*(\\.[a-zA-Z][a-zA-Z0-9_-]*)*$":
+          title: *entity_title
+          description: *entity_description
+          type: object
+          additionalProperties: false
+
+          required:
+            - title
+            - filter_systems
+
+          properties:
+            title:
+              title: Название
+              description: |
+                Название диаграммы - как оно будет отображено при визуализации
+              type: string
+
+            menu_location:
+              title: Пункт меню
+              description: |
+                Путь меню в SEAF.ArchTool, где будет располагаться диаграмма.
+                Если путь начинается с /, то это считается абсолютным путем, иначе относительным.
+                Абсолютный путь будет применен как есть, относительный путь будет дополнен корневым п.м.,
+                соответствующим данному архитектурному домену.
+                \nПример меню: ФО/Архитектура ФО ИИ-агенты
+              type: string
+
+            menu_order:
+              title: Порядок сортировки меню
+              description: |
+                Сортировка меню диаграммы в SEAF.ArchTool
+              type: number
+
+            group_by:
+              title: Группировать по
+              description: |
+                Указывайте id корневой категории, по которой на схеме будут сгруппированы системы.
+              $ref: "#/$rels/seaf.company.categories.category"
+
+            filter_systems:
+              title: Фильтр по системам
+              description: |
+                Начальный фильтр, который отбирает из всех систем те системы, ключи (идентификаторы) которых 
+                удовлетворяют указанным шаблонам.
+                Если шаблоны не заданы, то ни одна система не будет отображена.
+                В шаблонах можно указывать как ключи конкретных систем, так и маски "*" или "**".
+                Например "jupiter.app_system.**" - означает все объекты, ключ которых начинается с jupiter.app_system.
+              type: array
+              items:
+                anyOf:
+                  - type: string
+                  - type: string
+                    anyOf:
+                      - $ref: "#/$rels/seaf.company.app.systems.system"
+                      - $ref: "#/$rels/seaf.company.cybersec.systems.system"
+
+            filter_system_classes:
+              title: Фильтр по классам систем
+              description: |
+                Оставляет на диаграмме системы, относящиеся к указанным классам.
+                Если значение не задано, то данный атрибут не влияет на состав систем на диаграмме.
+                Если заданы другие фильтры (filter_*), то они применяются все одновременно.
+                Т.е. система будет отрисована на диаграмме, если она попала в фильтр1 И в фильтр2 И ... в фильтрN
+              type: array
+              items:
+                type: string
+                anyOf:
+                  - $ref: "#/$defs/seaf.company.def.app.system_classes_enum"
+                  - $ref: "#/$defs/seaf.company.def.cybersec.system_classes_enum"
+
+            filter_lifecycle_stages:
+              title: Фильтр по этапам ЖЦ
+              description: |
+                Оставляет на диаграмме системы, функции, интеграции, находящиеся на указанных этапах своего
+                жизненного цикла.
+                Если значение не задано, то данный атрибут не влияет на состав объектов на диаграмме.
+                Если заданы другие фильтры (filter_*), то они применяются все одновременно.
+                Т.е. система будет отрисована на диаграмме, если она попала в фильтр1 И в фильтр2 И ... в фильтрN
+              type: array
+              items:
+                type: string
+                $ref: "#/$defs/seaf.company.def.system_lifecycle_stage_enum"
+
+            filter_categories:
+              title: Фильтр по категориям
+              description: |
+                Оставляет на диаграмме системы, отнесенные к указанным категориям.
+                Если значение не задано, то данный атрибут не влияет на состав объектов на диаграмме.
+                Если заданы другие фильтры (filter_*), то они применяются все одновременно.
+                Т.е. система будет отрисована на диаграмме, если она попала в фильтр1 И в фильтр2 И ... в фильтрN
+              type: array
+              items:
+                type: string
+                $ref: "#/$rels/seaf.company.categories.category"
+
+#            show_subentities:
+#              title: Показывать подсущности
+#              description: |
+#                Если true, то сущности, имеющие наследников, показываются как несколько сущностей.
+#                В противном случае (false) такие сущности показываются как обычные сущности.
+#                Если не задано, то учитывается как false
+#              type: boolean
+#
+#            entity_patterns_formats:
+#              title: Форматы цвета и стиля для сущностей
+#              description: Задается массив форматов для различных паттернов имен сущностей. Используется первое найденное сопадение с паттерном
+#              type: array
+#              items:
+#                title: Массив форматов
+#                type: object
+#                additionalProperties: false
+#                properties:
+#                  pattern:
+#                    title: Паттерн имени сущности
+#                    type: string
+#                  object_format:
+#                    title: plantuml формат цвета\стиля для объекта
+#                    type: string
+#                  link_format:
+#                    title: plantuml формат цвета\стиля для исходящей стрелки объекта
+#                    type: string
+#                required:
+#                  - pattern
+#                  - object_format
+#

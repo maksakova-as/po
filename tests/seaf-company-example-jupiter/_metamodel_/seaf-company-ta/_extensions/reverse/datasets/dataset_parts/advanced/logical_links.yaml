@@ -1,0 +1,231 @@
+# Назначение: Подготовка датасета `reverse2seaf2.ds.ta.reverse.logical_links` (logical links) в контуре reverse.
+# Используется: ta/dataset_parts/*, _extensions/ta_docs/r41/docs/* и меню/таблицы reverse-источников.
+datasets:
+  reverse2seaf2.ds.ta.reverse.logical_links:
+    description: |
+      Builds logical links for Cloud.ru connections (peerings, VPN tunnels and EIP exposures) so SEAF cards can show endpoint relations.
+    origin:
+      data_lake: ($)
+      reverse_netcomps: reverse2seaf2.ds.ta.reverse.network_components
+      reverse_vpn: reverse2seaf2.ds.ta.reverse.vpn_gateways
+      reverse_nat: reverse2seaf2.ds.ta.reverse.nat_gateways
+      reverse_networks: reverse2seaf2.ds.ta.reverse.networks
+    source: |-
+      (
+        $normalize := function($text){
+          $text ? $replace($lowercase($text), /[^a-z0-9-]/, ".") ~> $replace(/\.{2,}/, ".") ~> $replace(/^\.|\.$/, "") : ""
+        };
+        $segment_ref := function($dc_text, $zone){
+          (
+            $dc_norm := $normalize($dc_text);
+            $dc_norm != "" and $zone != ""
+              ? "reverse.segment." & $dc_norm & "." & $zone
+              : null
+          )
+        };
+        $link_id := function($prefix, $raw){
+          (
+            $norm := $normalize($raw);
+            $norm != "" ? "reverse.link." & $prefix & "." & $norm : null
+          )
+        };
+        $ensure_array := function($value){
+          (
+            $type($value) = "array"
+              ? $value
+              : ($exists($value) ? [$value] : [])
+          )
+        };
+        $vpc_components := $exists(reverse_netcomps)
+          ? reverse_netcomps
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.network_components".source);
+        $vpn_components := $exists(reverse_vpn)
+          ? reverse_vpn
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.vpn_gateways".source);
+        $nat_components := $exists(reverse_nat)
+          ? reverse_nat
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.nat_gateways".source);
+        $networks := $exists(reverse_networks)
+          ? reverse_networks
+          : $eval(datasets."reverse2seaf2.ds.ta.reverse.networks".source);
+        $vpn_gateways_by_id := data_lake."seaf.ta.reverse.cloud_ru.advanced.vpn_gateways".$spread().(
+          $record := $.*[0];
+          $identifier := $record.id ? $record.id : $keys()[0];
+          {
+            ($identifier): $record
+          }
+        ) ~> $merge();
+        $nats := data_lake."seaf.ta.reverse.cloud_ru.advanced.nat_gateways".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $nat_eip_pairs := $nats.(
+          $nat := value;
+          $nat_id := $nat.id;
+          $component_id := $nat_id ? "reverse.netcomp.nat." & $normalize($nat_id) : null;
+          $component_id != null and $exists($lookup($nat_components, $component_id))
+            ? (
+                $ensure_array($nat.snat_rules).(
+                  $ensure_array($.eip_id).(
+                    {
+                      "eip_id": $,
+                      "component": $component_id,
+                      "dc": $nat.DC,
+                      "tenant": $nat.tenant
+                    }
+                  )
+                )
+              )
+            : []
+        )[];
+        $peerings := data_lake."seaf.ta.reverse.cloud_ru.advanced.peerings".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $peer_links := $peerings.(
+          $record := value;
+          $req_vpc := $record.request_vpc;
+          $acc_vpc := $record.accept_vpc;
+          $req_component := $req_vpc ? "reverse.netcomp.vpc." & $normalize($req_vpc) : null;
+          $acc_component := $acc_vpc ? "reverse.netcomp.vpc." & $normalize($acc_vpc) : null;
+          $req_exists := $req_component != null and $exists($lookup($vpc_components, $req_component));
+          $acc_exists := $acc_component != null and $exists($lookup($vpc_components, $acc_component));
+          ($req_exists and $acc_exists)
+            ? (
+                $link_key := $link_id("peering", $record.id ? $record.id : key);
+                $link_key != null
+                  ? {
+                      ($link_key): {
+                        "__id__": $link_key,
+                        "__entity_id__": "seaf.company.ta.services.logical_links",
+                        "__entity_title__": "Logical Link (reverse import)",
+                        "__company_id__": $record.tenant,
+                        "__link_to_card__": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "link": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "title": $record.name ? $record.name : $link_key,
+                        "description": $join([
+                          $record.status ? "Status: " & $record.status : "",
+                          $record.tenant ? "Tenant: " & $record.tenant : "",
+                          $record.DC ? "DC: " & $record.DC : ""
+                        ][ $ != "" ], "\n"),
+                        "source_obj": $req_component,
+                        "target_obj": [$acc_component],
+                        "direction": "<==>",
+                        "source_key": key,
+                        "resource_id": $record.id,
+                        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.peerings",
+                        "is_reverse": true
+                      }
+                    }
+                  : {}
+              )
+            : {}
+        );
+        $vpn_connections := data_lake."seaf.ta.reverse.cloud_ru.advanced.vpn_connections".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $vpn_links := $vpn_connections.(
+          $record := value;
+          $gateway_id := $record.gw_id;
+          $source_component := $gateway_id ? "reverse.netcomp.vpn." & $normalize($gateway_id) : null;
+          $source_exists := $source_component != null and $exists($lookup($vpn_components, $source_component));
+          $gateway_raw := $gateway_id != null and $exists($lookup($vpn_gateways_by_id, $gateway_id))
+            ? $lookup($vpn_gateways_by_id, $gateway_id)
+            : null;
+          $subnet_id := $gateway_raw != null ? $gateway_raw.subnet_id : null;
+          $network_id := $subnet_id ? "reverse.network." & $normalize($subnet_id) : null;
+          $network_exists := $network_id != null and $exists($lookup($networks, $network_id));
+          $segment_candidate := $segment_ref(
+            $gateway_raw.DC ? $gateway_raw.DC : $record.DC,
+            "INT-NET"
+          );
+          $targets := $network_exists
+            ? [$network_id]
+            : ($segment_candidate != null ? [$segment_candidate] : []);
+          ($source_exists and $targets != [])
+            ? (
+                $link_key := $link_id("vpn", $record.id ? $record.id : key);
+                $link_key != null
+                  ? {
+                      ($link_key): {
+                        "__id__": $link_key,
+                        "__entity_id__": "seaf.company.ta.services.logical_links",
+                        "__entity_title__": "Logical Link (reverse import)",
+                        "__company_id__": $record.tenant,
+                        "__link_to_card__": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "link": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "title": $record.name ? $record.name : $link_key,
+                        "description": $join([
+                          $record.remote_gw_ip ? "Remote Gateway IP: " & $record.remote_gw_ip : "",
+                          $record.remote_subnets ? "Remote Subnets: " & $join($ensure_array($record.remote_subnets), ", ") : "",
+                          $record.branch_id ? "Branch: " & $record.branch_id : "",
+                          $record.tenant ? "Tenant: " & $record.tenant : "",
+                          $record.DC ? "DC: " & $record.DC : ""
+                        ][ $ != "" ], "\n"),
+                        "source_obj": $source_component,
+                        "target_obj": $targets,
+                        "direction": "<==>",
+                        "source_key": key,
+                        "resource_id": $record.id,
+                        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.vpn_connections",
+                        "is_reverse": true
+                      }
+                    }
+                  : {}
+              )
+            : {}
+        );
+        $eips := data_lake."seaf.ta.reverse.cloud_ru.advanced.eips".$spread().{
+          "key": $keys()[0],
+          "value": $.*[0]
+        };
+        $eip_links := $eips.(
+          $record := value;
+          $matches := $nat_eip_pairs[eip_id = $record.id];
+          $first := $matches[0];
+          $source_component := $first.component;
+          $source_exists := $source_component != null and $exists($lookup($nat_components, $source_component));
+          $segment_candidate := $segment_ref(
+            $first.dc ? $first.dc : $record.DC,
+            "INTERNET"
+          );
+          ($source_exists and $segment_candidate != null)
+            ? (
+                $link_key := $link_id("eip", $record.id ? $record.id : key);
+                $link_key != null
+                  ? {
+                      ($link_key): {
+                        "__id__": $link_key,
+                        "__entity_id__": "seaf.company.ta.services.logical_links",
+                        "__entity_title__": "Logical Link (reverse import)",
+                        "__company_id__": $record.tenant,
+                        "__link_to_card__": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "link": "/entities/seaf.company.ta.services.logical_links/card?id=" & $link_key,
+                        "title": "EIP " & (
+                          $record.ext_address ? $record.ext_address : $record.id
+                        ),
+                        "description": $join([
+                          $record.ext_address ? "External IP: " & $record.ext_address : "",
+                          $record.int_address ? "Internal IP: " & $record.int_address : "",
+                          $record.type ? "Type: " & $record.type : "",
+                          $record.port_id ? "Port ID: " & $record.port_id : "",
+                          $record.tenant ? "Tenant: " & $record.tenant : "",
+                          $record.DC ? "DC: " & $record.DC : ""
+                        ][ $ != "" ], "\n"),
+                        "source_obj": $source_component,
+                        "target_obj": [$segment_candidate],
+                        "direction": "<==>",
+                        "source_key": key,
+                        "resource_id": $record.id,
+                        "reverse_source": "seaf.ta.reverse.cloud_ru.advanced.eips",
+                        "is_reverse": true
+                      }
+                    }
+                  : {}
+              )
+            : {}
+        );
+        [$peer_links, $vpn_links, $eip_links][] ~> $merge()
+      )
+

@@ -1,0 +1,10 @@
+datasets:
+  seaf.company.ds.ba.processes:
+    description: |
+      Датасет формирует коллекцию всех процессов
+
+    origin: seaf.ds.objects_by_entities
+    source: >
+      (
+      $."seaf.company.ba.processes";
+      )

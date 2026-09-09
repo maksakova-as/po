@@ -1,0 +1,50 @@
+docs:
+  ai_001.mcp.my_mcp:
+    type: ai-chat
+    location:  AI / MCP / MY MCP servers
+    scenarios:
+      mcp_1:
+        title: 1. SSE
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент.
+        mcp_servers:
+          - url: http://127.0.0.1:4000/mcp
+            transport: sse
+
+      mcp_2:
+        title: 2. STREAM
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент.
+        mcp_servers:
+          - url: http://127.0.0.1:4001/mcp
+            transport: streamableHttp
+
+      mcp_3:
+        title: 3. STREAM+STREAM
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент.
+        mcp_servers:
+          - url: http://127.0.0.1:4001/mcp
+            transport: streamableHttp
+          - url: http://127.0.0.1:4002/mcp
+            transport: streamableHttp
+
+      mcp_4:
+        title: 4. STREAM+SSE+STREAM
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты ИИ - ассистент.
+        mcp_servers:
+          - url: http://127.0.0.1:4001/mcp
+            transport: streamableHttp
+          - url: http://127.0.0.1:4000/mcp
+            transport: sse
+          - url: http://127.0.0.1:4002/mcp
+            transport: streamableHttp

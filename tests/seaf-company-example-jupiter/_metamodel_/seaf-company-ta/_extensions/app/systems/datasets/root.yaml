@@ -1,0 +1,7 @@
+imports:
+  # 10_services
+  - dataset_parts/10_services/systems_ta_services.yaml
+  # 20_dependency_graph
+  - dataset_parts/20_dependency_graph/systems_dependency_graph.yaml
+  # 30_deployment
+  - dataset_parts/30_deployment/systems_deployment_topology.yaml

@@ -1,0 +1,270 @@
+ai_001.subagents.data.products:
+  - name: Молоко
+    price: 100
+    quantity: 10
+    id: "product_001"
+  - name: Хлеб
+    price: 70
+    quantity: 0
+    id: "product_003"
+  - name: Сыр
+    price: 300
+    quantity: 30
+    id: "product_004"
+  - name: Масло
+    price: 170
+    quantity: 30
+    id: "product_005"
+
+
+docs:
+  ai_001.subagents:
+    type: ai-chat
+    location:  AI / SUBAGENTS (MARAT)
+    scenarios:
+      super_nums:
+        title: Суперчат (числа)
+        type: gigachat
+        model: GigaChat-2-Pro
+        compact_context: true
+        system_prompt: |
+          Ты ИИ-агент - супервизор.
+          В качестве инструментов имеешь возможность обращения к субагентам.
+
+        context_window: 1000
+        subagents:
+          - id: calculator
+            description: Калькулятор позволяющий производить расчеты
+          - id: random
+            description: Генерирует случайное число
+
+      calculator:
+        title: Калькулятор
+        type: gigachat
+        model: GigaChat-2
+
+        system_prompt: |
+          Ты калькулятор позволяющий производить расчеты по функции "x + y - z".
+
+          z - число введенное пользователем.
+          x и y следует получить с использованием соответствующих функций.
+
+          Если пользователь ввел не число верни ответ:
+          "Введите число"
+
+          Помни, что у тебя есть следующие функции:
+          get_x: получения значение x
+          get_y: получения значение y
+          calc: производит вычисление 
+
+          Помни:
+          - ты можешь вызывать функции последовательно
+          - перед вызовом функций, обязательно перепроверь передаваемые в нее параметры
+          - ты не проверяешь корректность расчета, а только возвращаешь пользователю результата вычисления calc
+
+        tools:
+          - name: get_x
+            query: >
+              (100)
+            schema:
+              name: get_x
+              description: Получает значение x
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение x
+                required:
+                  - number
+
+          - name: get_y
+            query: >
+              (300)
+            schema:
+              name: get_y
+              description: Получает значение y
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Значение y
+                required:
+                  - number
+
+          - name: calc
+            query: >
+              (
+                $x := $number($params.x);
+                $y := $number($params.y);
+                $z := $number($params.z);
+
+                $x + $y - $z
+              )
+            schema:
+              name: calc
+              description: Производит вычисление
+              parameters:
+                type: object
+                properties:
+                  x:
+                    type: number
+                    description: Значение x
+                  y:
+                    type: number
+                    description: Значение y
+                  z:
+                    type: number
+                    description: Значение z
+                required:
+                  - x
+                  - y
+                  - z
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: number
+                    description: Результат вычисления
+                required:
+                  - number
+      random:
+        title: Random
+        type: gigachat
+        model: GigaChat-2
+        system_prompt: |
+          Ты генератор случайных рандомных чисел.
+          Помни, что у тебя есть следующие функции:
+          get_random: Генерирует случайных число
+          Помни: 
+          - На любой запрос пользователя ты возращаешь случайное число
+          - В качестве ответа пользователю ты возращаешь результат выполнения функции, без добавления текста
+
+        tools:
+          - name: get_random
+            query: >
+              (100500)
+            schema:
+              name: get_random
+              description: Генерирует случайное число
+              parameters:
+                type: object
+                properties:
+                required:
+              return_parameters:
+                type: object
+                properties:
+                  number:
+                    type: integer
+                    description: Случайное целое число
+                required:
+                  - number
+
+      super_products:
+        title: Суперчат (продукты)
+        type: gigachat
+        model: GigaChat-2-Pro
+        compact_context: true
+        system_prompt: Ты управляешь субагентами.
+        context_window: 1000
+        subagents:
+          - id: get_products
+            description: Получает текущие позиции в магазине (наименование, идентификаторы)
+          - id: products_info
+            description: Получает информацию о продукте по идентификатору (цена, количество)
+
+      get_products:
+        title: Продукты
+        type: gigachat
+        model: GigaChat-2
+        history: false
+        system_prompt: |
+          Ты бот-консультант продуктового магазина.
+          Ты можешь получить список продуктов в магазине с наименование продукта и его идентификатором.
+          
+          ВАЖНО! ИСПОЛЬЗУЙ ТОЛЬКО ДАННЫЕ КОТОРЫЕ ТЫ МОЖЕШЬ ЯВНО ПОЛУЧИТЬ, НЕ ПРИДУМЫВАЯ ОТВЕТ.
+
+        tools:
+          - name: get_products
+            query: >
+              (
+                  $log($string($params), "========= GET PRODUCT");
+                  $products := $."ai_001.subagents.data.products";
+                  $map($products, function($v){(
+                      {"name": $v.name, "id": $v.id}
+                  )});
+              )
+            schema:
+              name: get_products
+              description: Получает какие продукты есть в магазине
+              parameters:
+                type: object
+                properties:
+                  arg:
+                    type: string
+              return_parameters:
+                type: object
+                properties:
+                  ids:
+                    type: array
+                    items:
+                      type: string
+                      description: ID продуктов
+      products_info:
+          title: products_info
+          type: gigachat
+          model: GigaChat-2
+          history: false
+          system_prompt: |
+            Ты бот-консультант продуктового магазина.
+            Ты можешь получить ДЕТАЛЬНУЮ информацию о цене и количестве продуктов в магазине.
+          tools:
+            - name: get_product_info
+              query: >
+                (
+                    $log($string($params), "========= GET PRODUCT INFO");
+                    $products := $."ai_001.subagents.data.products";
+                    $filter($products, function($v, $i, $a) {
+                        $v.id in $params.ids
+                    })         
+                )
+              schema:
+                name: get_product_info
+                description: Получает информацию об определенном продукте в магазине
+                parameters:
+                  type: object
+                  properties:
+                    ids:
+                      type: array
+                      items:
+                        type: string
+                        description: ID продуктов
+                return_parameters:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            description: Название позиции
+                          id:
+                            type: string
+                            description: ID позиции
+                          quantity:
+                            type: string
+                            description: Количество
+                          price:
+                            type: string
+                            description: Цена

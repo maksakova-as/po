@@ -1,0 +1,94 @@
+editable_table.ai.auto_fill.gigachat.table.colors:
+  - value: red
+    text: Красный
+  - value: green
+    text: Зеленый
+  - value: blue
+    text: Синий
+  - value: white
+    text: Белый
+
+docs:
+  editable_table.ai.auto_fill.gigachat.table:
+    location: TABLE / AI / AUTO FILL / GIGACHAT AGENT / TABLE
+    origin:
+      headers: >
+        ($.docs."editable_table.ai.auto_fill.gigachat.table"."headers")
+      body: >
+        ($."editable_table.ai.auto_fill.gigachat.table.data")
+      color_options: >
+        ($."editable_table.ai.auto_fill.gigachat.table.colors")
+
+    type: editable-table
+    page_size: 20
+    new_row: >
+      (
+          $rows := $keys(table);
+          $new_row_count := $count($rows) + 1;
+          $new_row_id := "row_" & $new_row_count;
+          $new_row_id
+      )
+
+    headers:
+      - value: text
+        type: text
+
+      - value: fn
+        type: fn
+        fn: >
+          (
+              row.fn ? row.fn 
+                  : row.text 
+                      ? ("[data]:" & row.text)
+                      : null
+          )
+
+      - value: checkbox
+        type: checkbox
+
+      - value: select
+        type: select
+        options: >
+          (color_options)
+
+      - value: multiple_select
+        type: multiple-select
+        options: >
+          (color_options)
+
+      - value: link
+        type: link
+
+    source: >
+      (
+          $path := "editable_table__ai__auto_fill__gigachat__agent"
+              & ".scenarios." 
+              & "gigachat_agent";
+      
+          $log($path);
+          $headers := $map(headers, function($h){(
+      
+              $request := "[Данные]: " & "[" & $h.value & "]" & "\n" & "[ID]: " & $h.value;
+      
+              $log($request);
+      
+              $agent := {
+                  $path: {
+                      "params": [{ "prop": $h.value }],
+                      "input_headers": [$h.value],
+                      "request": $request
+                  }
+              };
+      
+              
+      
+              $mock := {
+                  "width": "130px",
+                  "editable": true,
+                  "save": {"path": "save_result.yaml"},
+                  "agent": $agent
+              };
+              $merge([$h, $mock]);
+          )});
+          { "body": body, "headers": $headers }
+      )

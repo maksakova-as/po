@@ -1,0 +1,331 @@
+{
+  "seaf.company.ba.products": {
+    "title": "Продукты",
+    "description": "Товары, услуги или сервисы компании, созданные или адаптированные для использования внешними или внутренними клиентами",
+    "schema": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "__refdef__": {
+            "title": "Этапы жизненного цикла объекта",
+            "type": "object",
+            "properties": {
+              "lifecycle_stage": {
+                "title": "Этап ЖЦ",
+                "type": "string",
+                "enum": [
+                  "Идея",
+                  "Создается",
+                  "Используется и развивается",
+                  "Используется",
+                  "Выводится из эксплуатации",
+                  "В архиве"
+                ]
+              },
+              "affected_area": {
+                "__refdef__": {
+                  "title": "Область эффекта",
+                  "type": "string",
+                  "enum": [
+                    "people",
+                    "money",
+                    "resources",
+                    "time",
+                    "business",
+                    "technology",
+                    "other"
+                  ]
+                }
+              }
+            }
+          },
+          "allOf": [
+            {
+              "__refdef__": {
+                "title": "Базовые атрибуты для всех сущностей",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "title": "Краткое название",
+                    "type": "string",
+                    "description": "Используется в качестве названия объекта в схемах и отчетах"
+                  },
+                  "description": {
+                    "title": "Описание",
+                    "type": "string",
+                    "description": "Описание объекта в несколько предложений"
+                  },
+                  "external_id": {
+                    "title": "Внешний идентификатор",
+                    "type": "string",
+                    "description": "Идентификатор объекта во внешней системе"
+                  },
+                  "comments": {
+                    "title": "Комментарии",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "__refrel__": "seaf.company.ba.products"
+            },
+            "distributed_via": {
+              "title": "Распространяется через",
+              "description": "Каналы распространения продукта",
+              "type": "array",
+              "items": {
+                "__refrel__": "seaf.company.ba.channels"
+              }
+            },
+            "target_clients": {
+              "title": "Целевые клиенты",
+              "description": "Клиенты, на которых нацелен продукт",
+              "type": "array",
+              "items": {
+                "__refrel__": "seaf.company.ba.clients"
+              }
+            }
+          }
+        }
+      }
+    },
+    "objects": {
+      "product": {
+        "route": "/",
+        "title": "Продукт",
+        "symbol": "prd"
+      }
+    }
+  },
+  "seaf.company.ba.channels": {
+    "title": "Каналы",
+    "description": "Канал - это цифровое (web, app) физическое (офис, торговый зал) или смешанное (phygital) пространство Компании, в котором Клиент (внешний и/или внутренний) знакомится, приобретает и пользуется продуктами Компании",
+    "schema": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "__refdef__": {
+                "title": "Базовые атрибуты для всех сущностей",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "title": "Краткое название",
+                    "type": "string",
+                    "description": "Используется в качестве названия объекта в схемах и отчетах"
+                  },
+                  "description": {
+                    "title": "Описание",
+                    "type": "string",
+                    "description": "Описание объекта в несколько предложений"
+                  },
+                  "external_id": {
+                    "title": "Внешний идентификатор",
+                    "type": "string",
+                    "description": "Идентификатор объекта во внешней системе"
+                  },
+                  "comments": {
+                    "title": "Комментарии",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            },
+            {
+              "__refdef__": {
+                "title": "Этапы жизненного цикла объекта",
+                "type": "object",
+                "properties": {
+                  "lifecycle_stage": {
+                    "title": "Этап ЖЦ",
+                    "type": "string",
+                    "enum": [
+                      "Идея",
+                      "Создается",
+                      "Используется и развивается",
+                      "Используется",
+                      "Выводится из эксплуатации",
+                      "В архиве"
+                    ]
+                  },
+                  "affected_area": {
+                    "__refdef__": {
+                      "title": "Область эффекта",
+                      "type": "string",
+                      "enum": [
+                        "people",
+                        "money",
+                        "resources",
+                        "time",
+                        "business",
+                        "technology",
+                        "other"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "__refrel__": "seaf.company.ba.channels"
+            },
+            "type": {
+              "title": "Тип канала",
+              "enum": [
+                "Цифровой",
+                "Физический",
+                "Phygital"
+              ]
+            },
+            "serves_clients": {
+              "title": "Обслуживает клиентов",
+              "type": "array",
+              "items": {
+                "__refrel__": "seaf.company.ba.clients"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "serves_clients"
+          ]
+        }
+      }
+    },
+    "objects": {
+      "channel": {
+        "route": "/",
+        "title": "Канал",
+        "symbol": "ch"
+      }
+    }
+  },
+  "seaf.company.app.services": {
+    "title": "Прикладные сервисы",
+    "description": "Функциональность приложений, используемая потребителями (пользователями, системами, другими сервисами)",
+    "schema": {
+      "type": "object",
+      "patternProperties": {
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+          "type": "object",
+          "allOf": [
+            {
+              "__refdef__": {
+                "title": "Базовые атрибуты для всех сущностей",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "title": "Краткое название",
+                    "type": "string",
+                    "description": "Используется в качестве названия объекта в схемах и отчетах"
+                  },
+                  "description": {
+                    "title": "Описание",
+                    "type": "string",
+                    "description": "Описание объекта в несколько предложений"
+                  },
+                  "external_id": {
+                    "title": "Внешний идентификатор",
+                    "type": "string",
+                    "description": "Идентификатор объекта во внешней системе"
+                  },
+                  "comments": {
+                    "title": "Комментарии",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "title"
+                ]
+              }
+            },
+            {
+              "__refdef__": {
+                "title": "Этапы жизненного цикла объекта",
+                "type": "object",
+                "properties": {
+                  "lifecycle_stage": {
+                    "title": "Этап ЖЦ",
+                    "type": "string",
+                    "enum": [
+                      "Идея",
+                      "Создается",
+                      "Используется и развивается",
+                      "Используется",
+                      "Выводится из эксплуатации",
+                      "В архиве"
+                    ]
+                  },
+                  "affected_area": {
+                    "__refdef__": {
+                      "title": "Область эффекта",
+                      "type": "string",
+                      "enum": [
+                        "people",
+                        "money",
+                        "resources",
+                        "time",
+                        "business",
+                        "technology",
+                        "other"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "is_part_of": {
+              "title": "Ссылка на родительский объект",
+              "description": "Используется для задания древовидной структуры объектов",
+              "__refrel__": "seaf.company.app.services"
+            },
+            "type": {
+              "title": "Тип сервиса",
+              "enum": [
+                "UI",
+                "API",
+                "AI Agent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "objects": {
+      "service": {
+        "route": "/",
+        "title": "Прикладной сервис",
+        "symbol": "srv"
+      }
+    }
+  }
+}

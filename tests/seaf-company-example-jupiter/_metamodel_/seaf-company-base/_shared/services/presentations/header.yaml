@@ -1,0 +1,44 @@
+entities:
+  seaf.company.services:
+    presentations:
+      # Встраиваемся в презентацию карточки
+      card:
+        # Добавляем собственный виджет
+        widgets:
+          header:
+            # Расположение вверху
+            align: "^"
+            # Идентификатор презентации, которая будет использоваться в виджете
+            presentation: header
+            # Порядок расположения
+            order: 0
+            # Определяем стиль виджета
+            style:
+              margin: 0px
+              padding: 0px
+              border: false
+
+      # Презентация для виджета
+      header:
+        type: markdown
+        template: ../../../_shared/templates/header.md
+        params:
+          type: object
+          properties:
+            id:
+              title: Идентификатор
+              type: string
+          required:
+            - id
+        origin:
+          objects: seaf.ds.objects
+        source: >
+          (
+          /*  ищем объект для презентации */
+          $obj2present := $lookup(objects, $params.id);
+              { 
+                  "entity": $obj2present.__entity_title__ & " систем", 
+                  "title": $obj2present.title 
+              }
+          )
+          

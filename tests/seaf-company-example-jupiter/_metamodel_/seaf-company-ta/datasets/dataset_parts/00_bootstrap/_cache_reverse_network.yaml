@@ -1,0 +1,54 @@
+# Назначение: Промежуточный кеш сетевых объектов reverse (сегменты/сети/сетевые компоненты).
+# Используется: внутренний этап конвейера TA-датасетов.
+datasets:
+  seaf.company.ds.ta._cache.reverse_network:
+    description: |
+      Кэш reverse-датасетов сетевого слоя.
+    origin:
+      data_lake: ($)
+      cfg: seaf.company.ds.ta._config
+    source: >
+      (
+        $sources_enabled := cfg.enabled;
+        "reverse" in $sources_enabled
+          ? (
+              $datasets := data_lake.datasets;
+              $ctx_base := $merge([
+                data_lake,
+                {
+                  "data_lake": data_lake,
+                  "datasets": $datasets
+                }
+              ]);
+              $networks_cloud := $eval($datasets."reverse2seaf2.ds.ta.reverse.networks".source, $ctx_base);
+              $networks_vmware := $eval($datasets."reverse2seaf2.ds.ta.reverse.vmware.networks".source, $ctx_base);
+              $netcomps := $eval($datasets."reverse2seaf2.ds.ta.reverse.network_components".source, $ctx_base);
+              $nat := $eval($datasets."reverse2seaf2.ds.ta.reverse.nat_gateways".source, $ctx_base);
+              $vpn := $eval($datasets."reverse2seaf2.ds.ta.reverse.vpn_gateways".source, $ctx_base);
+              $elb_netc := $eval($datasets."reverse2seaf2.ds.ta.reverse.elb_network_components".source, $ctx_base);
+              $vmware_netc := $eval($datasets."reverse2seaf2.ds.ta.reverse.vmware.network_components".source, $ctx_base);
+              $ctx_links := $merge([
+                $ctx_base,
+                {
+                  "reverse_netcomps": $netcomps,
+                  "reverse_vpn": $vpn,
+                  "reverse_nat": $nat,
+                  "reverse_networks": $networks_cloud
+                }
+              ]);
+              {
+                "networks_cloud": $networks_cloud,
+                "networks_vmware": $networks_vmware,
+                "segments_cloud": $eval($datasets."reverse2seaf2.ds.ta.reverse.network_segments".source, $ctx_base),
+                "segments_vmware": $eval($datasets."reverse2seaf2.ds.ta.reverse.vmware.network_segments".source, $ctx_base),
+                "netcomps": $netcomps,
+                "nat": $nat,
+                "vpn": $vpn,
+                "elb_netcomps": $elb_netc,
+                "vmware_netcomps": $vmware_netc,
+                "netcomps_all": $merge([$netcomps, $nat, $vpn, $elb_netc, $vmware_netc]),
+                "logical_links": $eval($datasets."reverse2seaf2.ds.ta.reverse.logical_links".source, $ctx_links)
+              }
+            )
+          : {}
+      )

@@ -1,0 +1,10 @@
+imports:
+  - list.yaml
+  - card.yaml
+  - header.yaml
+  - summary.yaml
+  - comments.yaml
+  - clients.yaml
+  - products.yaml
+  - tree.yaml
+  - realization.yaml

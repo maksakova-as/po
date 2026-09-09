@@ -1,0 +1,124 @@
+{
+  "entities": {
+    "seaf.company.ba.products": {
+      "title": "Продукты",
+      "description": "Товары, услуги или сервисы компании, созданные или адаптированные для использования внешними или внутренними клиентами",
+      "schema": {
+        "type": "object",
+        "patternProperties": {
+          "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$": {
+            "type": "object",
+            "$ref": "#/$defs/seaf.company.shared.defs.lifecycle_stage",
+            "allOf": [
+              {
+                "$ref": "#/$defs/seaf.company.shared.defs.basic_attributes"
+              }
+            ],
+            "properties": {
+              "is_part_of": {
+                "title": "Ссылка на родительский объект",
+                "description": "Используется для задания древовидной структуры объектов",
+                "$ref": "#/$rels/seaf.company.ba.products.product"
+              },
+              "distributed_via": {
+                "title": "Распространяется через",
+                "description": "Каналы распространения продукта",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$rels/seaf.company.ba.channels.channel"
+                }
+              },
+              "target_clients": {
+                "title": "Целевые клиенты",
+                "description": "Клиенты, на которых нацелен продукт",
+                "type": "array",
+                "items": {
+                  "$ref": "#/$rels/seaf.company.ba.clients.client"
+                }
+              }
+            }
+          }
+        }
+      },
+      "objects": {
+        "product": {
+          "route": "/",
+          "title": "Продукт",
+          "symbol": "prd"
+        }
+      }
+    },
+    "seaf.company.shared.defs": {
+      "title": "Базовые атрибуты и справочники",
+      "schema": {
+        "$defs": {
+          "seaf.company.shared.defs.basic_attributes": {
+            "title": "Базовые атрибуты для всех сущностей",
+            "type": "object",
+            "properties": {
+              "title": {
+                "title": "Краткое название",
+                "type": "string",
+                "description": "Используется в качестве названия объекта в схемах и отчетах"
+              },
+              "description": {
+                "title": "Описание",
+                "type": "string",
+                "description": "Описание объекта в несколько предложений"
+              },
+              "external_id": {
+                "title": "Внешний идентификатор",
+                "type": "string",
+                "description": "Идентификатор объекта во внешней системе"
+              },
+              "comments": {
+                "title": "Комментарии",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "title"
+            ]
+          },
+          "seaf.company.shared.defs.lifecycle_stage": {
+            "title": "Этапы жизненного цикла объекта",
+            "type": "object",
+            "properties": {
+              "lifecycle_stage": {
+                "title": "Этап ЖЦ",
+                "type": "string",
+                "enum": [
+                  "Идея",
+                  "Создается",
+                  "Используется и развивается",
+                  "Используется",
+                  "Выводится из эксплуатации",
+                  "В архиве"
+                ]
+              },
+              "affected_area": {
+                "$ref": "#/$defs/seaf.change.adr.affects.area"
+              }
+            }
+          },
+          "seaf.change.adr.affects.area": {
+            "title": "Область эффекта",
+            "type": "string",
+            "enum": [
+              "people",
+              "money",
+              "resources",
+              "time",
+              "business",
+              "technology",
+              "other"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

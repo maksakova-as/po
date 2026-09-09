@@ -1,0 +1,28 @@
+entities:
+  seaf.company.artefacts:
+    schema:
+      # ADR
+      patternProperties:
+        "^([a-zA-Z0-9_-]+\\.)+(adr)(\\.[a-zA-Z0-9_-]+)+$":
+          title: "ADR"  # это название используется как имя подсущности в ER диаграмме
+          description: >
+            Артефакт Architecture decision record (обоснование архитектурного решения) используется для фиксации прохождения
+            определенной архитектурной развилки (выбора решения из нескольких вариантов)
+          type: object
+
+          # additionalProperties: false
+          # TODO: заменить на unevaluatedProperties: false после реализации в движках idea, vscode
+          # ошибка валидации возникает при комбинации additionalProperties: false + allOf на одном уровне
+          allOf:
+            - $ref: "#/$defs/seaf.company.def.artefact_basic_attributes"
+            - $ref: "#/$defs/seaf.company.def.artefact_stakeholders"
+
+          properties:
+            type:
+              title: Тип
+              enum:
+                - Обоснование архитектурного решения (ADR)
+              default: Обоснование архитектурного решения (ADR)
+
+          required:
+            - type

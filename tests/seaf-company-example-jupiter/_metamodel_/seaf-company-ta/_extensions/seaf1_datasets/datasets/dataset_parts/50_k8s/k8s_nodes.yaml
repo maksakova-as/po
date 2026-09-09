@@ -1,0 +1,31 @@
+# Назначение: Подготовка датасета `seaf.company.ds.ta.k8s_nodes` (k8s nodes) в контуре seaf1_datasets.
+# Используется: compat-слой seaf1 -> seaf2 (подключается по необходимости через extension root).
+# SEAF1 counterpart of seaf.company.ds.ta.k8s_nodes
+datasets:
+  seaf.company.ds.ta.k8s_nodes:
+    description: |
+      Kubernetes ноды
+    origin:
+      by_entities: seaf.ds.objects_by_entities
+      data_lake: ($)
+    source: >
+      (
+        $seaf2 := $exists(by_entities."seaf.company.ta.components.k8s_nodes") ? by_entities."seaf.company.ta.components.k8s_nodes" : {};
+        $list := data_lake."seaf.ta.components.k8s_node";
+        $seaf1 := $exists($list)
+          ? $each($list, function($val, $key) {
+              {
+                $key: $merge([
+                  $val,
+                  {
+                    "__id__": $key,
+                    "__entity_id__": "seaf.company.ta.components.k8s_nodes",
+                    "__entity_id": $key,
+                    "__object_type": "seaf.company.ta.components.k8s_nodes"
+                  }
+                ])
+              }
+            }) ~> $merge()
+          : {};
+        $merge([$seaf2, $seaf1])
+      )

@@ -1,0 +1,78 @@
+rules:
+  validators:
+    seaf.validation.ta.services.network_segment_parent_check:
+      uid: SEAF-TA-NETWORK-SEGMENT-PARENT-001
+      title: Проверка корректности связи Сети с сетевым сегментом
+      description: |
+        Проверяет, что у каждой Сети (seaf.company.ta.services.networks) указано
+        поле `segment`, оно не пустое и каждый его элемент ссылается на реально
+        существующий сетевой сегмент.
+      correction: |
+        Убедитесь, что для каждого объекта типа `seaf.company.ta.services.networks` указано
+        непустое поле `segment` и что каждый указанный сетевой сегмент
+        определен в `seaf.company.ta.services.network_segment`.
+      source: |
+        (
+          $configs := $."seaf.configs";
+          $ta_config := (
+            $cfg_root := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+            $cfg1 := $configs."seaf.company.ta";
+            $cfg2 := $configs.seaf.company.ta;
+            $cfg3 := $cfg_root."seaf.company.ta";
+            $cfg4 := $cfg_root.seaf.company.ta;
+            $cfg1 ? $cfg1 : ($cfg2 ? $cfg2 : ($cfg3 ? $cfg3 : $cfg4))
+          );
+          $rules_cfg := $ta_config.rules ? $ta_config.rules : {};
+          $rules_enabled := $exists($rules_cfg.rules_enabled) ? $rules_cfg.rules_enabled : true;
+          $rules_disabled := $exists($rules_cfg.rules_disabled) ? $rules_cfg.rules_disabled : [];
+          $rule_id := "seaf.validation.ta.services.network_segment_parent_check";
+          $rule_uid := $self.uid;
+          $rule_is_disabled := ($rule_id in $rules_disabled) or ($rule_uid in $rules_disabled);
+          $cfg_root2 := $configs."seaf.configs" ? $configs."seaf.configs" : $configs;
+          $company_ids := $keys($cfg_root2.company ? $cfg_root2.company : ($configs.company ? $configs.company : {}));
+          $has_company_filter := $count($company_ids) > 0;
+          $is_local := function($obj, $key){
+            $has_company_filter
+              ? (
+                  ($exists($obj.__company_id__) and $obj.__company_id__ in $company_ids)
+                  or ($substringBefore($key, ".") in $company_ids)
+                )
+              : (
+                  $not($exists($obj.source)) or $obj.source = "seaf2"
+                )
+          };
+        
+          $rules_enabled and $not($rule_is_disabled)
+            ? (
+              ([
+                (
+                  $ds := $.datasets."seaf.company.ds.ta.networks";
+                  $networks := $eval($ds.source, { "objects": $, "data_lake": $ });
+                  $seg_ds := $.datasets."seaf.company.ds.ta.network_segments";
+                  $segments_map := $eval($seg_ds.source, { "objects": $, "data_lake": $ });
+                  $defined_segment_keys := $keys($segments_map);
+                  $each($networks, function($network, $network_key) {
+                    (
+                        $not($is_local($network, $network_key)) ? [] :
+                        $segments := $network.segment;
+                        $not($exists($segments)) or $count($segments) = 0 ? {
+                            "uid": "seaf.validation.ta.network_segment_parent_check.missing." & $network_key,
+                            "title": "У Сети '" & $network.title & "' отсутствует или не заполнено поле segment.",
+                            "correction": "ID: " & $network_key & ". " & ("Необходимо указать хотя бы один сетевой сегмент для поля `segment`."),
+                            "description": "У Сети '" & $network.title & "' (UID: " & $network_key & ") отсутствует или не заполнено поле `segment`."
+                        } : (
+                            $invalid_segments := $filter($segments, function($s) { $not($s in $defined_segment_keys) });
+                            $count($invalid_segments) > 0 ? {
+                                "uid": "seaf.validation.ta.network_segment_parent_check.notfound." & $network_key,
+                                "title": "Сеть '" & $network.title & "' содержит ссылку на несуществующий сетевой сегмент.",
+                                "correction": "ID: " & $network_key & ". " & ("Проверьте все сегменты в поле `segment` для сети '" & $network.title & "'. Один или несколько из них не определены в `seaf.company.ta.services.network_segment`."),
+                                "description": "Сеть '" & $network.title & "' (UID: " & $network_key & ") ссылается на несуществующие сетевые сегменты: " & $join($invalid_segments, ", ")
+                            }
+                        )
+                    )
+                  })
+                )
+              ])
+            )
+            : []
+        )

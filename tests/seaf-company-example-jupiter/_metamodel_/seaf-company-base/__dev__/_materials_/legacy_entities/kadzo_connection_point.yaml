@@ -1,0 +1,34 @@
+entities:
+  kadzo.connection_points:
+    title: Точка подключения (соединения)
+    objects:
+      point:
+        route: "/"
+        title: Точка подключения
+        symbol: "point"
+
+    schema:
+      type: object
+      patternProperties:
+        "[a-zA-Z0-9_]*(\\.[a-zA-Z0-9_]*)*$":
+          type: object
+          properties:
+            title:
+              title: Наименование
+              type: string
+              minLength: 2
+            description:
+              title: Описание
+              type: string
+              minLength: 2
+            provided_by:
+              title: Поставщик точки подключения
+              oneOf:
+                - $ref: "#/$rels/kadzo.v2023.systems.systems"
+                - $ref: "#/$rels/kadzo.v2023.tech_services.tech_services"
+                - $ref: "#/$rels/kadzo.v2023.kb_systems.kb_systems"
+            implemented_in:
+              title: Реализуется в
+              $ref: "#/$rels/kadzo.components.component"
+          required:
+            - title

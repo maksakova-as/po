@@ -1,0 +1,52 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultTextAlignment center
+skinparam shadowing false
+skinparam rectangle {
+  FontColor #111318
+  BorderColor #4d6bf0
+  BackgroundColor #f2f4f7
+}
+skinparam node {
+  FontColor #111318
+  BorderColor #4d6bf0
+  BackgroundColor #fdfdfd
+}
+skinparam package {
+  FontColor #111318
+  BorderColor #4d6bf0
+  BackgroundColor #fdfdfd
+}
+
+{{#topology.locations}}
+node "**{{title}}**\n<size:10>Локация</size>" as {{ref}} {{color}} {
+  {{#segments}}
+  package "**{{title}}**\n<size:10>Сегмент</size>" as {{ref}} {{color}} {
+    {{#resources}}
+    rectangle "**{{title}}**\n<size:10>{{type}}</size>" as {{ref}} {{color}}
+    {{/resources}}
+  }
+  {{/segments}}
+  {{#networks}}
+  package "**{{title}}**\n<size:10>Сеть</size>" as {{ref}} {{color}} {
+    {{#resources}}
+    rectangle "**{{title}}**\n<size:10>{{type}}</size>" as {{ref}} {{color}}
+    {{/resources}}
+  }
+  {{/networks}}
+  {{#resources}}
+  rectangle "**{{title}}**\n<size:10>{{type}}</size>" as {{ref}} {{color}}
+  {{/resources}}
+}
+{{/topology.locations}}
+
+{{#topology.orphans}}
+rectangle "**{{title}}**\n<size:10>{{type}}</size>" as {{ref}} {{color}}
+{{/topology.orphans}}
+
+{{^topology.locations}}
+{{^topology.orphans}}
+note "Инфраструктура не определена" as N
+{{/topology.orphans}}
+{{/topology.locations}}
+@enduml

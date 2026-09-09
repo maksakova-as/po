@@ -1,0 +1,14 @@
+editable_table.ai.ai_fill_multiple_select.table.data:
+  row_1:
+    text_1: TEXT 1
+    text_2: TEXT 1
+    checkbox: true
+    select: blue
+    multiple_select:
+      - blue
+      - white
+    link: http://google.com
+    fn: OK OK
+  row_2: {}
+  row_3: {}
+

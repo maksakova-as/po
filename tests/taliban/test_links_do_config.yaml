@@ -1,0 +1,18 @@
+docs:
+  test.seaf2drawio.links_check:
+    type: seaf2drawio
+    location: Тест/ПроверкаДоработок
+    description: Проверка network_links и logical_links
+    origin:
+      dataset: test.links.data
+    source: >
+      (
+        {
+          "title": "Проверка связей",
+          "dataset": dataset
+        }
+      )
+
+datasets:
+  test.links.data:
+    source: ./test_links_data.yaml

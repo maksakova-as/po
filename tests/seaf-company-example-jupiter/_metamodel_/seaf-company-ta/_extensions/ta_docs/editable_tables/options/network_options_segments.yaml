@@ -1,0 +1,16 @@
+datasets:
+  seaf.company.ds.ta.network_options.segments:
+    description: Список сетевых сегментов для редактируемых таблиц
+    origin:
+      segments: seaf.company.ds.ta.network_segments
+    source: >
+      (
+        $segments := $exists(segments) ? segments : {};
+        $map($keys($segments), function($segment_id){(
+          $segment := $lookup($segments, $segment_id);
+          {
+            "value": $segment_id,
+            "text": $segment.title ? $segment.title : $segment_id
+          }
+        )})
+      )
