@@ -1,3 +1,0 @@
-(
-  $replace("some.value", "[^A-Za-z0-9_]", "_")
-)

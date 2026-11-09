@@ -1,5 +1,0 @@
-imports:
-  - aggregats.yaml
-  - business_terms/_root.yaml
-  - logical_layer/_root.yaml
-  - physical_layer/_root.yaml

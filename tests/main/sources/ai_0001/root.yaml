@@ -1,7 +1,0 @@
-imports:
-  - tools/root.yaml
-  - mcp/root.yaml
-  - other/root.yaml
-  - user_prompt_injection/root.yaml
-  - aigena/root.yaml
-  - subagents/root.yaml

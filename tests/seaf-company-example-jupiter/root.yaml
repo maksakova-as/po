@@ -1,4 +1,0 @@
-imports:
-  - root: dochub.yaml
-    permission: jupiter
-    alias: jupiter

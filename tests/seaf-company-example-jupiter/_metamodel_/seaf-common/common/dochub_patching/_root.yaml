@@ -1,5 +1,0 @@
-imports:
-  - components.yaml
-  - aspects.yaml
-  - contexts.yaml
-  - docs.yaml

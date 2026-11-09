@@ -1,5 +1,0 @@
-seaf.configs:
-  seaf.company.da:
-    root_menu: "Архитектура данных"
-    root_menu_order: 3000
-

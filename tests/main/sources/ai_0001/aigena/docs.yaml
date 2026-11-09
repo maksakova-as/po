@@ -1,8 +1,0 @@
-docs:
-  ai_001.aigena:
-    type: ai-chat
-    location:  AI / AI GENA
-    scenarios:
-      aigena:
-        title: AiGenA
-        type: aigena

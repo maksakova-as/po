@@ -1,4 +1,0 @@
-docs:
-  editable_table.s3.s3_config:
-    location: TABLE / S3 / Config
-    type: s3-integration

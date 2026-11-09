@@ -1,5 +1,0 @@
-seaf.configs:
-  seaf.company.ai:
-    root_menu: "ИИ-архитектура"
-    root_menu_order: 3500
-

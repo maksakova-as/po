@@ -1,6 +1,0 @@
-imports:
-#  - common/root.yaml Очень тяжелая проверка которая сильно нагружает бекенд.
-  - components/root.yaml
-  - environments/root.yaml
-  - services/root.yaml
-  - p3/root.yaml

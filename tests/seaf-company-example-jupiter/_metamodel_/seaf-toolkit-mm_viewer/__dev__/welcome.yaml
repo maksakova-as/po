@@ -1,5 +1,0 @@
-docs:
-  dochub.welcome:
-    type: markdown
-    location: /SEAF/toolkit-mm_viewer/README
-    source: ../README.md

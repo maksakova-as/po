@@ -1,9 +1,0 @@
-imports:
-  - configs.yaml
-  - artefacts.yaml
-  - art_adr.yaml
-  - art_ka.yaml
-  - art_pattern.yaml
-  - datasets.yaml
-  - menus.yaml
-  - presentations/_root.yaml

@@ -1,5 +1,0 @@
-docs:
-  test-01:
-    location: Png-md
-    type: markdown
-    source: example.md

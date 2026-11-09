@@ -1,4 +1,0 @@
-imports:
-  - configs.yaml
-  - goals/_root.yaml
-  - activities/_root.yaml

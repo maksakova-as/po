@@ -1,5 +1,0 @@
-imports:
-  - menus.yaml
-  - widgets.yaml
-  - trees.yaml
-  - utils.yaml

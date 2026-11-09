@@ -1,5 +1,0 @@
-imports:
-  - defs.yaml
-  - configs.yaml
-  - models/_root.yaml
-  - agents/_root.yaml

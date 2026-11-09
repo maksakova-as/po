@@ -1,4 +1,0 @@
-(
-  $o := { "title": null };
-  $exists($o.title)
-)

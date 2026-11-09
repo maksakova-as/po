@@ -1,4 +1,0 @@
-imports:
-  - agent.yaml
-  - table.yaml
-  - table_data.yaml

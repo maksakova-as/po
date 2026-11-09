@@ -1,5 +1,0 @@
-imports:
-  - entities.yaml
-  - datasets.yaml
-  - menus.yaml
-  - presentations/_root.yaml
